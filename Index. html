@@ -86,7 +86,7 @@
       color: #bbb;
       align-items: center;
     }
-    .like-btn {
+    .action-btn {
       background: none;
       border: none;
       color: #bbb;
@@ -94,9 +94,48 @@
       padding: 4px 0;
       cursor: pointer;
     }
-    .like-btn.liked {
+    .action-btn.liked {
       color: #ff5252;
       font-weight: 600;
+    }
+    .comment-box {
+      display: none;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #2a2a2a;
+    }
+    .comment-box.open {
+      display: block;
+    }
+    .comment-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 8px;
+      font-size: 13px;
+      color: #ddd;
+    }
+    .comment-item {
+      background: #242424;
+      padding: 6px 10px;
+      border-radius: 6px;
+    }
+    .comment-row {
+      display: flex;
+      gap: 8px;
+    }
+    .comment-row input {
+      margin-top: 0;
+      flex: 1;
+    }
+    .comment-row button {
+      background: #4caf50;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0 12px;
+      font-weight: 600;
+      cursor: pointer;
     }
     textarea, input {
       width: 100%;
@@ -163,9 +202,16 @@
       <div class="card-header">2friend Official</div>
       <div class="media-box">Short Video / Story Preview</div>
       <div class="actions">
-        <button class="like-btn" onclick="toggleLike('official', this)">Like (0)</button>
-        <span>Comment</span>
+        <button class="action-btn like-btn" onclick="toggleLike('official', this)">Like (0)</button>
+        <button class="action-btn comment-toggle" onclick="toggleCommentBox('official')">Comment (0)</button>
         <span>Share</span>
+      </div>
+      <div id="comments-official" class="comment-box">
+        <div class="comment-list"></div>
+        <div class="comment-row">
+          <input type="text" placeholder="कमेंट लिखें..." onkeydown="if(event.key==='Enter') addComment('official', this)" />
+          <button onclick="addComment('official', this.previousElementSibling)">भेजें</button>
+        </div>
       </div>
     </article>
   </main>
@@ -206,29 +252,18 @@
   <script>
     const POSTS_KEY = '2friend_posts';
     const LIKES_KEY = '2friend_likes';
+    const COMMENTS_KEY = '2friend_comments';
 
-    function getSavedPosts() {
+    function readStorage(key, fallback) {
       try {
-        return JSON.parse(localStorage.getItem(POSTS_KEY)) || [];
+        return JSON.parse(localStorage.getItem(key)) ?? fallback;
       } catch {
-        return [];
+        return fallback;
       }
     }
 
-    function savePosts(posts) {
-      localStorage.setItem(POSTS_KEY, JSON.stringify(posts));
-    }
-
-    function getLikes() {
-      try {
-        return JSON.parse(localStorage.getItem(LIKES_KEY)) || {};
-      } catch {
-        return {};
-      }
-    }
-
-    function saveLikes(likes) {
-      localStorage.setItem(LIKES_KEY, JSON.stringify(likes));
+    function writeStorage(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
     }
 
     function updateLikeUI(btn, likeData) {
@@ -239,7 +274,7 @@
     }
 
     function toggleLike(postId, btn) {
-      const likes = getLikes();
+      const likes = readStorage(LIKES_KEY, {});
       const current = likes[postId] || { count: 0, liked: false };
       if (current.liked) {
         current.count = Math.max(0, current.count - 1);
@@ -249,21 +284,56 @@
         current.liked = true;
       }
       likes[postId] = current;
-      saveLikes(likes);
+      writeStorage(LIKES_KEY, likes);
       updateLikeUI(btn, current);
+    }
+
+    function toggleCommentBox(postId) {
+      const box = document.getElementById('comments-' + postId);
+      if (box) box.classList.toggle('open');
+    }
+
+    function renderCommentsForPost(postId) {
+      const allComments = readStorage(COMMENTS_KEY, {});
+      const list = allComments[postId] || [];
+      const card = document.querySelector(`[data-post-id="${postId}"]`);
+      if (!card) return;
+
+      const toggleBtn = card.querySelector('.comment-toggle');
+      if (toggleBtn) toggleBtn.textContent = `Comment (${list.length})`;
+
+      const listEl = card.querySelector('.comment-list');
+      if (listEl) {
+        listEl.innerHTML = list.map(c => `<div class="comment-item">${c}</div>`).join('');
+      }
+    }
+
+    function addComment(postId, inputEl) {
+      const text = inputEl.value.trim();
+      if (!text) return;
+
+      const allComments = readStorage(COMMENTS_KEY, {});
+      const list = allComments[postId] || [];
+      list.push(text);
+      allComments[postId] = list;
+      writeStorage(COMMENTS_KEY, allComments);
+
+      inputEl.value = '';
+      renderCommentsForPost(postId);
     }
 
     function renderPosts() {
       const feed = document.getElementById('tab-feed');
       feed.querySelectorAll('.user-post').forEach(el => el.remove());
 
-      const likes = getLikes();
+      const likes = readStorage(LIKES_KEY, {});
       const officialBtn = feed.querySelector('[data-post-id="official"] .like-btn');
       if (officialBtn) {
         updateLikeUI(officialBtn, likes['official'] || { count: 0, liked: false });
       }
+      renderCommentsForPost('official');
 
-      const posts = getSavedPosts();
+      const posts = readStorage(POSTS_KEY, []);
       posts.forEach((post, index) => {
         const postId = post.id || ('user_' + index);
         const text = typeof post === 'string' ? post : post.text;
@@ -274,14 +344,22 @@
           <div class="card-header">@2friend_user</div>
           <p style="margin:6px 0 10px; color:#eee;">${text}</p>
           <div class="actions">
-            <button class="like-btn" onclick="toggleLike('${postId}', this)">Like (0)</button>
-            <span>Comment</span>
+            <button class="action-btn like-btn" onclick="toggleLike('${postId}', this)">Like (0)</button>
+            <button class="action-btn comment-toggle" onclick="toggleCommentBox('${postId}')">Comment (0)</button>
             <span>Share</span>
+          </div>
+          <div id="comments-${postId}" class="comment-box">
+            <div class="comment-list"></div>
+            <div class="comment-row">
+              <input type="text" placeholder="कमेंट लिखें..." onkeydown="if(event.key==='Enter') addComment('${postId}', this)" />
+              <button onclick="addComment('${postId}', this.previousElementSibling)">भेजें</button>
+            </div>
           </div>
         `;
         feed.prepend(card);
         const btn = card.querySelector('.like-btn');
         updateLikeUI(btn, likes[postId] || { count: 0, liked: false });
+        renderCommentsForPost(postId);
       });
 
       document.getElementById('postCount').textContent = `पोस्ट: ${1 + posts.length} · फ़ॉलोअर्स: 0`;
@@ -300,9 +378,9 @@
       const text = input.value.trim();
       if (!text) return;
 
-      const posts = getSavedPosts();
+      const posts = readStorage(POSTS_KEY, []);
       posts.push({ id: 'post_' + Date.now(), text });
-      savePosts(posts);
+      writeStorage(POSTS_KEY, posts);
       renderPosts();
 
       input.value = '';
