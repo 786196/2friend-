@@ -5,17 +5,133 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>2friend</title>
   <style>
-    body { font-family: sans-serif; margin: 0; padding: 16px; background: #f5f5f5; }
-    header { background: #111; color: #fff; padding: 12px 16px; border-radius: 8px; }
-    .card { background: #fff; padding: 14px; margin-top: 12px; border-radius: 8px; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #121212;
+      color: #ffffff;
+      padding-bottom: 68px;
+    }
+    header {
+      position: sticky;
+      top: 0;
+      background: #181818;
+      padding: 12px 16px;
+      border-bottom: 1px solid #2a2a2a;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+    }
+    .logo {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .stories {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 12px 16px;
+      border-bottom: 1px solid #242424;
+    }
+    .story {
+      min-width: 66px;
+      text-align: center;
+      font-size: 12px;
+      color: #ccc;
+    }
+    .avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #2c2c2c;
+      border: 2px solid #4caf50;
+      margin: 0 auto 6px;
+    }
+    .feed {
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .card {
+      background: #1c1c1c;
+      border: 1px solid #2b2b2b;
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .card-header {
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .media-box {
+      height: 220px;
+      background: #262626;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #aaa;
+      margin: 8px 0 10px;
+    }
+    .actions {
+      display: flex;
+      gap: 16px;
+      font-size: 14px;
+      color: #bbb;
+    }
+    nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #181818;
+      border-top: 1px solid #2a2a2a;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+    }
+    nav button {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 13px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <header>
-    <h2>2friend</h2>
+    <span class="logo">2friend</span>
+    <span style="font-size:12px; color:#aaa;">हिंदी</span>
   </header>
-  <div class="card">
-    <p>स्वागत है! यहाँ 2friend का पहला पेज तैयार हो रहा है।</p>
-  </div>
+
+  <section class="stories">
+    <div class="story"><div class="avatar"></div>आपकी स्टोरी</div>
+    <div class="story"><div class="avatar"></div>दोस्त 1</div>
+    <div class="story"><div class="avatar"></div>दोस्त 2</div>
+    <div class="story"><div class="avatar"></div>दोस्त 3</div>
+  </section>
+
+  <main class="feed">
+    <article class="card">
+      <div class="card-header">2friend Official</div>
+      <div class="media-box">Short Video / Story Preview</div>
+      <div class="actions">
+        <span>Like</span>
+        <span>Comment</span>
+        <span>Share</span>
+      </div>
+    </article>
+  </main>
+
+  <nav>
+    <button>Feed</button>
+    <button>Stories</button>
+    <button>Create</button>
+    <button>Profile</button>
+  </nav>
 </body>
 </html>
