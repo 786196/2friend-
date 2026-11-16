@@ -191,7 +191,42 @@
   </nav>
 
   <script>
-    let totalPosts = 1;
+    const STORAGE_KEY = '2friend_posts';
+
+    function getSavedPosts() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    function savePosts(posts) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+    }
+
+    function renderPosts() {
+      const feed = document.getElementById('tab-feed');
+      feed.querySelectorAll('.user-post').forEach(el => el.remove());
+
+      const posts = getSavedPosts();
+      posts.forEach(text => {
+        const card = document.createElement('article');
+        card.className = 'card user-post';
+        card.innerHTML = `
+          <div class="card-header">@2friend_user</div>
+          <p style="margin:6px 0 10px; color:#eee;">${text}</p>
+          <div class="actions">
+            <span>Like</span>
+            <span>Comment</span>
+            <span>Share</span>
+          </div>
+        `;
+        feed.prepend(card);
+      });
+
+      document.getElementById('postCount').textContent = `पोस्ट: ${1 + posts.length} · फ़ॉलोअर्स: 0`;
+    }
 
     function switchTab(tabName, btn) {
       document.querySelectorAll('.tab-section').forEach(sec => sec.classList.remove('active'));
@@ -206,24 +241,16 @@
       const text = input.value.trim();
       if (!text) return;
 
-      const feed = document.getElementById('tab-feed');
-      const card = document.createElement('article');
-      card.className = 'card';
-      card.innerHTML = `
-        <div class="card-header">@2friend_user</div>
-        <p style="margin:6px 0 10px; color:#eee;">${text}</p>
-        <div class="actions">
-          <span>Like</span>
-          <span>Comment</span>
-          <span>Share</span>
-        </div>
-      `;
-      feed.prepend(card);
-      totalPosts += 1;
-      document.getElementById('postCount').textContent = `पोस्ट: ${totalPosts} · फ़ॉलोअर्स: 0`;
+      const posts = getSavedPosts();
+      posts.push(text);
+      savePosts(posts);
+      renderPosts();
+
       input.value = '';
       switchTab('feed', document.querySelector('nav button'));
     }
+
+    renderPosts();
   </script>
 </body>
 </html>
