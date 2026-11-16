@@ -84,6 +84,19 @@
       gap: 16px;
       font-size: 14px;
       color: #bbb;
+      align-items: center;
+    }
+    .like-btn {
+      background: none;
+      border: none;
+      color: #bbb;
+      font-size: 14px;
+      padding: 4px 0;
+      cursor: pointer;
+    }
+    .like-btn.liked {
+      color: #ff5252;
+      font-weight: 600;
     }
     textarea, input {
       width: 100%;
@@ -146,11 +159,11 @@
 
   <!-- Feed Tab -->
   <main id="tab-feed" class="tab-section active">
-    <article class="card">
+    <article class="card" data-post-id="official">
       <div class="card-header">2friend Official</div>
       <div class="media-box">Short Video / Story Preview</div>
       <div class="actions">
-        <span>Like</span>
+        <button class="like-btn" onclick="toggleLike('official', this)">Like (0)</button>
         <span>Comment</span>
         <span>Share</span>
       </div>
@@ -191,38 +204,84 @@
   </nav>
 
   <script>
-    const STORAGE_KEY = '2friend_posts';
+    const POSTS_KEY = '2friend_posts';
+    const LIKES_KEY = '2friend_likes';
 
     function getSavedPosts() {
       try {
-        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        return JSON.parse(localStorage.getItem(POSTS_KEY)) || [];
       } catch {
         return [];
       }
     }
 
     function savePosts(posts) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+      localStorage.setItem(POSTS_KEY, JSON.stringify(posts));
+    }
+
+    function getLikes() {
+      try {
+        return JSON.parse(localStorage.getItem(LIKES_KEY)) || {};
+      } catch {
+        return {};
+      }
+    }
+
+    function saveLikes(likes) {
+      localStorage.setItem(LIKES_KEY, JSON.stringify(likes));
+    }
+
+    function updateLikeUI(btn, likeData) {
+      const count = likeData.count || 0;
+      const liked = Boolean(likeData.liked);
+      btn.textContent = `Like (${count})`;
+      btn.classList.toggle('liked', liked);
+    }
+
+    function toggleLike(postId, btn) {
+      const likes = getLikes();
+      const current = likes[postId] || { count: 0, liked: false };
+      if (current.liked) {
+        current.count = Math.max(0, current.count - 1);
+        current.liked = false;
+      } else {
+        current.count += 1;
+        current.liked = true;
+      }
+      likes[postId] = current;
+      saveLikes(likes);
+      updateLikeUI(btn, current);
     }
 
     function renderPosts() {
       const feed = document.getElementById('tab-feed');
       feed.querySelectorAll('.user-post').forEach(el => el.remove());
 
+      const likes = getLikes();
+      const officialBtn = feed.querySelector('[data-post-id="official"] .like-btn');
+      if (officialBtn) {
+        updateLikeUI(officialBtn, likes['official'] || { count: 0, liked: false });
+      }
+
       const posts = getSavedPosts();
-      posts.forEach(text => {
+      posts.forEach((post, index) => {
+        const postId = post.id || ('user_' + index);
+        const text = typeof post === 'string' ? post : post.text;
         const card = document.createElement('article');
         card.className = 'card user-post';
+        card.dataset.postId = postId;
         card.innerHTML = `
           <div class="card-header">@2friend_user</div>
           <p style="margin:6px 0 10px; color:#eee;">${text}</p>
           <div class="actions">
-            <span>Like</span>
+            <button class="like-btn" onclick="toggleLike('${postId}', this)">Like (0)</button>
             <span>Comment</span>
             <span>Share</span>
           </div>
         `;
         feed.prepend(card);
+        const btn = card.querySelector('.like-btn');
+        updateLikeUI(btn, likes[postId] || { count: 0, liked: false });
       });
 
       document.getElementById('postCount').textContent = `पोस्ट: ${1 + posts.length} · फ़ॉलोअर्स: 0`;
@@ -242,7 +301,7 @@
       if (!text) return;
 
       const posts = getSavedPosts();
-      posts.push(text);
+      posts.push({ id: 'post_' + Date.now(), text });
       savePosts(posts);
       renderPosts();
 
