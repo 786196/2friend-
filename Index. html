@@ -37,10 +37,11 @@
       border-bottom: 1px solid #242424;
     }
     .story {
-      min-width: 66px;
+      min-width: 68px;
       text-align: center;
       font-size: 12px;
       color: #ccc;
+      cursor: pointer;
     }
     .avatar {
       width: 56px;
@@ -49,6 +50,13 @@
       background: #2c2c2c;
       border: 2px solid #4caf50;
       margin: 0 auto 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: #fff;
+      padding: 4px;
+      overflow: hidden;
     }
     .tab-section {
       display: none;
@@ -68,6 +76,10 @@
     .card-header {
       font-weight: 600;
       margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
     }
     .media-box {
       height: 220px;
@@ -97,6 +109,15 @@
     .action-btn.liked {
       color: #ff5252;
       font-weight: 600;
+    }
+    .delete-btn {
+      background: none;
+      border: 1px solid #4a2626;
+      color: #ff7b7b;
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-size: 12px;
+      cursor: pointer;
     }
     .comment-box {
       display: none;
@@ -136,6 +157,15 @@
       padding: 0 12px;
       font-weight: 600;
       cursor: pointer;
+    }
+    .story-preview {
+      background: #242424;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 10px;
+      margin-top: 8px;
+      font-size: 13px;
+      color: #eee;
     }
     textarea, input {
       width: 100%;
@@ -186,20 +216,15 @@
 <body>
   <header>
     <span class="logo">2friend</span>
-    <span style="font-size:12px; color:#aaa;">हिंदी</span>
+    <span id="headerUser" style="font-size:12px; color:#aaa;">@2friend_user</span>
   </header>
 
-  <section class="stories">
-    <div class="story"><div class="avatar"></div>आपकी स्टोरी</div>
-    <div class="story"><div class="avatar"></div>दोस्त 1</div>
-    <div class="story"><div class="avatar"></div>दोस्त 2</div>
-    <div class="story"><div class="avatar"></div>दोस्त 3</div>
-  </section>
+  <section id="storyStrip" class="stories"></section>
 
   <!-- Feed Tab -->
   <main id="tab-feed" class="tab-section active">
     <article class="card" data-post-id="official">
-      <div class="card-header">2friend Official</div>
+      <div class="card-header"><span>2friend Official</span></div>
       <div class="media-box">Short Video / Story Preview</div>
       <div class="actions">
         <button class="action-btn like-btn" onclick="toggleLike('official', this)">Like (0)</button>
@@ -219,15 +244,21 @@
   <!-- Stories Tab -->
   <section id="tab-stories" class="tab-section">
     <div class="card">
-      <div class="card-header">सभी स्टोरीज़</div>
-      <p style="color:#bbb; font-size:14px;">यहाँ दोस्तों की स्टोरी और शॉर्ट वीडियो दिखेंगे।</p>
+      <div class="card-header"><span>नई स्टोरी जोड़ें</span></div>
+      <input id="storyInput" type="text" placeholder="अपनी स्टोरी का संदेश लिखें..." />
+      <button class="primary-btn" onclick="addStory()">स्टोरी डालें</button>
+      <div id="activeStoryBox" class="story-preview">अभी कोई स्टोरी नहीं है।</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span>सभी स्टोरीज़</span></div>
+      <div id="storiesList" class="comment-list"></div>
     </div>
   </section>
 
   <!-- Create Tab -->
   <section id="tab-create" class="tab-section">
     <div class="card">
-      <div class="card-header">नई पोस्ट बनाएं</div>
+      <div class="card-header"><span>नई पोस्ट बनाएं</span></div>
       <textarea id="postInput" rows="3" placeholder="अपने दोस्तों के साथ कुछ शेयर करें..."></textarea>
       <button class="primary-btn" onclick="addPost()">पोस्ट करें</button>
     </div>
@@ -236,9 +267,14 @@
   <!-- Profile Tab -->
   <section id="tab-profile" class="tab-section">
     <div class="card">
-      <div class="card-header">मेरी प्रोफ़ाइल</div>
-      <p style="color:#bbb; font-size:14px;">यूज़रनेम: @2friend_user</p>
-      <p id="postCount" style="color:#bbb; font-size:14px;">पोस्ट: 1 · फ़ॉलोअर्स: 0</p>
+      <div class="card-header"><span>मेरी प्रोफ़ाइल</span></div>
+      <p id="profileHandle" style="color:#fff; font-size:15px; margin:6px 0;">@2friend_user</p>
+      <p id="profileBio" style="color:#bbb; font-size:13px; margin:6px 0;">बायो अभी सेट नहीं है।</p>
+      <p id="postCount" style="color:#bbb; font-size:14px; margin:6px 0;">पोस्ट: 1 · फ़ॉलोअर्स: 0</p>
+
+      <input id="usernameInput" type="text" placeholder="नया यूज़रनेम (जैसे @rahul)" />
+      <input id="bioInput" type="text" placeholder="अपना बायो लिखें..." />
+      <button class="primary-btn" onclick="saveProfile()">प्रोफ़ाइल सेव करें</button>
     </div>
   </section>
 
@@ -253,6 +289,8 @@
     const POSTS_KEY = '2friend_posts';
     const LIKES_KEY = '2friend_likes';
     const COMMENTS_KEY = '2friend_comments';
+    const STORIES_KEY = '2friend_stories';
+    const PROFILE_KEY = '2friend_profile';
 
     function readStorage(key, fallback) {
       try {
@@ -264,6 +302,42 @@
 
     function writeStorage(key, value) {
       localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function getProfile() {
+      return readStorage(PROFILE_KEY, {
+        username: '@2friend_user',
+        bio: 'बायो अभी सेट नहीं है।'
+      });
+    }
+
+    function renderProfile() {
+      const profile = getProfile();
+      document.getElementById('headerUser').textContent = profile.username;
+      document.getElementById('profileHandle').textContent = profile.username;
+      document.getElementById('profileBio').textContent = profile.bio;
+    }
+
+    function saveProfile() {
+      const usernameVal = document.getElementById('usernameInput').value.trim();
+      const bioVal = document.getElementById('bioInput').value.trim();
+      const current = getProfile();
+
+      let cleanUsername = usernameVal || current.username;
+      if (!cleanUsername.startsWith('@')) {
+        cleanUsername = '@' + cleanUsername;
+      }
+
+      const updated = {
+        username: cleanUsername,
+        bio: bioVal || current.bio
+      };
+
+      writeStorage(PROFILE_KEY, updated);
+      document.getElementById('usernameInput').value = '';
+      document.getElementById('bioInput').value = '';
+      renderProfile();
+      renderPosts();
     }
 
     function updateLikeUI(btn, likeData) {
@@ -322,10 +396,77 @@
       renderCommentsForPost(postId);
     }
 
+    function renderStories() {
+      const stories = readStorage(STORIES_KEY, []);
+      const profile = getProfile();
+      const strip = document.getElementById('storyStrip');
+      const listEl = document.getElementById('storiesList');
+      const previewBox = document.getElementById('activeStoryBox');
+
+      const defaultStories = [
+        { author: 'आपकी स्टोरी', text: stories[0]?.text || 'नई स्टोरी जोड़ने के लिए Stories टैब खोलें' },
+        { author: 'दोस्त 1', text: 'दोस्त 1 की स्टोरी' },
+        { author: 'दोस्त 2', text: 'दोस्त 2 की स्टोरी' },
+        { author: 'दोस्त 3', text: 'दोस्त 3 की स्टोरी' }
+      ];
+
+      strip.innerHTML = defaultStories.map((s, idx) => `
+        <div class="story" onclick="openStory('${s.author}', '${s.text.replace(/'/g, "\\'")}')">
+          <div class="avatar">${idx === 0 && stories.length ? 'Live' : ''}</div>
+          ${s.author}
+        </div>
+      `).join('');
+
+      if (stories.length > 0) {
+        previewBox.textContent = `ताज़ा स्टोरी (${profile.username}): ${stories[stories.length - 1].text}`;
+        listEl.innerHTML = stories.slice().reverse().map(s =>
+          `<div class="comment-item"><strong>${profile.username}:</strong> ${s.text}</div>`
+        ).join('');
+      } else {
+        previewBox.textContent = 'अभी कोई स्टोरी नहीं है।';
+        listEl.innerHTML = '<div class="comment-item">कोई स्टोरी नहीं जोड़ी गई है।</div>';
+      }
+    }
+
+    function openStory(author, text) {
+      switchTab('stories', document.querySelectorAll('nav button')[1]);
+      const previewBox = document.getElementById('activeStoryBox');
+      if (previewBox) previewBox.textContent = `${author}: ${text}`;
+    }
+
+    function addStory() {
+      const input = document.getElementById('storyInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const stories = readStorage(STORIES_KEY, []);
+      stories.push({ id: 'story_' + Date.now(), text });
+      writeStorage(STORIES_KEY, stories);
+      input.value = '';
+      renderStories();
+    }
+
+    function deletePost(postId) {
+      const posts = readStorage(POSTS_KEY, []);
+      const filtered = posts.filter((p, idx) => (p.id || ('user_' + idx)) !== postId);
+      writeStorage(POSTS_KEY, filtered);
+
+      const likes = readStorage(LIKES_KEY, {});
+      delete likes[postId];
+      writeStorage(LIKES_KEY, likes);
+
+      const comments = readStorage(COMMENTS_KEY, {});
+      delete comments[postId];
+      writeStorage(COMMENTS_KEY, comments);
+
+      renderPosts();
+    }
+
     function renderPosts() {
       const feed = document.getElementById('tab-feed');
       feed.querySelectorAll('.user-post').forEach(el => el.remove());
 
+      const profile = getProfile();
       const likes = readStorage(LIKES_KEY, {});
       const officialBtn = feed.querySelector('[data-post-id="official"] .like-btn');
       if (officialBtn) {
@@ -341,7 +482,10 @@
         card.className = 'card user-post';
         card.dataset.postId = postId;
         card.innerHTML = `
-          <div class="card-header">@2friend_user</div>
+          <div class="card-header">
+            <span>${profile.username}</span>
+            <button class="delete-btn" onclick="deletePost('${postId}')">डिलीट</button>
+          </div>
           <p style="margin:6px 0 10px; color:#eee;">${text}</p>
           <div class="actions">
             <button class="action-btn like-btn" onclick="toggleLike('${postId}', this)">Like (0)</button>
@@ -387,6 +531,8 @@
       switchTab('feed', document.querySelector('nav button'));
     }
 
+    renderProfile();
+    renderStories();
     renderPosts();
   </script>
 </body>
