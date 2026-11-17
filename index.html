@@ -62,13 +62,14 @@
     <div class="brand-wrap">
       <strong>2friend</strong>
       <span class="badge-green">480p · HLS · 128k · Max 1m</span>
+      <span id="apiSyncBadge" class="tag">API: Local Mode</span>
     </div>
     <span>@2friend_user</span>
   </header>
 
   <!-- 1. FEED VIEW -->
   <section id="feedView" class="view active">
-    <div class="stories">
+    <div class="stories" id="topStoriesBar">
       <div class="story" onclick="openDirectStory(0)"><div class="ring">+</div>आपकी स्टोरी</div>
       <div class="story" onclick="openDirectStory(1)"><div class="ring">Demo</div>2friend Demo</div>
       <div class="story" onclick="openDirectStory(3)"><div class="ring">D1</div>दोस्त 1</div>
@@ -145,7 +146,7 @@
         <input type="text" id="r2BaseInput" value="https://pub-eaf6b9a861824b82ad140f60615e8933.r2.dev" placeholder="R2 Base URL" />
       </div>
       <div style="margin-top:10px;">
-        <input type="text" id="postMediaUrl" placeholder="R2 फ़ाइल पाथ (जैसे: stories/demo_480p.mp4 या feed/post_480p.mp4)" />
+        <input type="text" id="postMediaUrl" placeholder="R2 फ़ाइल पाथ (जैसे: 17949242979073049909321212498922.jpg)" />
       </div>
       <div style="margin-top:10px;">
         <textarea id="postCaption" rows="3" placeholder="टेक्स्ट लिखें..."></textarea>
@@ -231,8 +232,11 @@
     document.addEventListener('cut', e => e.preventDefault());
     document.addEventListener('paste', e => e.preventDefault());
 
+    // VPS / Node.js Backend URL (जैसे: 'http://YOUR_VPS_IP:4000' या 'https://api.yourdomain.com')
+    const API_BASE_URL = 'http://127.0.0.1:4000';
     const R2_CACHE_BASE = 'https://pub-eaf6b9a861824b82ad140f60615e8933.r2.dev';
     const MAX_VIDEO_SECONDS = 60;
+    let apiOnline = false;
 
     const PRIMARY_AD_NETWORK = 'Applooney Max';
     const AD_NETWORK_PRIORITY = [
@@ -259,6 +263,29 @@
       const cleanBase = (base || R2_CACHE_BASE).replace(/\/+$/, '');
       const cleanPath = cleanUrl.replace(/^\/+/, '');
       return cleanBase ? `${cleanBase}/${cleanPath}` : cleanPath;
+    }
+
+    async function apiCall(path, options = {}) {
+      if (!API_BASE_URL) return null;
+      try {
+        const res = await fetch(`${API_BASE_URL.replace(/\/+$/, '')}${path}`, {
+          headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+          ...options
+        });
+        if (!res.ok) return null;
+        return await res.json();
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function setApiBadge(connected) {
+      apiOnline = connected;
+      const badge = document.getElementById('apiSyncBadge');
+      if (!badge) return;
+      badge.textContent = connected ? 'API: PostgreSQL Connected' : 'API: Local Mode';
+      badge.style.background = connected ? '#163826' : '#1d2b44';
+      badge.style.color = connected ? '#2ecc71' : '#7fb3ff';
     }
 
     function validateVideoDuration(file) {
@@ -549,12 +576,14 @@
       const status = document.getElementById('createStatus');
 
       let localVideoUrl = '';
+      let durationSec = 0;
 
       if (selectedFile) {
         try {
           const duration = await validateVideoDuration(selectedFile);
+          durationSec = Math.round(duration);
           localVideoUrl = URL.createObjectURL(selectedFile);
-          status.textContent = `वीडियो मान्य है (${Math.round(duration)} सेकंड / अधिकतम 60 सेकंड)।`;
+          status.textContent = `वीडियो मान्य है (${durationSec} सेकंड / अधिकतम 60 सेकंड)।`;
         } catch (err) {
           status.textContent = err.message;
           if (fileInput) fileInput.value = '';
@@ -566,20 +595,32 @@
       const mediaUrl = localVideoUrl || r2MediaUrl;
 
       if (kind === 'story') {
+        const apiRes = await apiCall('/api/stories', {
+          method: 'POST',
+          body: JSON.stringify({
+            author,
+            caption,
+            mediaUrl: r2MediaUrl || mediaUrl,
+            durationSeconds: durationSec
+          })
+        });
+
+        const savedStory = apiRes && apiRes.story ? apiRes.story : null;
         storyItems.splice(1, 0, {
-          user: author,
-          text: caption,
+          user: savedStory ? savedStory.author : author,
+          text: savedStory ? savedStory.caption : caption,
           isAd: false,
           adNetwork: 'Applooney Max',
-          videoUrl: mediaUrl
+          videoUrl: savedStory && savedStory.media_url ? savedStory.media_url : mediaUrl
         });
+
         renderStoriesHub();
         if (fileInput) fileInput.value = '';
         document.getElementById('postTitle').value = '';
         document.getElementById('postMediaUrl').value = '';
         document.getElementById('postCaption').value = '';
-        status.textContent = r2MediaUrl
-          ? 'Cloudflare R2 स्टोरी जुड़ गई है — Stories खुल रही है...'
+        status.textContent = savedStory
+          ? 'स्टोरी PostgreSQL API और R2 में सेव हो गई — Stories खुल रही है...'
           : 'नई स्टोरी जुड़ गई है — Stories खुल रही है...';
 
         const storiesBtn = document.querySelectorAll('nav button')[1];
@@ -588,39 +629,72 @@
         return;
       }
 
-      const isVideo = Boolean(localVideoUrl) || /\.(mp4|m3u8|webm)$/i.test(mediaUrl);
-      posts.unshift({
-        id: Date.now(),
-        author,
-        tag: r2MediaUrl
-          ? (isVideo ? 'Cloudflare R2 · 480p · Max 1m' : 'Cloudflare R2 · Image')
-          : (isVideo ? 'Video · Max 1m · 480p' : 'Text Feed'),
-        caption: isVideo ? `${caption} (Max 1 min · 480p / 128kbps)` : caption,
-        imageUrl: mediaUrl && !isVideo ? mediaUrl : '',
-        videoUrl: mediaUrl && isVideo ? mediaUrl : '',
-        likes: 0,
-        liked: false,
-        comments: []
+      const apiPostRes = await apiCall('/api/posts', {
+        method: 'POST',
+        body: JSON.stringify({
+          author,
+          caption,
+          mediaUrl: r2MediaUrl || mediaUrl,
+          durationSeconds: durationSec
+        })
       });
+
+      const savedPost = apiPostRes && apiPostRes.post ? apiPostRes.post : null;
+      const isVideo = Boolean(localVideoUrl) || /\.(mp4|m3u8|webm)$/i.test(mediaUrl);
+
+      if (savedPost) {
+        posts.unshift({
+          id: savedPost.id,
+          author: savedPost.author,
+          tag: savedPost.tag,
+          caption: savedPost.caption,
+          imageUrl: savedPost.media_type === 'image' ? savedPost.media_url : '',
+          videoUrl: savedPost.media_type === 'video' ? savedPost.media_url : '',
+          likes: savedPost.likes_count || 0,
+          liked: false,
+          comments: []
+        });
+      } else {
+        posts.unshift({
+          id: Date.now(),
+          author,
+          tag: r2MediaUrl
+            ? (isVideo ? 'Cloudflare R2 · 480p · Max 1m' : 'Cloudflare R2 · Image')
+            : (isVideo ? 'Video · Max 1m · 480p' : 'Text Feed'),
+          caption: isVideo ? `${caption} (Max 1 min · 480p / 128kbps)` : caption,
+          imageUrl: mediaUrl && !isVideo ? mediaUrl : '',
+          videoUrl: mediaUrl && isVideo ? mediaUrl : '',
+          likes: 0,
+          liked: false,
+          comments: []
+        });
+      }
 
       if (fileInput) fileInput.value = '';
       document.getElementById('postTitle').value = '';
       document.getElementById('postMediaUrl').value = '';
       document.getElementById('postCaption').value = '';
-      status.textContent = r2MediaUrl
-        ? 'Cloudflare R2 पोस्ट Feed में जुड़ गई है।'
-        : (localVideoUrl ? '1 मिनट से कम का वीडियो Feed में जुड़ गया है।' : 'पोस्ट Feed में जुड़ गई है।');
+      status.textContent = savedPost
+        ? 'पोस्ट PostgreSQL API में सेव होकर Feed में जुड़ गई है।'
+        : (r2MediaUrl ? 'Cloudflare R2 पोस्ट Feed में जुड़ गई है।' : 'पोस्ट Feed में जुड़ गई है।');
 
       renderFeed();
       switchTab(document.querySelector('nav button'), 'feedView');
     }
 
-    function sendChat() {
+    async function sendChat() {
       const input = document.getElementById('chatInput');
       const msg = input.value.trim();
       if (!msg) return;
+
+      const apiRes = await apiCall('/api/messages', {
+        method: 'POST',
+        body: JSON.stringify({ senderHandle: '@2friend_user', messageText: msg })
+      });
+
+      const finalMsg = apiRes && apiRes.message ? apiRes.message.message_text : msg;
       const li = document.createElement('li');
-      li.innerHTML = `<span>आप: ${msg}</span>`;
+      li.innerHTML = `<span>आप: ${finalMsg}</span>`;
       document.getElementById('chatList').appendChild(li);
       input.value = '';
     }
@@ -653,19 +727,45 @@
       list.innerHTML = sorted
         .map((u, idx) => `<li><span>#${idx + 1} ${u.handle} — ${u.minutes} min</span></li>`)
         .join('');
+      const currentUser = screenUsers.find(u => u.handle === '@2friend_user') || sorted[0];
       const profileTime = document.getElementById('profileScreenTime');
-      if (profileTime) profileTime.textContent = `${screenUsers[0].minutes} min`;
+      if (profileTime && currentUser) profileTime.textContent = `${currentUser.minutes} min`;
     }
 
-    function simulateScreenTime() {
-      screenUsers[0].minutes += 1;
+    async function simulateScreenTime() {
+      const apiRes = await apiCall('/api/screen-time', {
+        method: 'POST',
+        body: JSON.stringify({ userHandle: '@2friend_user', addMinutes: 1 })
+      });
+
+      if (apiRes && Array.isArray(apiRes.topUsers) && apiRes.topUsers.length) {
+        screenUsers.length = 0;
+        apiRes.topUsers.forEach(row => {
+          screenUsers.push({ handle: row.user_handle, minutes: Number(row.minutes_watched) || 0 });
+        });
+      } else {
+        screenUsers[0].minutes += 1;
+      }
       renderWinners();
     }
 
-    function processMidnightPayout() {
-      const top = [...screenUsers].sort((a, b) => b.minutes - a.minutes)[0];
+    async function processMidnightPayout() {
+      const apiRes = await apiCall('/api/payouts/midnight', { method: 'POST' });
       const status = document.getElementById('payoutStatus');
       const rewardState = document.getElementById('profileRewardState');
+
+      if (apiRes && Array.isArray(apiRes.winners) && apiRes.winners.length) {
+        const top = apiRes.winners[0];
+        if (status) {
+          status.textContent = `रात 12:00 AM API प्रोसेस पूरा: टॉप विनर ${top.user_handle} (${top.minutes_watched} min)`;
+        }
+        if (rewardState) {
+          rewardState.textContent = `Winner: ${top.user_handle}`;
+        }
+        return;
+      }
+
+      const top = [...screenUsers].sort((a, b) => b.minutes - a.minutes)[0];
       if (status && top) {
         status.textContent = `रात 12:00 AM प्रोसेस पूरा: टॉप विनर ${top.handle} (${top.minutes} min)`;
       }
@@ -674,9 +774,50 @@
       }
     }
 
+    async function syncFromBackend() {
+      const health = await apiCall('/api/health');
+      if (!health || !health.ok) {
+        setApiBadge(false);
+        return;
+      }
+      setApiBadge(true);
+
+      const feedData = await apiCall('/api/feed');
+      if (feedData && Array.isArray(feedData.posts) && feedData.posts.length) {
+        const mapped = feedData.posts.map(p => ({
+          id: p.id,
+          author: p.author,
+          tag: p.tag,
+          caption: p.caption,
+          imageUrl: p.media_type === 'image' ? p.media_url : '',
+          videoUrl: p.media_type === 'video' ? p.media_url : '',
+          likes: p.likes_count || 0,
+          liked: false,
+          comments: []
+        }));
+        posts.splice(0, posts.length, ...mapped);
+        renderFeed();
+      }
+
+      const storyData = await apiCall('/api/stories');
+      if (storyData && Array.isArray(storyData.stories) && storyData.stories.length) {
+        storyData.stories.forEach(s => {
+          storyItems.splice(1, 0, {
+            user: s.author,
+            text: s.caption,
+            isAd: false,
+            adNetwork: 'Applooney Max',
+            videoUrl: s.media_url || ''
+          });
+        });
+        renderStoriesHub();
+      }
+    }
+
     renderFeed();
     renderStoriesHub();
     renderWinners();
+    syncFromBackend();
   </script>
 </body>
 </html>
