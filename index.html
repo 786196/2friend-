@@ -102,30 +102,36 @@
     <div class="card">
       <div class="card-head">
         <strong>उपलब्ध स्टोरीज</strong>
-        <span class="tag">Text / 480p Ready</span>
+        <span class="tag">Cloudflare R2 · Cache HIT</span>
       </div>
       <ul class="comment-list" id="storiesHubList"></ul>
     </div>
   </section>
 
-  <!-- 3. CREATE VIEW -->
+  <!-- 3. CREATE VIEW (CLOUDFLARE R2 + CACHE SAFE) -->
   <section id="createView" class="view">
     <div class="card">
       <div class="card-head">
         <strong>नई पोस्ट / स्टोरी बनाएं</strong>
-        <span class="badge-green">Low-Bandwidth Mode</span>
+        <span class="badge-green">R2 · 90–95% Cache HIT</span>
       </div>
+      <p style="color:#aaa; font-size:12px; margin:8px 0;">
+        Cloudflare R2 लिंक डालें (बिना query token के स्थिर URL से 90–95% Cache HIT और कम खर्च रहेगा)।
+      </p>
       <div style="margin-top:10px;">
         <select id="postKind">
-          <option value="feed">Feed Post (Text / Photo / 480p Video)</option>
-          <option value="story">Story Loop Item (Text / 480p Story)</option>
+          <option value="feed">Feed Post (Text / R2 Photo / R2 480p Video)</option>
+          <option value="story">Story Loop Item (Text / R2 480p Story)</option>
         </select>
       </div>
       <div style="margin-top:10px;">
         <input type="text" id="postTitle" placeholder="नाम (जैसे: 2friend Official)" />
       </div>
       <div style="margin-top:10px;">
-        <input type="text" id="postMediaUrl" placeholder="Bunny CDN / Volume Network फोटो या 480p लिंक (वैकल्पिक)" />
+        <input type="text" id="r2BaseInput" placeholder="R2 Base URL (जैसे: https://pub-xxxx.r2.dev)" />
+      </div>
+      <div style="margin-top:10px;">
+        <input type="text" id="postMediaUrl" placeholder="R2 फ़ाइल पाथ या पूरा लिंक (जैसे: media/v_101_480p.mp4)" />
       </div>
       <div style="margin-top:10px;">
         <textarea id="postCaption" rows="3" placeholder="टेक्स्ट लिखें..."></textarea>
@@ -210,7 +216,17 @@
     document.addEventListener('cut', e => e.preventDefault());
     document.addEventListener('paste', e => e.preventDefault());
 
-    // फीड डेटा (Text + Photo + Video)
+    const R2_CACHE_BASE = 'https://pub-your-bucket.r2.dev';
+
+    function buildCacheSafeR2Url(base, rawPath) {
+      if (!rawPath) return '';
+      const cleanUrl = rawPath.split('?')[0].trim();
+      if (/^https?:\/\//i.test(cleanUrl)) return cleanUrl;
+      const cleanBase = (base || R2_CACHE_BASE).replace(/\/+$/, '');
+      const cleanPath = cleanUrl.replace(/^\/+/, '');
+      return cleanBase ? `${cleanBase}/${cleanPath}` : cleanPath;
+    }
+
     const posts = [
       {
         id: 'tips',
@@ -226,7 +242,7 @@
       {
         id: 'photo',
         author: '2friend Photo',
-        tag: 'Bunny Volume · Image',
+        tag: 'Cloudflare R2 · Image',
         caption: '2friend Feed Photo Preview — डाउनलोड और कॉपी-पेस्ट लॉक सक्रिय।',
         imageUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=60',
         videoUrl: '',
@@ -237,8 +253,8 @@
       {
         id: 'official',
         author: '2friend Official',
-        tag: 'Bunny CDN · 480p HLS',
-        caption: 'Short Video / Story Preview (HLS 480p / H.264 / AAC 128kbps)',
+        tag: 'Cloudflare R2 · 480p',
+        caption: 'Short Video / Story Preview (480p / H.264 / AAC 128kbps)',
         imageUrl: '',
         videoUrl: '',
         likes: 0,
@@ -270,7 +286,7 @@
             </div>
           ` : (post.id === 'official' ? `
             <div class="preview" style="color:#aaa; font-size:14px;">
-              Short Video / Story Preview (HLS 480p / H.264 / AAC 128kbps)
+              Short Video / Story Preview (480p / H.264 / AAC 128kbps)
             </div>
           ` : '')}
           <div class="actions">
@@ -290,7 +306,6 @@
         `;
         list.appendChild(card);
 
-        // हर 2 पोस्ट के बाद फीड में तय Ad Break स्लॉट
         if ((index + 1) % 2 === 0) {
           const adCard = document.createElement('aside');
           adCard.className = 'ad-card';
@@ -328,7 +343,6 @@
       document.getElementById(`comments-${i}`).style.display = 'block';
     }
 
-    // स्टोरी लूप और विज्ञापन ब्रेक लॉजिक
     const storyItems = [
       { user: 'आपकी स्टोरी', text: 'आपकी 480p स्टोरी लाइव है।', isAd: false },
       { user: '2friend Demo', text: '2friend पर तेज़ 480p वीडियो और 128k ऑडियो का अनुभव लें।', isAd: false },
@@ -398,7 +412,9 @@
     function createPost() {
       const kind = document.getElementById('postKind').value;
       const author = document.getElementById('postTitle').value.trim() || '@2friend_user';
-      const mediaUrl = document.getElementById('postMediaUrl').value.trim();
+      const r2Base = document.getElementById('r2BaseInput').value.trim();
+      const rawMedia = document.getElementById('postMediaUrl').value.trim();
+      const mediaUrl = buildCacheSafeR2Url(r2Base, rawMedia);
       const caption = document.getElementById('postCaption').value.trim() || '2friend पोस्ट';
       const status = document.getElementById('createStatus');
 
@@ -412,12 +428,12 @@
         return;
       }
 
-      const isVideo = /\.(mp4|m3u8|webm)(\?|$)/i.test(mediaUrl);
+      const isVideo = /\.(mp4|m3u8|webm)$/i.test(mediaUrl);
       posts.unshift({
         id: Date.now(),
         author,
-        tag: mediaUrl ? (isVideo ? 'Bunny CDN · 480p HLS' : 'Bunny Volume · Image') : 'Text Feed',
-        caption,
+        tag: mediaUrl ? (isVideo ? 'Cloudflare R2 · 480p' : 'Cloudflare R2 · Image') : 'Text Feed',
+        caption: isVideo ? `${caption} (480p / 128kbps)` : caption,
         imageUrl: mediaUrl && !isVideo ? mediaUrl : '',
         videoUrl: mediaUrl && isVideo ? mediaUrl : '',
         likes: 0,
@@ -428,7 +444,7 @@
       document.getElementById('postTitle').value = '';
       document.getElementById('postMediaUrl').value = '';
       document.getElementById('postCaption').value = '';
-      status.textContent = 'नई पोस्ट Feed में जुड़ गई है।';
+      status.textContent = 'Cloudflare R2 पोस्ट Feed में जुड़ गई है।';
       renderFeed();
       switchTab(document.querySelector('nav button'), 'feedView');
     }
@@ -457,7 +473,6 @@
       btn.classList.add('active');
     }
 
-    // Daily Winners Widget लॉजिक
     const screenUsers = [
       { handle: '@2friend_user', minutes: 14 },
       { handle: '@friend_one', minutes: 11 },
