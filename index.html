@@ -6,223 +6,38 @@
   <title>2friend</title>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
   <style>
-    * {
-      box-sizing: border-box;
-      -webkit-user-select: none;
-      user-select: none;
-    }
-    input, textarea {
-      -webkit-user-select: text;
-      user-select: text;
-    }
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, sans-serif;
-      background: #121212;
-      color: #ffffff;
-      padding-bottom: 78px;
-    }
-    header {
-      position: sticky;
-      top: 0;
-      background: #181818;
-      padding: 12px 16px;
-      border-bottom: 1px solid #2a2a2a;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 10;
-    }
+    * { box-sizing: border-box; -webkit-user-select: none; user-select: none; }
+    input, textarea { -webkit-user-select: text; user-select: text; }
+    body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: #121212; color: #ffffff; padding-bottom: 78px; }
+    header { position: sticky; top: 0; background: #181818; padding: 12px 16px; border-bottom: 1px solid #2a2a2a; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
     .logo { font-size: 20px; font-weight: 700; }
-    .badge {
-      font-size: 11px;
-      background: #223824;
-      color: #7ee081;
-      padding: 3px 8px;
-      border-radius: 999px;
-      border: 1px solid #355e38;
-    }
-    .stories {
-      display: flex;
-      gap: 12px;
-      overflow-x: auto;
-      padding: 12px 16px;
-      border-bottom: 1px solid #242424;
-    }
-    .story {
-      min-width: 72px;
-      text-align: center;
-      font-size: 12px;
-      color: #ccc;
-      cursor: pointer;
-    }
-    .avatar {
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      background: #2c2c2c;
-      border: 2px solid #4caf50;
-      margin: 0 auto 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      color: #fff;
-    }
-    .tab-section {
-      display: none;
-      padding: 14px 16px;
-      flex-direction: column;
-      gap: 14px;
-    }
+    .badge { font-size: 11px; background: #223824; color: #7ee081; padding: 3px 8px; border-radius: 999px; border: 1px solid #355e38; }
+    .stories { display: flex; gap: 12px; overflow-x: auto; padding: 12px 16px; border-bottom: 1px solid #242424; }
+    .story { min-width: 72px; text-align: center; font-size: 12px; color: #ccc; cursor: pointer; }
+    .avatar { width: 56px; height: 56px; border-radius: 50%; background: #2c2c2c; border: 2px solid #4caf50; margin: 0 auto 6px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #fff; }
+    .tab-section { display: none; padding: 14px 16px; flex-direction: column; gap: 14px; }
     .tab-section.active { display: flex; }
-    .card {
-      background: #1c1c1c;
-      border: 1px solid #2b2b2b;
-      border-radius: 12px;
-      padding: 14px;
-    }
-    .card-header {
-      font-weight: 600;
-      margin-bottom: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-    }
-    .media-box {
-      min-height: 220px;
-      background: #222;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #aaa;
-      margin: 8px 0 10px;
-      overflow: hidden;
-      position: relative;
-    }
-    video {
-      width: 100%;
-      max-height: 360px;
-      display: block;
-      background: #000;
-    }
-    .actions {
-      display: flex;
-      gap: 16px;
-      font-size: 14px;
-      color: #bbb;
-      align-items: center;
-    }
-    .action-btn {
-      background: none;
-      border: none;
-      color: #bbb;
-      font-size: 14px;
-      padding: 4px 0;
-      cursor: pointer;
-    }
+    .card { background: #1c1c1c; border: 1px solid #2b2b2b; border-radius: 12px; padding: 14px; }
+    .card-header { font-weight: 600; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .media-box { min-height: 220px; background: #222; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #aaa; margin: 8px 0 10px; overflow: hidden; position: relative; }
+    video { width: 100%; max-height: 360px; display: block; background: #000; }
+    .actions { display: flex; gap: 16px; font-size: 14px; color: #bbb; align-items: center; }
+    .action-btn { background: none; border: none; color: #bbb; font-size: 14px; padding: 4px 0; cursor: pointer; }
     .action-btn.liked { color: #ff5252; font-weight: 600; }
-    .delete-btn {
-      background: none;
-      border: 1px solid #4a2626;
-      color: #ff7b7b;
-      border-radius: 6px;
-      padding: 3px 8px;
-      font-size: 12px;
-      cursor: pointer;
-    }
-    .comment-box {
-      display: none;
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid #2a2a2a;
-    }
+    .delete-btn { background: none; border: 1px solid #4a2626; color: #ff7b7b; border-radius: 6px; padding: 3px 8px; font-size: 12px; cursor: pointer; }
+    .comment-box { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid #2a2a2a; }
     .comment-box.open { display: block; }
-    .comment-list {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 8px;
-      font-size: 13px;
-      color: #ddd;
-    }
-    .comment-item {
-      background: #242424;
-      padding: 7px 10px;
-      border-radius: 6px;
-      word-break: break-word;
-    }
+    .comment-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; font-size: 13px; color: #ddd; }
+    .comment-item { background: #242424; padding: 7px 10px; border-radius: 6px; word-break: break-word; }
     .comment-row { display: flex; gap: 8px; }
     .comment-row input { margin-top: 0; flex: 1; }
-    .comment-row button {
-      background: #4caf50;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 0 12px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    textarea, input {
-      width: 100%;
-      background: #262626;
-      border: 1px solid #3a3a3a;
-      color: #fff;
-      border-radius: 8px;
-      padding: 10px;
-      margin-top: 8px;
-      font-family: inherit;
-    }
-    .primary-btn {
-      margin-top: 10px;
-      background: #4caf50;
-      color: #fff;
-      border: none;
-      padding: 10px 14px;
-      border-radius: 8px;
-      font-weight: 600;
-      width: 100%;
-      cursor: pointer;
-    }
-    .secondary-btn {
-      margin-top: 8px;
-      background: #283545;
-      color: #d6e8ff;
-      border: 1px solid #3d526b;
-      padding: 9px 12px;
-      border-radius: 8px;
-      font-weight: 600;
-      width: 100%;
-      cursor: pointer;
-    }
-    .hint {
-      font-size: 12px;
-      color: #999;
-      margin-top: 6px;
-      line-height: 1.4;
-    }
-    nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: #181818;
-      border-top: 1px solid #2a2a2a;
-      display: flex;
-      justify-content: space-around;
-      padding: 10px 0;
-      z-index: 10;
-    }
-    nav button {
-      background: none;
-      border: none;
-      color: #888;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-    }
+    .comment-row button { background: #4caf50; color: #fff; border: none; border-radius: 8px; padding: 0 12px; font-weight: 600; cursor: pointer; }
+    textarea, input { width: 100%; background: #262626; border: 1px solid #3a3a3a; color: #fff; border-radius: 8px; padding: 10px; margin-top: 8px; font-family: inherit; }
+    .primary-btn { margin-top: 10px; background: #4caf50; color: #fff; border: none; padding: 10px 14px; border-radius: 8px; font-weight: 600; width: 100%; cursor: pointer; }
+    .secondary-btn { margin-top: 8px; background: #283545; color: #d6e8ff; border: 1px solid #3d526b; padding: 9px 12px; border-radius: 8px; font-weight: 600; width: 100%; cursor: pointer; }
+    .hint { font-size: 12px; color: #999; margin-top: 6px; line-height: 1.4; }
+    nav { position: fixed; bottom: 0; left: 0; right: 0; background: #181818; border-top: 1px solid #2a2a2a; display: flex; justify-content: space-around; padding: 10px 0; z-index: 10; }
+    nav button { background: none; border: none; color: #888; font-size: 13px; font-weight: 600; cursor: pointer; }
     nav button.active { color: #4caf50; }
   </style>
 </head>
@@ -306,49 +121,39 @@
   </nav>
 
   <script>
-    const CONFIG = {
-      apiBase: '',
-      maxHeight: 480,
-      audioBitrateKbps: 128,
-      cdnCache: true
-    };
-
+    const CONFIG = { apiBase: '', maxHeight: 480, audioBitrateKbps: 128, cdnCache: true };
     const KEYS = {
-      posts: '2friend_posts_v3',
-      likes: '2friend_likes_v3',
-      comments: '2friend_comments_v3',
-      stories: '2friend_stories_v3',
-      profile: '2friend_profile_v3'
+      posts: '2friend_posts_v4',
+      likes: '2friend_likes_v4',
+      comments: '2friend_comments_v4',
+      stories: '2friend_stories_v4',
+      profile: '2friend_profile_v4'
     };
-
-    const read = (k, fb) => {
-      try { return JSON.parse(localStorage.getItem(k)) ?? fb; } catch { return fb; }
-    };
+    const read = (k, fb) => { try { return JSON.parse(localStorage.getItem(k)) ?? fb; } catch { return fb; } };
     const write = (k, v) => localStorage.setItem(k, JSON.stringify(v));
 
+    async function apiRequest(path, options = {}) {
+      if (!CONFIG.apiBase) return null;
+      try {
+        const res = await fetch(`${CONFIG.apiBase}${path}`, {
+          headers: { 'Content-Type': 'application/json', 'Accept-Encoding': 'br, gzip', ...(options.headers || {}) },
+          ...options
+        });
+        return res.ok ? await res.json() : null;
+      } catch { return null; }
+    }
+
     async function prepareDirectBunnyUpload(kind) {
-      if (!CONFIG.apiBase) {
-        const ts = Date.now();
-        const sampleHls = `https://cdn.2friend.example.com/${kind}_${ts}/playlist.m3u8`;
-        if (kind === 'story') {
-          document.getElementById('storyVideoInput').value = sampleHls;
-          document.getElementById('activeStoryBox').textContent = `Direct Bunny HLS Target: ${sampleHls} (VPS पर वीडियो बाइनरी नहीं जाएगा)`;
-        } else {
-          document.getElementById('videoUrlInput').value = sampleHls;
-        }
-        return;
-      }
-      const res = await fetch(`${CONFIG.apiBase}/api/media/upload-init`, {
+      const data = await apiRequest('/api/media/upload-init', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept-Encoding': 'br, gzip' },
         body: JSON.stringify({ kind, fileName: `${kind}.mp4` })
       });
-      const data = await res.json();
+      const targetUrl = data?.hlsPlaylistUrl || `https://cdn.2friend.example.com/${kind}_${Date.now()}/playlist.m3u8`;
       if (kind === 'story') {
-        document.getElementById('storyVideoInput').value = data.hlsPlaylistUrl;
-        document.getElementById('activeStoryBox').textContent = `Direct Bunny Upload Ready: ${data.bunnyUploadUrl}`;
+        document.getElementById('storyVideoInput').value = targetUrl;
+        document.getElementById('activeStoryBox').textContent = `Direct Bunny HLS Target: ${targetUrl}`;
       } else {
-        document.getElementById('videoUrlInput').value = data.hlsPlaylistUrl;
+        document.getElementById('videoUrlInput').value = targetUrl;
       }
     }
 
@@ -365,12 +170,8 @@
       video.controlsList = 'nodownload noremoteplayback';
       video.disablePictureInPicture = true;
       video.oncontextmenu = () => false;
-
       if (url.includes('.m3u8') && window.Hls && Hls.isSupported()) {
-        const hls = new Hls({
-          capLevelToPlayerSize: true,
-          maxMaxBufferLength: 15
-        });
+        const hls = new Hls({ capLevelToPlayerSize: true, maxMaxBufferLength: 15 });
         hls.loadSource(url);
         hls.attachMedia(video);
         hls.on(Hls.Events.MANIFEST_PARSED, (_, data) => {
@@ -383,17 +184,13 @@
       container.appendChild(video);
     }
 
-    function getProfile() {
-      return read(KEYS.profile, { username: '@2friend_user', bio: 'बायो अभी सेट नहीं है।' });
-    }
-
+    function getProfile() { return read(KEYS.profile, { username: '@2friend_user', bio: 'बायो अभी सेट नहीं है।' }); }
     function renderProfile() {
       const p = getProfile();
       document.getElementById('headerUser').textContent = p.username;
       document.getElementById('profileHandle').textContent = p.username;
       document.getElementById('profileBio').textContent = p.bio;
     }
-
     function saveProfile() {
       const u = document.getElementById('usernameInput').value.trim();
       const b = document.getElementById('bioInput').value.trim();
@@ -406,12 +203,10 @@
       renderProfile();
       renderPosts();
     }
-
     function updateLikeUI(btn, data) {
       btn.textContent = `Like (${data.count || 0})`;
       btn.classList.toggle('liked', Boolean(data.liked));
     }
-
     function toggleLike(postId, btn) {
       const likes = read(KEYS.likes, {});
       const cur = likes[postId] || { count: 0, liked: false };
@@ -421,18 +216,13 @@
       write(KEYS.likes, likes);
       updateLikeUI(btn, cur);
     }
-
     function sharePost(postId) {
       const link = `${location.origin}${location.pathname}#post=${encodeURIComponent(postId)}`;
-      if (navigator.share) {
-        navigator.share({ title: '2friend', url: link }).catch(() => {});
-      }
+      if (navigator.share) navigator.share({ title: '2friend', url: link }).catch(() => {});
     }
-
     function toggleCommentBox(postId) {
       document.getElementById('comments-' + postId)?.classList.toggle('open');
     }
-
     function renderComments(postId) {
       const all = read(KEYS.comments, {});
       const list = all[postId] || [];
@@ -448,7 +238,6 @@
         box.appendChild(div);
       });
     }
-
     function addComment(postId, input) {
       const text = input.value.trim();
       if (!text) return;
@@ -459,21 +248,18 @@
       input.value = '';
       renderComments(postId);
     }
-
     function renderStories() {
       const stories = read(KEYS.stories, []);
       const profile = getProfile();
       const strip = document.getElementById('storyStrip');
       const listEl = document.getElementById('storiesList');
       const preview = document.getElementById('activeStoryBox');
-
       const items = [
         { author: 'आपकी स्टोरी', text: stories.at(-1)?.text || 'स्टोरी जोड़ें', videoUrl: stories.at(-1)?.videoUrl || '' },
         { author: 'दोस्त 1', text: 'दोस्त 1 की स्टोरी', videoUrl: '' },
         { author: 'दोस्त 2', text: 'दोस्त 2 की स्टोरी', videoUrl: '' },
         { author: 'दोस्त 3', text: 'दोस्त 3 की स्टोरी', videoUrl: '' }
       ];
-
       strip.innerHTML = '';
       items.forEach((s, i) => {
         const div = document.createElement('div');
@@ -488,7 +274,6 @@
         };
         strip.appendChild(div);
       });
-
       listEl.innerHTML = '';
       if (!stories.length) {
         preview.textContent = 'अभी कोई स्टोरी नहीं है।';
@@ -503,41 +288,37 @@
         listEl.appendChild(row);
       });
     }
-
-    function addStory() {
+    async function addStory() {
       const input = document.getElementById('storyInput');
       const videoInput = document.getElementById('storyVideoInput');
       const text = input.value.trim();
       const videoUrl = videoInput.value.trim();
       if (!text && !videoUrl) return;
       const stories = read(KEYS.stories, []);
-      stories.push({ id: 'story_' + Date.now(), text: text || 'वीडियो स्टोरी', videoUrl });
+      const item = { id: 'story_' + Date.now(), text: text || 'वीडियो स्टोरी', videoUrl };
+      stories.push(item);
       write(KEYS.stories, stories);
+      apiRequest('/api/stories', { method: 'POST', body: JSON.stringify(item) });
       input.value = '';
       videoInput.value = '';
       renderStories();
     }
-
     function deletePost(postId) {
       write(KEYS.posts, read(KEYS.posts, []).filter(p => p.id !== postId));
       renderPosts();
     }
-
     function renderPosts() {
       const feed = document.getElementById('tab-feed');
       feed.querySelectorAll('.user-post').forEach(e => e.remove());
-
       const profile = getProfile();
       const likes = read(KEYS.likes, {});
       updateLikeUI(feed.querySelector('[data-post-id="official"] .like-btn'), likes['official'] || {});
       renderComments('official');
-
       const posts = read(KEYS.posts, []);
       posts.forEach(post => {
         const card = document.createElement('article');
         card.className = 'card user-post';
         card.dataset.postId = post.id;
-
         const header = document.createElement('div');
         header.className = 'card-header';
         const authorSpan = document.createElement('span');
@@ -548,21 +329,18 @@
         delBtn.onclick = () => deletePost(post.id);
         header.append(authorSpan, delBtn);
         card.appendChild(header);
-
         if (post.videoUrl) {
           const media = document.createElement('div');
           media.className = 'media-box';
           attachMedia(media, post.videoUrl);
           card.appendChild(media);
         }
-
         if (post.text) {
           const p = document.createElement('p');
           p.style.margin = '6px 0 10px';
           p.textContent = post.text;
           card.appendChild(p);
         }
-
         const actions = document.createElement('div');
         actions.className = 'actions';
         actions.innerHTML = `
@@ -571,7 +349,6 @@
           <button class="action-btn" onclick="sharePost('${post.id}')">Share</button>
         `;
         card.appendChild(actions);
-
         const cBox = document.createElement('div');
         cBox.id = 'comments-' + post.id;
         cBox.className = 'comment-box';
@@ -583,175 +360,44 @@
           </div>
         `;
         card.appendChild(cBox);
-
         feed.prepend(card);
         updateLikeUI(card.querySelector('.like-btn'), likes[post.id] || {});
         renderComments(post.id);
       });
-
       document.getElementById('postCount').textContent = `पोस्ट: ${1 + posts.length}`;
     }
-
     function switchTab(tabName, btn) {
       document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
       document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
       document.getElementById('tab-' + tabName)?.classList.add('active');
       btn?.classList.add('active');
     }
-
-    function addPost() {
+    async function addPost() {
       const text = document.getElementById('postInput').value.trim();
       const videoUrl = document.getElementById('videoUrlInput').value.trim();
       if (!text && !videoUrl) return;
       const posts = read(KEYS.posts, []);
-      posts.push({ id: 'post_' + Date.now(), text, videoUrl });
+      const item = { id: 'post_' + Date.now(), text, videoUrl };
+      posts.push(item);
       write(KEYS.posts, posts);
+      apiRequest('/api/posts', { method: 'POST', body: JSON.stringify(item) });
       document.getElementById('postInput').value = '';
       document.getElementById('videoUrlInput').value = '';
       renderPosts();
       switchTab('feed', document.querySelector('nav button'));
     }
-
+    async function syncFromServer() {
+      const data = await apiRequest('/api/feed');
+      if (!data) return;
+      if (Array.isArray(data.posts) && data.posts.length) write(KEYS.posts, data.posts.slice().reverse());
+      if (Array.isArray(data.stories) && data.stories.length) write(KEYS.stories, data.stories.slice().reverse());
+      renderStories();
+      renderPosts();
+    }
     renderProfile();
     renderStories();
     renderPosts();
+    syncFromServer();
   </script>
 </body>
 </html>
-{
-  "name": "2friend-backend",
-  "version": "1.0.0",
-  "private": true,
-  "scripts": {
-    "start": "node src/server.js"
-  },
-  "dependencies": {
-    "compression": "^1.7.4",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
-    "express": "^4.21.0"
-  }
-}
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const compression = require('compression');
-const zlib = require('zlib');
-
-const app = express();
-app.use(cors());
-app.use(express.json({ limit: '64kb' }));
-
-app.use(
-  compression({
-    level: 6,
-    threshold: 512,
-    filter: (req, res) => {
-      if (req.headers['x-no-compression']) return false;
-      return compression.filter(req, res);
-    }
-  })
-);
-
-app.use((req, res, next) => {
-  const accept = req.headers['accept-encoding'] || '';
-  if (accept.includes('br') && !res.getHeader('Content-Encoding')) {
-    const origJson = res.json.bind(res);
-    res.json = (data) => {
-      const payload = Buffer.from(JSON.stringify(data));
-      zlib.brotliCompress(payload, (err, compressed) => {
-        if (err) return origJson(data);
-        res.setHeader('Content-Type', 'application/json; charset=utf-8');
-        res.setHeader('Content-Encoding', 'br');
-        res.send(compressed);
-      });
-    };
-  }
-  next();
-});
-
-app.post('/api/media/upload-init', (req, res) => {
-  const { kind = 'short', fileName = 'video.mp4' } = req.body || {};
-  const safeName = `${kind}_${Date.now()}_${String(fileName).replace(/[^a-zA-Z0-9._-]/g, '_')}`;
-  const cdnBase = process.env.BUNNY_CDN_URL || 'https://cdn.2friend.example.com';
-  const storageZone = process.env.BUNNY_STORAGE_ZONE || '2friend-media';
-  const storageEndpoint = process.env.BUNNY_STORAGE_ENDPOINT || 'https://storage.bunnycdn.com';
-
-  res.setHeader('Cache-Control', 'no-store');
-  res.json({
-    ok: true,
-    uploadMode: 'direct-to-bunny',
-    vpsReceivesVideoBinary: false,
-    bunnyStorageZone: storageZone,
-    bunnyUploadUrl: `${storageEndpoint}/${storageZone}/${safeName}`,
-    bunnyCdnBaseUrl: cdnBase,
-    hlsPlaylistUrl: `${cdnBase}/${safeName}/playlist.m3u8`,
-    mediaPolicy: {
-      maxResolution: '480p',
-      videoCodec: 'H.264 (AVC)',
-      audioCodec: 'AAC',
-      audioBitrateKbps: 128,
-      streaming: 'HLS',
-      cdnCacheEnabled: true
-    }
-  });
-});
-
-const store = { posts: [], stories: [] };
-
-app.get('/api/feed', (req, res) => {
-  res.setHeader('Cache-Control', 'public, max-age=15, s-maxage=60');
-  res.json({
-    posts: store.posts,
-    stories: store.stories,
-    policy: {
-      maxResolution: '480p',
-      codec: 'H.264 (AVC)',
-      audio: 'AAC 96-128 kbps',
-      streaming: 'HLS',
-      cdn: 'Bunny.net Volume Network',
-      directUpload: true,
-      cdnCache: true,
-      compression: 'gzip/brotli'
-    }
-  });
-});
-
-app.post('/api/posts', (req, res) => {
-  const text = String(req.body?.text || '').slice(0, 500);
-  const videoUrl = String(req.body?.videoUrl || '').slice(0, 500);
-  if (!text && !videoUrl) return res.status(400).json({ error: 'Empty post' });
-
-  const item = {
-    id: `post_${Date.now()}`,
-    text,
-    videoUrl,
-    createdAt: new Date().toISOString()
-  };
-  store.posts.unshift(item);
-  res.status(201).json({ ok: true, item });
-});
-
-app.post('/api/stories', (req, res) => {
-  const text = String(req.body?.text || '').slice(0, 300);
-  const videoUrl = String(req.body?.videoUrl || '').slice(0, 500);
-  if (!text && !videoUrl) return res.status(400).json({ error: 'Empty story' });
-
-  const item = {
-    id: `story_${Date.now()}`,
-    text,
-    videoUrl,
-    expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
-  };
-  store.stories.unshift(item);
-  res.status(201).json({ ok: true, item });
-});
-
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', service: '2friend-api' });
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`2friend API running on port ${PORT}`);
-});
