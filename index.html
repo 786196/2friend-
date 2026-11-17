@@ -4,14 +4,23 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>2friend</title>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    input, textarea {
+      -webkit-user-select: text;
+      user-select: text;
+    }
     body {
       margin: 0;
       font-family: system-ui, -apple-system, sans-serif;
       background: #121212;
       color: #ffffff;
-      padding-bottom: 76px;
+      padding-bottom: 78px;
     }
     header {
       position: sticky;
@@ -24,10 +33,14 @@
       align-items: center;
       z-index: 10;
     }
-    .logo {
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
+    .logo { font-size: 20px; font-weight: 700; }
+    .badge {
+      font-size: 11px;
+      background: #223824;
+      color: #7ee081;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid #355e38;
     }
     .stories {
       display: flex;
@@ -37,7 +50,7 @@
       border-bottom: 1px solid #242424;
     }
     .story {
-      min-width: 68px;
+      min-width: 72px;
       text-align: center;
       font-size: 12px;
       color: #ccc;
@@ -55,8 +68,6 @@
       justify-content: center;
       font-size: 11px;
       color: #fff;
-      padding: 4px;
-      overflow: hidden;
     }
     .tab-section {
       display: none;
@@ -64,9 +75,7 @@
       flex-direction: column;
       gap: 14px;
     }
-    .tab-section.active {
-      display: flex;
-    }
+    .tab-section.active { display: flex; }
     .card {
       background: #1c1c1c;
       border: 1px solid #2b2b2b;
@@ -82,14 +91,22 @@
       gap: 8px;
     }
     .media-box {
-      height: 220px;
-      background: #262626;
+      min-height: 220px;
+      background: #222;
       border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: #aaa;
       margin: 8px 0 10px;
+      overflow: hidden;
+      position: relative;
+    }
+    video {
+      width: 100%;
+      max-height: 360px;
+      display: block;
+      background: #000;
     }
     .actions {
       display: flex;
@@ -106,10 +123,7 @@
       padding: 4px 0;
       cursor: pointer;
     }
-    .action-btn.liked {
-      color: #ff5252;
-      font-weight: 600;
-    }
+    .action-btn.liked { color: #ff5252; font-weight: 600; }
     .delete-btn {
       background: none;
       border: 1px solid #4a2626;
@@ -125,9 +139,7 @@
       padding-top: 10px;
       border-top: 1px solid #2a2a2a;
     }
-    .comment-box.open {
-      display: block;
-    }
+    .comment-box.open { display: block; }
     .comment-list {
       display: flex;
       flex-direction: column;
@@ -138,17 +150,12 @@
     }
     .comment-item {
       background: #242424;
-      padding: 6px 10px;
+      padding: 7px 10px;
       border-radius: 6px;
+      word-break: break-word;
     }
-    .comment-row {
-      display: flex;
-      gap: 8px;
-    }
-    .comment-row input {
-      margin-top: 0;
-      flex: 1;
-    }
+    .comment-row { display: flex; gap: 8px; }
+    .comment-row input { margin-top: 0; flex: 1; }
     .comment-row button {
       background: #4caf50;
       color: #fff;
@@ -157,15 +164,6 @@
       padding: 0 12px;
       font-weight: 600;
       cursor: pointer;
-    }
-    .story-preview {
-      background: #242424;
-      border: 1px solid #333;
-      border-radius: 8px;
-      padding: 10px;
-      margin-top: 8px;
-      font-size: 13px;
-      color: #eee;
     }
     textarea, input {
       width: 100%;
@@ -188,6 +186,23 @@
       width: 100%;
       cursor: pointer;
     }
+    .secondary-btn {
+      margin-top: 8px;
+      background: #283545;
+      color: #d6e8ff;
+      border: 1px solid #3d526b;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      width: 100%;
+      cursor: pointer;
+    }
+    .hint {
+      font-size: 12px;
+      color: #999;
+      margin-top: 6px;
+      line-height: 1.4;
+    }
     nav {
       position: fixed;
       bottom: 0;
@@ -208,46 +223,51 @@
       font-weight: 600;
       cursor: pointer;
     }
-    nav button.active {
-      color: #4caf50;
-    }
+    nav button.active { color: #4caf50; }
   </style>
 </head>
-<body>
+<body oncontextmenu="return false;" oncopy="return false;" oncut="return false;">
   <header>
-    <span class="logo">2friend</span>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <span class="logo">2friend</span>
+      <span class="badge">480p · HLS · 128k</span>
+    </div>
     <span id="headerUser" style="font-size:12px; color:#aaa;">@2friend_user</span>
   </header>
 
   <section id="storyStrip" class="stories"></section>
 
-  <!-- Feed Tab -->
   <main id="tab-feed" class="tab-section active">
     <article class="card" data-post-id="official">
-      <div class="card-header"><span>2friend Official</span></div>
-      <div class="media-box">Short Video / Story Preview</div>
+      <div class="card-header">
+        <span>2friend Official</span>
+        <span style="font-size:11px; color:#888;">Bunny CDN Cached</span>
+      </div>
+      <div class="media-box">Short Video / Story Preview (HLS 480p / H.264 / AAC 128kbps)</div>
       <div class="actions">
         <button class="action-btn like-btn" onclick="toggleLike('official', this)">Like (0)</button>
         <button class="action-btn comment-toggle" onclick="toggleCommentBox('official')">Comment (0)</button>
-        <span>Share</span>
+        <button class="action-btn" onclick="sharePost('official')">Share</button>
       </div>
       <div id="comments-official" class="comment-box">
         <div class="comment-list"></div>
         <div class="comment-row">
-          <input type="text" placeholder="कमेंट लिखें..." onkeydown="if(event.key==='Enter') addComment('official', this)" />
+          <input type="text" placeholder="केवल टेक्स्ट कमेंट लिखें..." onkeydown="if(event.key==='Enter') addComment('official', this)" />
           <button onclick="addComment('official', this.previousElementSibling)">भेजें</button>
         </div>
       </div>
     </article>
   </main>
 
-  <!-- Stories Tab -->
   <section id="tab-stories" class="tab-section">
     <div class="card">
       <div class="card-header"><span>नई स्टोरी जोड़ें</span></div>
-      <input id="storyInput" type="text" placeholder="अपनी स्टोरी का संदेश लिखें..." />
+      <input id="storyInput" type="text" placeholder="स्टोरी का टेक्स्ट लिखें..." />
+      <input id="storyVideoInput" type="url" placeholder="वैकल्पिक: Bunny CDN HLS (.m3u8) या 480p MP4 URL" />
+      <button class="secondary-btn" onclick="prepareDirectBunnyUpload('story')">Direct Bunny Upload URL तैयार करें (VPS पर वीडियो नहीं)</button>
       <button class="primary-btn" onclick="addStory()">स्टोरी डालें</button>
-      <div id="activeStoryBox" class="story-preview">अभी कोई स्टोरी नहीं है।</div>
+      <div class="hint">480p · H.264 · AAC 96–128 kbps · HLS · Bunny CDN Cache</div>
+      <div id="activeStoryBox" class="comment-item" style="margin-top:10px;">अभी कोई स्टोरी नहीं है।</div>
     </div>
     <div class="card">
       <div class="card-header"><span>सभी स्टोरीज़</span></div>
@@ -255,23 +275,23 @@
     </div>
   </section>
 
-  <!-- Create Tab -->
   <section id="tab-create" class="tab-section">
     <div class="card">
-      <div class="card-header"><span>नई पोस्ट बनाएं</span></div>
-      <textarea id="postInput" rows="3" placeholder="अपने दोस्तों के साथ कुछ शेयर करें..."></textarea>
+      <div class="card-header"><span>नई शॉर्ट वीडियो / पोस्ट बनाएं</span></div>
+      <textarea id="postInput" rows="3" placeholder="टेक्स्ट पोस्ट लिखें..."></textarea>
+      <input id="videoUrlInput" type="url" placeholder="Bunny CDN HLS (.m3u8) या 480p MP4 URL" />
+      <button class="secondary-btn" onclick="prepareDirectBunnyUpload('short')">Direct Bunny Upload URL तैयार करें (VPS पर वीडियो नहीं)</button>
       <button class="primary-btn" onclick="addPost()">पोस्ट करें</button>
+      <div class="hint">डाउनलोड, कॉपी-पेस्ट और मीडिया अटैचमेंट लॉक सक्रिय हैं।</div>
     </div>
   </section>
 
-  <!-- Profile Tab -->
   <section id="tab-profile" class="tab-section">
     <div class="card">
       <div class="card-header"><span>मेरी प्रोफ़ाइल</span></div>
-      <p id="profileHandle" style="color:#fff; font-size:15px; margin:6px 0;">@2friend_user</p>
+      <p id="profileHandle" style="margin:6px 0;">@2friend_user</p>
       <p id="profileBio" style="color:#bbb; font-size:13px; margin:6px 0;">बायो अभी सेट नहीं है।</p>
-      <p id="postCount" style="color:#bbb; font-size:14px; margin:6px 0;">पोस्ट: 1 · फ़ॉलोअर्स: 0</p>
-
+      <p id="postCount" style="color:#bbb; font-size:14px; margin:6px 0;">पोस्ट: 1</p>
       <input id="usernameInput" type="text" placeholder="नया यूज़रनेम (जैसे @rahul)" />
       <input id="bioInput" type="text" placeholder="अपना बायो लिखें..." />
       <button class="primary-btn" onclick="saveProfile()">प्रोफ़ाइल सेव करें</button>
@@ -286,248 +306,309 @@
   </nav>
 
   <script>
-    const POSTS_KEY = '2friend_posts';
-    const LIKES_KEY = '2friend_likes';
-    const COMMENTS_KEY = '2friend_comments';
-    const STORIES_KEY = '2friend_stories';
-    const PROFILE_KEY = '2friend_profile';
+    const CONFIG = {
+      apiBase: '',
+      maxHeight: 480,
+      audioBitrateKbps: 128,
+      cdnCache: true
+    };
 
-    function readStorage(key, fallback) {
-      try {
-        return JSON.parse(localStorage.getItem(key)) ?? fallback;
-      } catch {
-        return fallback;
+    const KEYS = {
+      posts: '2friend_posts_v3',
+      likes: '2friend_likes_v3',
+      comments: '2friend_comments_v3',
+      stories: '2friend_stories_v3',
+      profile: '2friend_profile_v3'
+    };
+
+    const read = (k, fb) => {
+      try { return JSON.parse(localStorage.getItem(k)) ?? fb; } catch { return fb; }
+    };
+    const write = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+
+    async function prepareDirectBunnyUpload(kind) {
+      if (!CONFIG.apiBase) {
+        const ts = Date.now();
+        const sampleHls = `https://cdn.2friend.example.com/${kind}_${ts}/playlist.m3u8`;
+        if (kind === 'story') {
+          document.getElementById('storyVideoInput').value = sampleHls;
+          document.getElementById('activeStoryBox').textContent = `Direct Bunny HLS Target: ${sampleHls} (VPS पर वीडियो बाइनरी नहीं जाएगा)`;
+        } else {
+          document.getElementById('videoUrlInput').value = sampleHls;
+        }
+        return;
+      }
+      const res = await fetch(`${CONFIG.apiBase}/api/media/upload-init`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept-Encoding': 'br, gzip' },
+        body: JSON.stringify({ kind, fileName: `${kind}.mp4` })
+      });
+      const data = await res.json();
+      if (kind === 'story') {
+        document.getElementById('storyVideoInput').value = data.hlsPlaylistUrl;
+        document.getElementById('activeStoryBox').textContent = `Direct Bunny Upload Ready: ${data.bunnyUploadUrl}`;
+      } else {
+        document.getElementById('videoUrlInput').value = data.hlsPlaylistUrl;
       }
     }
 
-    function writeStorage(key, value) {
-      localStorage.setItem(key, JSON.stringify(value));
+    function attachMedia(container, url) {
+      container.innerHTML = '';
+      if (!url) {
+        container.textContent = 'Short Video / Story Preview (HLS 480p / H.264 / AAC 128kbps)';
+        return;
+      }
+      const video = document.createElement('video');
+      video.controls = true;
+      video.playsInline = true;
+      video.preload = 'metadata';
+      video.controlsList = 'nodownload noremoteplayback';
+      video.disablePictureInPicture = true;
+      video.oncontextmenu = () => false;
+
+      if (url.includes('.m3u8') && window.Hls && Hls.isSupported()) {
+        const hls = new Hls({
+          capLevelToPlayerSize: true,
+          maxMaxBufferLength: 15
+        });
+        hls.loadSource(url);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, (_, data) => {
+          const idx480 = data.levels.findIndex(l => l.height <= CONFIG.maxHeight);
+          if (idx480 !== -1) hls.currentLevel = idx480;
+        });
+      } else {
+        video.src = url;
+      }
+      container.appendChild(video);
     }
 
     function getProfile() {
-      return readStorage(PROFILE_KEY, {
-        username: '@2friend_user',
-        bio: 'बायो अभी सेट नहीं है।'
-      });
+      return read(KEYS.profile, { username: '@2friend_user', bio: 'बायो अभी सेट नहीं है।' });
     }
 
     function renderProfile() {
-      const profile = getProfile();
-      document.getElementById('headerUser').textContent = profile.username;
-      document.getElementById('profileHandle').textContent = profile.username;
-      document.getElementById('profileBio').textContent = profile.bio;
+      const p = getProfile();
+      document.getElementById('headerUser').textContent = p.username;
+      document.getElementById('profileHandle').textContent = p.username;
+      document.getElementById('profileBio').textContent = p.bio;
     }
 
     function saveProfile() {
-      const usernameVal = document.getElementById('usernameInput').value.trim();
-      const bioVal = document.getElementById('bioInput').value.trim();
-      const current = getProfile();
-
-      let cleanUsername = usernameVal || current.username;
-      if (!cleanUsername.startsWith('@')) {
-        cleanUsername = '@' + cleanUsername;
-      }
-
-      const updated = {
-        username: cleanUsername,
-        bio: bioVal || current.bio
-      };
-
-      writeStorage(PROFILE_KEY, updated);
+      const u = document.getElementById('usernameInput').value.trim();
+      const b = document.getElementById('bioInput').value.trim();
+      const cur = getProfile();
+      let clean = u || cur.username;
+      if (!clean.startsWith('@')) clean = '@' + clean;
+      write(KEYS.profile, { username: clean, bio: b || cur.bio });
       document.getElementById('usernameInput').value = '';
       document.getElementById('bioInput').value = '';
       renderProfile();
       renderPosts();
     }
 
-    function updateLikeUI(btn, likeData) {
-      const count = likeData.count || 0;
-      const liked = Boolean(likeData.liked);
-      btn.textContent = `Like (${count})`;
-      btn.classList.toggle('liked', liked);
+    function updateLikeUI(btn, data) {
+      btn.textContent = `Like (${data.count || 0})`;
+      btn.classList.toggle('liked', Boolean(data.liked));
     }
 
     function toggleLike(postId, btn) {
-      const likes = readStorage(LIKES_KEY, {});
-      const current = likes[postId] || { count: 0, liked: false };
-      if (current.liked) {
-        current.count = Math.max(0, current.count - 1);
-        current.liked = false;
-      } else {
-        current.count += 1;
-        current.liked = true;
+      const likes = read(KEYS.likes, {});
+      const cur = likes[postId] || { count: 0, liked: false };
+      cur.liked = !cur.liked;
+      cur.count = cur.liked ? cur.count + 1 : Math.max(0, cur.count - 1);
+      likes[postId] = cur;
+      write(KEYS.likes, likes);
+      updateLikeUI(btn, cur);
+    }
+
+    function sharePost(postId) {
+      const link = `${location.origin}${location.pathname}#post=${encodeURIComponent(postId)}`;
+      if (navigator.share) {
+        navigator.share({ title: '2friend', url: link }).catch(() => {});
       }
-      likes[postId] = current;
-      writeStorage(LIKES_KEY, likes);
-      updateLikeUI(btn, current);
     }
 
     function toggleCommentBox(postId) {
-      const box = document.getElementById('comments-' + postId);
-      if (box) box.classList.toggle('open');
+      document.getElementById('comments-' + postId)?.classList.toggle('open');
     }
 
-    function renderCommentsForPost(postId) {
-      const allComments = readStorage(COMMENTS_KEY, {});
-      const list = allComments[postId] || [];
+    function renderComments(postId) {
+      const all = read(KEYS.comments, {});
+      const list = all[postId] || [];
       const card = document.querySelector(`[data-post-id="${postId}"]`);
       if (!card) return;
-
-      const toggleBtn = card.querySelector('.comment-toggle');
-      if (toggleBtn) toggleBtn.textContent = `Comment (${list.length})`;
-
-      const listEl = card.querySelector('.comment-list');
-      if (listEl) {
-        listEl.innerHTML = list.map(c => `<div class="comment-item">${c}</div>`).join('');
-      }
+      card.querySelector('.comment-toggle').textContent = `Comment (${list.length})`;
+      const box = card.querySelector('.comment-list');
+      box.innerHTML = '';
+      list.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'comment-item';
+        div.textContent = c;
+        box.appendChild(div);
+      });
     }
 
-    function addComment(postId, inputEl) {
-      const text = inputEl.value.trim();
+    function addComment(postId, input) {
+      const text = input.value.trim();
       if (!text) return;
-
-      const allComments = readStorage(COMMENTS_KEY, {});
-      const list = allComments[postId] || [];
-      list.push(text);
-      allComments[postId] = list;
-      writeStorage(COMMENTS_KEY, allComments);
-
-      inputEl.value = '';
-      renderCommentsForPost(postId);
+      const all = read(KEYS.comments, {});
+      all[postId] = all[postId] || [];
+      all[postId].push(text);
+      write(KEYS.comments, all);
+      input.value = '';
+      renderComments(postId);
     }
 
     function renderStories() {
-      const stories = readStorage(STORIES_KEY, []);
+      const stories = read(KEYS.stories, []);
       const profile = getProfile();
       const strip = document.getElementById('storyStrip');
       const listEl = document.getElementById('storiesList');
-      const previewBox = document.getElementById('activeStoryBox');
+      const preview = document.getElementById('activeStoryBox');
 
-      const defaultStories = [
-        { author: 'आपकी स्टोरी', text: stories[0]?.text || 'नई स्टोरी जोड़ने के लिए Stories टैब खोलें' },
-        { author: 'दोस्त 1', text: 'दोस्त 1 की स्टोरी' },
-        { author: 'दोस्त 2', text: 'दोस्त 2 की स्टोरी' },
-        { author: 'दोस्त 3', text: 'दोस्त 3 की स्टोरी' }
+      const items = [
+        { author: 'आपकी स्टोरी', text: stories.at(-1)?.text || 'स्टोरी जोड़ें', videoUrl: stories.at(-1)?.videoUrl || '' },
+        { author: 'दोस्त 1', text: 'दोस्त 1 की स्टोरी', videoUrl: '' },
+        { author: 'दोस्त 2', text: 'दोस्त 2 की स्टोरी', videoUrl: '' },
+        { author: 'दोस्त 3', text: 'दोस्त 3 की स्टोरी', videoUrl: '' }
       ];
 
-      strip.innerHTML = defaultStories.map((s, idx) => `
-        <div class="story" onclick="openStory('${s.author}', '${s.text.replace(/'/g, "\\'")}')">
-          <div class="avatar">${idx === 0 && stories.length ? 'Live' : ''}</div>
-          ${s.author}
-        </div>
-      `).join('');
+      strip.innerHTML = '';
+      items.forEach((s, i) => {
+        const div = document.createElement('div');
+        div.className = 'story';
+        div.innerHTML = `<div class="avatar">${i === 0 && stories.length ? 'Live' : ''}</div>`;
+        const label = document.createElement('span');
+        label.textContent = s.author;
+        div.appendChild(label);
+        div.onclick = () => {
+          switchTab('stories', document.querySelectorAll('nav button')[1]);
+          preview.textContent = `${s.author}: ${s.text}`;
+        };
+        strip.appendChild(div);
+      });
 
-      if (stories.length > 0) {
-        previewBox.textContent = `ताज़ा स्टोरी (${profile.username}): ${stories[stories.length - 1].text}`;
-        listEl.innerHTML = stories.slice().reverse().map(s =>
-          `<div class="comment-item"><strong>${profile.username}:</strong> ${s.text}</div>`
-        ).join('');
-      } else {
-        previewBox.textContent = 'अभी कोई स्टोरी नहीं है।';
-        listEl.innerHTML = '<div class="comment-item">कोई स्टोरी नहीं जोड़ी गई है।</div>';
+      listEl.innerHTML = '';
+      if (!stories.length) {
+        preview.textContent = 'अभी कोई स्टोरी नहीं है।';
+        listEl.innerHTML = '<div class="comment-item">कोई स्टोरी नहीं है।</div>';
+        return;
       }
-    }
-
-    function openStory(author, text) {
-      switchTab('stories', document.querySelectorAll('nav button')[1]);
-      const previewBox = document.getElementById('activeStoryBox');
-      if (previewBox) previewBox.textContent = `${author}: ${text}`;
+      preview.textContent = `ताज़ा स्टोरी (${profile.username}): ${stories.at(-1).text}`;
+      stories.slice().reverse().forEach(s => {
+        const row = document.createElement('div');
+        row.className = 'comment-item';
+        row.textContent = `${profile.username}: ${s.text} ${s.videoUrl ? '[HLS 480p]' : ''}`;
+        listEl.appendChild(row);
+      });
     }
 
     function addStory() {
       const input = document.getElementById('storyInput');
+      const videoInput = document.getElementById('storyVideoInput');
       const text = input.value.trim();
-      if (!text) return;
-
-      const stories = readStorage(STORIES_KEY, []);
-      stories.push({ id: 'story_' + Date.now(), text });
-      writeStorage(STORIES_KEY, stories);
+      const videoUrl = videoInput.value.trim();
+      if (!text && !videoUrl) return;
+      const stories = read(KEYS.stories, []);
+      stories.push({ id: 'story_' + Date.now(), text: text || 'वीडियो स्टोरी', videoUrl });
+      write(KEYS.stories, stories);
       input.value = '';
+      videoInput.value = '';
       renderStories();
     }
 
     function deletePost(postId) {
-      const posts = readStorage(POSTS_KEY, []);
-      const filtered = posts.filter((p, idx) => (p.id || ('user_' + idx)) !== postId);
-      writeStorage(POSTS_KEY, filtered);
-
-      const likes = readStorage(LIKES_KEY, {});
-      delete likes[postId];
-      writeStorage(LIKES_KEY, likes);
-
-      const comments = readStorage(COMMENTS_KEY, {});
-      delete comments[postId];
-      writeStorage(COMMENTS_KEY, comments);
-
+      write(KEYS.posts, read(KEYS.posts, []).filter(p => p.id !== postId));
       renderPosts();
     }
 
     function renderPosts() {
       const feed = document.getElementById('tab-feed');
-      feed.querySelectorAll('.user-post').forEach(el => el.remove());
+      feed.querySelectorAll('.user-post').forEach(e => e.remove());
 
       const profile = getProfile();
-      const likes = readStorage(LIKES_KEY, {});
-      const officialBtn = feed.querySelector('[data-post-id="official"] .like-btn');
-      if (officialBtn) {
-        updateLikeUI(officialBtn, likes['official'] || { count: 0, liked: false });
-      }
-      renderCommentsForPost('official');
+      const likes = read(KEYS.likes, {});
+      updateLikeUI(feed.querySelector('[data-post-id="official"] .like-btn'), likes['official'] || {});
+      renderComments('official');
 
-      const posts = readStorage(POSTS_KEY, []);
-      posts.forEach((post, index) => {
-        const postId = post.id || ('user_' + index);
-        const text = typeof post === 'string' ? post : post.text;
+      const posts = read(KEYS.posts, []);
+      posts.forEach(post => {
         const card = document.createElement('article');
         card.className = 'card user-post';
-        card.dataset.postId = postId;
-        card.innerHTML = `
-          <div class="card-header">
-            <span>${profile.username}</span>
-            <button class="delete-btn" onclick="deletePost('${postId}')">डिलीट</button>
-          </div>
-          <p style="margin:6px 0 10px; color:#eee;">${text}</p>
-          <div class="actions">
-            <button class="action-btn like-btn" onclick="toggleLike('${postId}', this)">Like (0)</button>
-            <button class="action-btn comment-toggle" onclick="toggleCommentBox('${postId}')">Comment (0)</button>
-            <span>Share</span>
-          </div>
-          <div id="comments-${postId}" class="comment-box">
-            <div class="comment-list"></div>
-            <div class="comment-row">
-              <input type="text" placeholder="कमेंट लिखें..." onkeydown="if(event.key==='Enter') addComment('${postId}', this)" />
-              <button onclick="addComment('${postId}', this.previousElementSibling)">भेजें</button>
-            </div>
+        card.dataset.postId = post.id;
+
+        const header = document.createElement('div');
+        header.className = 'card-header';
+        const authorSpan = document.createElement('span');
+        authorSpan.textContent = profile.username;
+        const delBtn = document.createElement('button');
+        delBtn.className = 'delete-btn';
+        delBtn.textContent = 'डिलीट';
+        delBtn.onclick = () => deletePost(post.id);
+        header.append(authorSpan, delBtn);
+        card.appendChild(header);
+
+        if (post.videoUrl) {
+          const media = document.createElement('div');
+          media.className = 'media-box';
+          attachMedia(media, post.videoUrl);
+          card.appendChild(media);
+        }
+
+        if (post.text) {
+          const p = document.createElement('p');
+          p.style.margin = '6px 0 10px';
+          p.textContent = post.text;
+          card.appendChild(p);
+        }
+
+        const actions = document.createElement('div');
+        actions.className = 'actions';
+        actions.innerHTML = `
+          <button class="action-btn like-btn" onclick="toggleLike('${post.id}', this)">Like (0)</button>
+          <button class="action-btn comment-toggle" onclick="toggleCommentBox('${post.id}')">Comment (0)</button>
+          <button class="action-btn" onclick="sharePost('${post.id}')">Share</button>
+        `;
+        card.appendChild(actions);
+
+        const cBox = document.createElement('div');
+        cBox.id = 'comments-' + post.id;
+        cBox.className = 'comment-box';
+        cBox.innerHTML = `
+          <div class="comment-list"></div>
+          <div class="comment-row">
+            <input type="text" placeholder="केवल टेक्स्ट कमेंट लिखें..." onkeydown="if(event.key==='Enter') addComment('${post.id}', this)" />
+            <button onclick="addComment('${post.id}', this.previousElementSibling)">भेजें</button>
           </div>
         `;
+        card.appendChild(cBox);
+
         feed.prepend(card);
-        const btn = card.querySelector('.like-btn');
-        updateLikeUI(btn, likes[postId] || { count: 0, liked: false });
-        renderCommentsForPost(postId);
+        updateLikeUI(card.querySelector('.like-btn'), likes[post.id] || {});
+        renderComments(post.id);
       });
 
-      document.getElementById('postCount').textContent = `पोस्ट: ${1 + posts.length} · फ़ॉलोअर्स: 0`;
+      document.getElementById('postCount').textContent = `पोस्ट: ${1 + posts.length}`;
     }
 
     function switchTab(tabName, btn) {
-      document.querySelectorAll('.tab-section').forEach(sec => sec.classList.remove('active'));
+      document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
       document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-      const target = document.getElementById('tab-' + tabName);
-      if (target) target.classList.add('active');
-      if (btn) btn.classList.add('active');
+      document.getElementById('tab-' + tabName)?.classList.add('active');
+      btn?.classList.add('active');
     }
 
     function addPost() {
-      const input = document.getElementById('postInput');
-      const text = input.value.trim();
-      if (!text) return;
-
-      const posts = readStorage(POSTS_KEY, []);
-      posts.push({ id: 'post_' + Date.now(), text });
-      writeStorage(POSTS_KEY, posts);
+      const text = document.getElementById('postInput').value.trim();
+      const videoUrl = document.getElementById('videoUrlInput').value.trim();
+      if (!text && !videoUrl) return;
+      const posts = read(KEYS.posts, []);
+      posts.push({ id: 'post_' + Date.now(), text, videoUrl });
+      write(KEYS.posts, posts);
+      document.getElementById('postInput').value = '';
+      document.getElementById('videoUrlInput').value = '';
       renderPosts();
-
-      input.value = '';
       switchTab('feed', document.querySelector('nav button'));
     }
 
