@@ -29,7 +29,7 @@
     .actions button.liked { color: #ff4d6d; font-weight: 600; }
     .comments { margin-top: 10px; border-top: 1px solid #2a2a2a; padding-top: 8px; display: none; }
     .row { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
-    input, textarea, select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; font-family: inherit; user-select: text; -webkit-user-select: text; }
+    input, textarea { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; font-family: inherit; user-select: text; -webkit-user-select: text; }
     .btn { padding: 10px 14px; border: none; border-radius: 8px; background: #2ecc71; color: #000; font-weight: 600; cursor: pointer; white-space: nowrap; }
     .btn-outline { padding: 10px 14px; border: 1px solid #444; border-radius: 8px; background: #1c1c1c; color: #fff; font-weight: 600; cursor: pointer; white-space: nowrap; }
     .comment-list { list-style: none; padding: 0; margin: 6px 0 0; font-size: 13px; color: #ddd; }
@@ -128,14 +128,13 @@
         <span class="badge-green">Max 1 Min · R2 Cache HIT</span>
       </div>
       <p style="color:#aaa; font-size:12px; margin:8px 0;">
-        अधिकतम वीडियो सीमा <strong>1 मिनट (60 सेकंड)</strong> है। आप वीडियो फ़ाइल चुन सकते हैं या बिना query token वाला Cloudflare R2 लिंक डाल सकते हैं।
+        अधिकतम वीडियो सीमा <strong>1 मिनट (60 सेकंड)</strong> है। नीचे बटन से प्रकार चुनें, वीडियो या टेक्स्ट डालें, और पब्लिश करें।
       </p>
-      <div style="margin-top:10px;">
-        <select id="postKind">
-          <option value="feed">Feed Post (Text / Video ≤ 1m / R2 Photo / R2 480p Video)</option>
-          <option value="story">Story Loop Item (Text / Video ≤ 1m / R2 480p Story)</option>
-        </select>
+      <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
+        <button type="button" class="btn" id="btnKindFeed" onclick="selectPostKind('feed')">Feed Post</button>
+        <button type="button" class="btn-outline" id="btnKindStory" onclick="selectPostKind('story')">Story Loop Item</button>
       </div>
+      <input type="hidden" id="postKind" value="feed" />
       <div style="margin-top:10px;">
         <input type="text" id="postTitle" placeholder="नाम (जैसे: 2friend Official)" />
       </div>
@@ -186,7 +185,7 @@
         <span class="tag">No File/Photo Upload</span>
       </div>
       <ul class="comment-list" id="chatList">
-        <li>2friend: स्वागत है! यहाँ केवल टेक्स्ट मैसेज सक्रिय है।</li>
+        <li><span>2friend: स्वागत है! यहाँ केवल टेक्स्ट मैसेज सक्रिय है।</span></li>
       </ul>
       <div class="row">
         <input type="text" id="chatInput" placeholder="टेक्स्ट मैसेज लिखें..." />
@@ -526,6 +525,17 @@
       if (mediaSlot) mediaSlot.innerHTML = '';
       const modal = document.getElementById('storyModal');
       if (modal) modal.classList.remove('open');
+    }
+
+    function selectPostKind(kind) {
+      const hiddenInput = document.getElementById('postKind');
+      const feedBtn = document.getElementById('btnKindFeed');
+      const storyBtn = document.getElementById('btnKindStory');
+      if (hiddenInput) hiddenInput.value = kind;
+      if (feedBtn && storyBtn) {
+        feedBtn.className = kind === 'feed' ? 'btn' : 'btn-outline';
+        storyBtn.className = kind === 'story' ? 'btn' : 'btn-outline';
+      }
     }
 
     async function createPost() {
