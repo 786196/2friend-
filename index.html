@@ -128,7 +128,7 @@
         <span class="badge-green">Max 1 Min · R2 Cache HIT</span>
       </div>
       <p style="color:#aaa; font-size:12px; margin:8px 0;">
-        अधिकतम वीडियो सीमा <strong>1 मिनट (60 सेकंड)</strong> है। नीचे बटन से प्रकार चुनें, वीडियो या टेक्स्ट डालें, और पब्लिश करें।
+        अधिकतम वीडियो सीमा <strong>1 मिनट (60 सेकंड)</strong> है। R2 Public URL पहले से जुड़ा है—बस फ़ाइल पाथ या लोकल वीडियो चुनें।
       </p>
       <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
         <button type="button" class="btn" id="btnKindFeed" onclick="selectPostKind('feed')">Feed Post</button>
@@ -142,10 +142,10 @@
         <input type="file" id="postVideoFile" accept="video/mp4,video/webm,video/*" />
       </div>
       <div style="margin-top:10px;">
-        <input type="text" id="r2BaseInput" placeholder="R2 Base URL (जैसे: https://pub-xxxx.r2.dev)" />
+        <input type="text" id="r2BaseInput" value="https://pub-eaf6b9a861824b82ad140f60615e8933.r2.dev" placeholder="R2 Base URL" />
       </div>
       <div style="margin-top:10px;">
-        <input type="text" id="postMediaUrl" placeholder="R2 फ़ाइल पाथ या पूरा लिंक (जैसे: media/v_101_480p.mp4)" />
+        <input type="text" id="postMediaUrl" placeholder="R2 फ़ाइल पाथ (जैसे: stories/demo_480p.mp4 या feed/post_480p.mp4)" />
       </div>
       <div style="margin-top:10px;">
         <textarea id="postCaption" rows="3" placeholder="टेक्स्ट लिखें..."></textarea>
@@ -231,7 +231,7 @@
     document.addEventListener('cut', e => e.preventDefault());
     document.addEventListener('paste', e => e.preventDefault());
 
-    const R2_CACHE_BASE = 'https://pub-your-bucket.r2.dev';
+    const R2_CACHE_BASE = 'https://pub-eaf6b9a861824b82ad140f60615e8933.r2.dev';
     const MAX_VIDEO_SECONDS = 60;
 
     const PRIMARY_AD_NETWORK = 'Applooney Max';
@@ -541,7 +541,7 @@
     async function createPost() {
       const kind = document.getElementById('postKind').value;
       const author = document.getElementById('postTitle').value.trim() || '@2friend_user';
-      const r2Base = document.getElementById('r2BaseInput').value.trim();
+      const r2Base = document.getElementById('r2BaseInput').value.trim() || R2_CACHE_BASE;
       const rawMedia = document.getElementById('postMediaUrl').value.trim();
       const fileInput = document.getElementById('postVideoFile');
       const selectedFile = fileInput && fileInput.files ? fileInput.files[0] : null;
@@ -562,7 +562,8 @@
         }
       }
 
-      const mediaUrl = localVideoUrl || buildCacheSafeR2Url(r2Base, rawMedia);
+      const r2MediaUrl = buildCacheSafeR2Url(r2Base, rawMedia);
+      const mediaUrl = localVideoUrl || r2MediaUrl;
 
       if (kind === 'story') {
         storyItems.splice(1, 0, {
@@ -570,14 +571,16 @@
           text: caption,
           isAd: false,
           adNetwork: 'Applooney Max',
-          videoUrl: localVideoUrl
+          videoUrl: mediaUrl
         });
         renderStoriesHub();
         if (fileInput) fileInput.value = '';
         document.getElementById('postTitle').value = '';
         document.getElementById('postMediaUrl').value = '';
         document.getElementById('postCaption').value = '';
-        status.textContent = 'नई स्टोरी जुड़ गई है — Stories खुल रही है...';
+        status.textContent = r2MediaUrl
+          ? 'Cloudflare R2 स्टोरी जुड़ गई है — Stories खुल रही है...'
+          : 'नई स्टोरी जुड़ गई है — Stories खुल रही है...';
 
         const storiesBtn = document.querySelectorAll('nav button')[1];
         if (storiesBtn) switchTab(storiesBtn, 'storiesView');
@@ -589,7 +592,9 @@
       posts.unshift({
         id: Date.now(),
         author,
-        tag: isVideo ? 'Video · Max 1m · 480p' : (mediaUrl ? 'Cloudflare R2 · Image' : 'Text Feed'),
+        tag: r2MediaUrl
+          ? (isVideo ? 'Cloudflare R2 · 480p · Max 1m' : 'Cloudflare R2 · Image')
+          : (isVideo ? 'Video · Max 1m · 480p' : 'Text Feed'),
         caption: isVideo ? `${caption} (Max 1 min · 480p / 128kbps)` : caption,
         imageUrl: mediaUrl && !isVideo ? mediaUrl : '',
         videoUrl: mediaUrl && isVideo ? mediaUrl : '',
@@ -602,9 +607,9 @@
       document.getElementById('postTitle').value = '';
       document.getElementById('postMediaUrl').value = '';
       document.getElementById('postCaption').value = '';
-      status.textContent = localVideoUrl
-        ? '1 मिनट से कम का वीडियो Feed में जुड़ गया है।'
-        : 'पोस्ट Feed में जुड़ गई है।';
+      status.textContent = r2MediaUrl
+        ? 'Cloudflare R2 पोस्ट Feed में जुड़ गई है।'
+        : (localVideoUrl ? '1 मिनट से कम का वीडियो Feed में जुड़ गया है।' : 'पोस्ट Feed में जुड़ गई है।');
 
       renderFeed();
       switchTab(document.querySelector('nav button'), 'feedView');
