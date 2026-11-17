@@ -100,7 +100,7 @@
       border-radius: 999px;
     }
     .media-box {
-      min-height: 210px;
+      min-height: 200px;
       background: #222;
       border-radius: 8px;
       display: flex;
@@ -257,6 +257,26 @@
   </section>
 
   <main id="tab-feed" class="tab-section active">
+    <article class="card" data-post-id="tips">
+      <div class="card-header">
+        <span>2friend Tips</span>
+        <span class="sub-tag">Text Feed</span>
+      </div>
+      <p style="margin:6px 0 10px; color:#ddd;">2friend पर केवल टेक्स्ट कमेंट और मैसेज चलते हैं, और मीडिया डाउनलोड/कॉपी-पेस्ट लॉक सक्रिय है।</p>
+      <div class="actions">
+        <button class="action-btn like-btn" onclick="toggleLike('tips', this)">Like (0)</button>
+        <button class="action-btn comment-toggle" onclick="toggleCommentBox('tips')">Comment (0)</button>
+        <button class="action-btn" onclick="sharePost('tips')">Share</button>
+      </div>
+      <div id="comments-tips" class="comment-box">
+        <div class="comment-list"></div>
+        <div class="comment-row">
+          <input type="text" placeholder="केवल टेक्स्ट कमेंट लिखें..." onkeydown="if(event.key==='Enter') addComment('tips', this)" />
+          <button onclick="addComment('tips', this.previousElementSibling)">भेजें</button>
+        </div>
+      </div>
+    </article>
+
     <article class="card" data-post-id="official">
       <div class="card-header">
         <span>2friend Official</span>
@@ -307,9 +327,10 @@
   <section id="tab-profile" class="tab-section">
     <div class="card">
       <div class="card-header"><span>मेरी प्रोफ़ाइल</span></div>
+      <div class="comment-item" style="margin-bottom:8px;">लोकल मोड सक्रिय — डेटा इसी डिवाइस में सेव है (VPS बाद में जुड़ेगा)</div>
       <p id="profileHandle" style="margin:6px 0;">@2friend_user</p>
       <p id="profileBio" style="color:#bbb; font-size:13px; margin:6px 0;">बायो अभी सेट नहीं है।</p>
-      <p id="postCount" style="color:#bbb; font-size:14px; margin:6px 0;">पोस्ट: 1 · स्टोरीज़: 0</p>
+      <p id="postCount" style="color:#bbb; font-size:14px; margin:6px 0;">पोस्ट: 2 · स्टोरीज़: 0</p>
       <input id="usernameInput" type="text" placeholder="नया यूज़रनेम (जैसे @rahul)" />
       <input id="bioInput" type="text" placeholder="अपना बायो लिखें..." />
       <button class="primary-btn" onclick="saveProfile()">प्रोफ़ाइल सेव करें</button>
@@ -325,11 +346,11 @@
 
   <script>
     const KEYS = {
-      posts: '2friend_posts_clean_v1',
-      likes: '2friend_likes_clean_v1',
-      comments: '2friend_comments_clean_v1',
-      stories: '2friend_stories_clean_v1',
-      profile: '2friend_profile_clean_v1'
+      posts: '2friend_posts_clean_v2',
+      likes: '2friend_likes_clean_v2',
+      comments: '2friend_comments_clean_v2',
+      stories: '2friend_stories_clean_v2',
+      profile: '2friend_profile_clean_v2'
     };
     const read = (k, fb) => { try { return JSON.parse(localStorage.getItem(k)) ?? fb; } catch { return fb; } };
     const write = (k, v) => localStorage.setItem(k, JSON.stringify(v));
@@ -465,9 +486,9 @@
 
       const items = [
         { author: 'आपकी स्टोरी', text: latest?.text || 'स्टोरी जोड़ें', videoUrl: latest?.videoUrl || '' },
+        { author: '2friend Demo', text: '480p HLS स्टोरी प्रीव्यू डेमो', videoUrl: '' },
         { author: 'दोस्त 1', text: 'दोस्त 1 की स्टोरी', videoUrl: '' },
-        { author: 'दोस्त 2', text: 'दोस्त 2 की स्टोरी', videoUrl: '' },
-        { author: 'दोस्त 3', text: 'दोस्त 3 की स्टोरी', videoUrl: '' }
+        { author: 'दोस्त 2', text: 'दोस्त 2 की स्टोरी', videoUrl: '' }
       ];
 
       strip.innerHTML = '';
@@ -496,7 +517,7 @@
         });
       }
 
-      document.getElementById('postCount').textContent = `पोस्ट: ${1 + posts.length} · स्टोरीज़: ${stories.length}`;
+      document.getElementById('postCount').textContent = `पोस्ट: ${2 + posts.length} · स्टोरीज़: ${stories.length}`;
     }
 
     function addStory() {
@@ -526,8 +547,11 @@
 
       const profile = getProfile();
       const likes = read(KEYS.likes, {});
-      updateLikeUI(feed.querySelector('[data-post-id="official"] .like-btn'), likes['official'] || {});
-      renderComments('official');
+      ['tips', 'official'].forEach(id => {
+        const btn = feed.querySelector(`[data-post-id="${id}"] .like-btn`);
+        if (btn) updateLikeUI(btn, likes[id] || {});
+        renderComments(id);
+      });
 
       const posts = read(KEYS.posts, []);
       posts.forEach(post => {
@@ -600,7 +624,7 @@
       });
 
       const stories = read(KEYS.stories, []);
-      document.getElementById('postCount').textContent = `पोस्ट: ${1 + posts.length} · स्टोरीज़: ${stories.length}`;
+      document.getElementById('postCount').textContent = `पोस्ट: ${2 + posts.length} · स्टोरीज़: ${stories.length}`;
     }
 
     function switchTab(tabName, btn) {
