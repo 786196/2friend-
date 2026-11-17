@@ -6,9 +6,9 @@
   <title>2friend</title>
   <style>
     * { box-sizing: border-box; user-select: none; -webkit-user-select: none; }
-    body { margin: 0; font-family: system-ui, sans-serif; background: #111; color: #fff; padding-bottom: 72px; }
+    body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: #111; color: #fff; padding-bottom: 72px; }
     header { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid #222; position: sticky; top: 0; background: #111; z-index: 10; }
-    .brand-wrap { display: flex; align-items: center; gap: 8px; }
+    .brand-wrap { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .badge-green { background: #163826; color: #2ecc71; border: 1px solid #2ecc71; font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 600; }
     .stories { display: flex; gap: 14px; padding: 14px 16px; overflow-x: auto; border-bottom: 1px solid #222; }
     .story { text-align: center; font-size: 12px; cursor: pointer; min-width: 72px; }
@@ -18,9 +18,9 @@
     .card { margin: 14px; background: #1a1a1a; border-radius: 12px; padding: 14px; border: 1px solid #2a2a2a; }
     .card-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
     .tag { font-size: 11px; padding: 3px 8px; border-radius: 999px; background: #1d2b44; color: #7fb3ff; font-weight: 600; }
-    .preview { width: 100%; aspect-ratio: 16/10; background: #000; border-radius: 10px; overflow: hidden; margin: 12px 0; border: 1px solid #2a2a2a; }
+    .preview { width: 100%; aspect-ratio: 16/10; background: #000; border-radius: 10px; overflow: hidden; margin: 12px 0; border: 1px solid #2a2a2a; display: flex; align-items: center; justify-content: center; }
     video { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .actions { display: flex; gap: 18px; font-size: 14px; margin-top: 8px; }
+    .actions { display: flex; gap: 18px; font-size: 14px; margin-top: 10px; }
     .actions button { background: none; border: none; color: #fff; font-size: 14px; cursor: pointer; padding: 0; }
     .actions button.liked { color: #ff4d6d; font-weight: 600; }
     .comments { margin-top: 10px; border-top: 1px solid #2a2a2a; padding-top: 8px; display: none; }
@@ -76,7 +76,7 @@
         <input type="text" id="postTitle" placeholder="नाम (जैसे: 2friend Official)" />
       </div>
       <div style="margin-top:10px;">
-        <input type="text" id="postVideoUrl" placeholder="Bunny CDN / Volume Network वीडियो लिंक (वैकल्पिक)" />
+        <input type="text" id="postVideoUrl" placeholder="Bunny CDN / Volume Network 480p वीडियो लिंक (वैकल्पिक)" />
       </div>
       <div style="margin-top:10px;">
         <textarea id="postCaption" rows="3" placeholder="टेक्स्ट लिखें..."></textarea>
@@ -145,7 +145,7 @@
         id: 'official',
         author: '2friend Official',
         tag: 'Bunny CDN · 480p HLS',
-        caption: '',
+        caption: 'Short Video / Story Preview (480p / 128kbps)',
         videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
         likes: 0,
         liked: false,
@@ -167,7 +167,7 @@
           ${post.caption ? `<p style="margin:10px 0 4px; font-size:14px; color:#ddd; line-height:1.45;">${post.caption}</p>` : ''}
           ${post.videoUrl ? `
             <div class="preview">
-              <video src="${post.videoUrl}" controls playsinline preload="metadata" controlsList="nodownload noplaybackrate" disablePictureInPicture></video>
+              <video src="${post.videoUrl}" controls playsinline muted preload="metadata" controlsList="nodownload noplaybackrate" disablePictureInPicture></video>
             </div>
           ` : ''}
           <div class="actions">
@@ -251,7 +251,10 @@
     }
 
     function sharePost() {
-      alert('पोस्ट लिंक शेयर करने के लिए तैयार है।');
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(window.location.href).catch(() => {});
+      }
+      alert('2friend लिंक तैयार है।');
     }
 
     function switchTab(btn, viewId) {
