@@ -27,7 +27,7 @@
     .actions button.liked { color: #ff4d6d; font-weight: 600; }
     .comments { margin-top: 10px; border-top: 1px solid #2a2a2a; padding-top: 8px; display: none; }
     .row { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
-    input, textarea { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; font-family: inherit; user-select: text; -webkit-user-select: text; }
+    input, textarea, select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; font-family: inherit; user-select: text; -webkit-user-select: text; }
     .btn { padding: 10px 14px; border: none; border-radius: 8px; background: #2ecc71; color: #000; font-weight: 600; cursor: pointer; white-space: nowrap; }
     .btn-outline { padding: 10px 14px; border: 1px solid #444; border-radius: 8px; background: #1c1c1c; color: #fff; font-weight: 600; cursor: pointer; white-space: nowrap; }
     .comment-list { list-style: none; padding: 0; margin: 6px 0 0; font-size: 13px; color: #ddd; }
@@ -36,6 +36,10 @@
     .story-modal.open { display: flex; }
     .progress-bar { width: 100%; height: 4px; background: #333; border-radius: 99px; overflow: hidden; margin-bottom: 12px; }
     .progress-fill { height: 100%; width: 0%; background: #2ecc71; transition: width 0.2s linear; }
+    .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
+    .stat-box { background: #121212; border: 1px solid #262626; border-radius: 10px; padding: 10px; }
+    .stat-box small { display: block; color: #999; font-size: 11px; }
+    .stat-box strong { display: block; margin-top: 4px; font-size: 15px; color: #2ecc71; }
     nav { position: fixed; bottom: 0; left: 0; right: 0; display: flex; background: #141414; border-top: 1px solid #222; z-index: 20; }
     nav button { flex: 1; padding: 14px 0; background: none; border: none; color: #aaa; font-size: 14px; cursor: pointer; }
     nav button.active { color: #2ecc71; font-weight: 600; }
@@ -50,7 +54,7 @@
     <span>@2friend_user</span>
   </header>
 
-  <!-- FEED VIEW -->
+  <!-- 1. FEED VIEW -->
   <section id="feedView" class="view active">
     <div class="stories">
       <div class="story" onclick="startStoryLoop(0)"><div class="ring">+</div>आपकी स्टोरी</div>
@@ -79,48 +83,87 @@
     <div id="feedList"></div>
   </section>
 
-  <!-- STORIES VIEW -->
+  <!-- 2. STORIES VIEW -->
   <section id="storiesView" class="view">
     <div class="card">
       <div class="card-head">
-        <strong>स्टोरीज लूप (Auto-Loop + Ad Break)</strong>
+        <strong>Stories Loop & Ad Break</strong>
         <span class="badge-green">480p · 128k</span>
       </div>
-      <p style="color:#aaa; font-size:14px;">स्टोरी लूप शुरू करने पर हर 2 स्टोरी के बाद विज्ञापन ब्रेक चलेगा:</p>
+      <p style="color:#aaa; font-size:13px; margin:8px 0;">
+        स्टोरी लूप अपने आप आगे बढ़ता है और हर 2 स्टोरी के बाद AdMob / Meta विज्ञापन ब्रेक चलता है।
+      </p>
       <div class="row">
         <button class="btn" onclick="startStoryLoop(0)">पूरा स्टोरी लूप चलाएँ</button>
-        <button class="btn-outline" onclick="startStoryLoop(1)">2friend Demo से शुरू करें</button>
+        <button class="btn-outline" onclick="startStoryLoop(1)">2friend Demo खोलें</button>
       </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <strong>उपलब्ध स्टोरीज</strong>
+        <span class="tag">Text / 480p Ready</span>
+      </div>
+      <ul class="comment-list" id="storiesHubList"></ul>
     </div>
   </section>
 
-  <!-- CREATE VIEW -->
+  <!-- 3. CREATE VIEW -->
   <section id="createView" class="view">
     <div class="card">
-      <strong>नई पोस्ट बनाएं</strong>
+      <div class="card-head">
+        <strong>नई पोस्ट / स्टोरी बनाएं</strong>
+        <span class="badge-green">Low-Bandwidth Mode</span>
+      </div>
+      <div style="margin-top:10px;">
+        <select id="postKind">
+          <option value="feed">Feed Post (Text / Photo / 480p Video)</option>
+          <option value="story">Story Loop Item (Text / 480p Story)</option>
+        </select>
+      </div>
       <div style="margin-top:10px;">
         <input type="text" id="postTitle" placeholder="नाम (जैसे: 2friend Official)" />
       </div>
       <div style="margin-top:10px;">
-        <input type="text" id="postMediaUrl" placeholder="Bunny CDN / Volume Network फोटो या 480p वीडियो लिंक (वैकल्पिक)" />
+        <input type="text" id="postMediaUrl" placeholder="Bunny CDN / Volume Network फोटो या 480p लिंक (वैकल्पिक)" />
       </div>
       <div style="margin-top:10px;">
         <textarea id="postCaption" rows="3" placeholder="टेक्स्ट लिखें..."></textarea>
       </div>
-      <div style="margin-top:12px;">
-        <button class="btn" onclick="createPost()">पोस्ट करें</button>
+      <div class="row" style="margin-top:12px;">
+        <button class="btn" onclick="createPost()">पब्लिश करें</button>
       </div>
+      <p id="createStatus" style="margin:8px 0 0; font-size:12px; color:#2ecc71;"></p>
     </div>
   </section>
 
-  <!-- PROFILE VIEW -->
+  <!-- 4. PROFILE VIEW -->
   <section id="profileView" class="view">
     <div class="card">
-      <strong>@2friend_user</strong>
-      <p style="color:#aaa; font-size:14px;">2friend पर केवल टेक्स्ट कमेंट और मैसेज चलते हैं, और मीडिया डाउनलोड/कॉपी-पेस्ट लॉक सक्रिय है।</p>
+      <div class="card-head">
+        <strong>@2friend_user</strong>
+        <span class="badge-green">Verified · 480p/128k</span>
+      </div>
+      <p style="color:#aaa; font-size:13px; margin:8px 0;">
+        2friend पर केवल टेक्स्ट कमेंट और मैसेज चलते हैं, और मीडिया डाउनलोड/कॉपी-पेस्ट लॉक सक्रिय है।
+      </p>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <small>आज का स्क्रीन-टाइम</small>
+          <strong id="profileScreenTime">14 min</strong>
+        </div>
+        <div class="stat-box">
+          <small>रिवॉर्ड स्टेटस</small>
+          <strong id="profileRewardState">12:00 AM Ready</strong>
+        </div>
+      </div>
     </div>
+
     <div class="card">
-      <strong>टेक्स्ट मैसेज (केवल टेक्स्ट)</strong>
+      <div class="card-head">
+        <strong>टेक्स्ट मैसेज (केवल टेक्स्ट)</strong>
+        <span class="tag">No File/Photo Upload</span>
+      </div>
       <ul class="comment-list" id="chatList">
         <li>2friend: स्वागत है! यहाँ केवल टेक्स्ट मैसेज सक्रिय है।</li>
       </ul>
@@ -285,30 +328,6 @@
       document.getElementById(`comments-${i}`).style.display = 'block';
     }
 
-    function createPost() {
-      const author = document.getElementById('postTitle').value.trim() || '@2friend_user';
-      const mediaUrl = document.getElementById('postMediaUrl').value.trim();
-      const caption = document.getElementById('postCaption').value.trim() || '2friend पोस्ट';
-      const isVideo = /\.(mp4|m3u8|webm)(\?|$)/i.test(mediaUrl);
-
-      posts.unshift({
-        id: Date.now(),
-        author,
-        tag: mediaUrl ? (isVideo ? 'Bunny CDN · 480p HLS' : 'Bunny Volume · Image') : 'Text Feed',
-        caption,
-        imageUrl: mediaUrl && !isVideo ? mediaUrl : '',
-        videoUrl: mediaUrl && isVideo ? mediaUrl : '',
-        likes: 0,
-        liked: false,
-        comments: []
-      });
-      document.getElementById('postTitle').value = '';
-      document.getElementById('postMediaUrl').value = '';
-      document.getElementById('postCaption').value = '';
-      renderFeed();
-      switchTab(document.querySelector('nav button'), 'feedView');
-    }
-
     // स्टोरी लूप और विज्ञापन ब्रेक लॉजिक
     const storyItems = [
       { user: 'आपकी स्टोरी', text: 'आपकी 480p स्टोरी लाइव है।', isAd: false },
@@ -319,13 +338,25 @@
       { user: 'Ad Break', text: 'Google AdMob / Meta Audience Network — अगला लूप विज्ञापन ब्रेक', isAd: true }
     ];
 
+    function renderStoriesHub() {
+      const hub = document.getElementById('storiesHubList');
+      if (!hub) return;
+      hub.innerHTML = storyItems
+        .map((s, idx) => `<li>${s.isAd ? '⚡ ' : '● '}<strong>${s.user}</strong> — ${s.text} <button class="btn-outline" style="padding:4px 8px; font-size:11px; margin-left:6px;" onclick="openDirectStory(${idx})">खोलें</button></li>`)
+        .join('');
+    }
+
     let currentStoryIdx = 0;
     let storyTimer = null;
     let progressVal = 0;
 
     function startStoryLoop(startIndex) {
       const mapIndex = [0, 1, 3, 4][startIndex] ?? 0;
-      currentStoryIdx = mapIndex;
+      openDirectStory(mapIndex);
+    }
+
+    function openDirectStory(idx) {
+      currentStoryIdx = idx;
       document.getElementById('storyModal').classList.add('open');
       showCurrentStory();
     }
@@ -362,6 +393,44 @@
     function closeStory() {
       clearInterval(storyTimer);
       document.getElementById('storyModal').classList.remove('open');
+    }
+
+    function createPost() {
+      const kind = document.getElementById('postKind').value;
+      const author = document.getElementById('postTitle').value.trim() || '@2friend_user';
+      const mediaUrl = document.getElementById('postMediaUrl').value.trim();
+      const caption = document.getElementById('postCaption').value.trim() || '2friend पोस्ट';
+      const status = document.getElementById('createStatus');
+
+      if (kind === 'story') {
+        storyItems.splice(1, 0, { user: author, text: caption, isAd: false });
+        renderStoriesHub();
+        status.textContent = 'नई स्टोरी Stories Loop में जुड़ गई है।';
+        document.getElementById('postTitle').value = '';
+        document.getElementById('postMediaUrl').value = '';
+        document.getElementById('postCaption').value = '';
+        return;
+      }
+
+      const isVideo = /\.(mp4|m3u8|webm)(\?|$)/i.test(mediaUrl);
+      posts.unshift({
+        id: Date.now(),
+        author,
+        tag: mediaUrl ? (isVideo ? 'Bunny CDN · 480p HLS' : 'Bunny Volume · Image') : 'Text Feed',
+        caption,
+        imageUrl: mediaUrl && !isVideo ? mediaUrl : '',
+        videoUrl: mediaUrl && isVideo ? mediaUrl : '',
+        likes: 0,
+        liked: false,
+        comments: []
+      });
+
+      document.getElementById('postTitle').value = '';
+      document.getElementById('postMediaUrl').value = '';
+      document.getElementById('postCaption').value = '';
+      status.textContent = 'नई पोस्ट Feed में जुड़ गई है।';
+      renderFeed();
+      switchTab(document.querySelector('nav button'), 'feedView');
     }
 
     function sendChat() {
@@ -402,6 +471,8 @@
       list.innerHTML = sorted
         .map((u, idx) => `<li>#${idx + 1} ${u.handle} — ${u.minutes} min</li>`)
         .join('');
+      const profileTime = document.getElementById('profileScreenTime');
+      if (profileTime) profileTime.textContent = `${screenUsers[0].minutes} min`;
     }
 
     function simulateScreenTime() {
@@ -412,12 +483,17 @@
     function processMidnightPayout() {
       const top = [...screenUsers].sort((a, b) => b.minutes - a.minutes)[0];
       const status = document.getElementById('payoutStatus');
+      const rewardState = document.getElementById('profileRewardState');
       if (status && top) {
         status.textContent = `रात 12:00 AM प्रोसेस पूरा: टॉप विनर ${top.handle} (${top.minutes} min)`;
+      }
+      if (rewardState && top) {
+        rewardState.textContent = `Winner: ${top.handle}`;
       }
     }
 
     renderFeed();
+    renderStoriesHub();
     renderWinners();
   </script>
 </body>
