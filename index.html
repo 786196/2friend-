@@ -21,7 +21,7 @@
     .card-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
     .tag { font-size: 11px; padding: 3px 8px; border-radius: 999px; background: #1d2b44; color: #7fb3ff; font-weight: 600; }
     .preview { width: 100%; aspect-ratio: 16/10; background: #000; border-radius: 10px; overflow: hidden; margin: 12px 0; border: 1px solid #2a2a2a; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 12px; text-align: center; }
-    video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    video, img.post-img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; -webkit-user-drag: none; }
     .actions { display: flex; gap: 18px; font-size: 14px; margin-top: 10px; }
     .actions button { background: none; border: none; color: #fff; font-size: 14px; cursor: pointer; padding: 0; }
     .actions button.liked { color: #ff4d6d; font-weight: 600; }
@@ -102,7 +102,7 @@
         <input type="text" id="postTitle" placeholder="नाम (जैसे: 2friend Official)" />
       </div>
       <div style="margin-top:10px;">
-        <input type="text" id="postVideoUrl" placeholder="Bunny CDN / Volume Network 480p वीडियो लिंक (वैकल्पिक)" />
+        <input type="text" id="postMediaUrl" placeholder="Bunny CDN / Volume Network फोटो या 480p वीडियो लिंक (वैकल्पिक)" />
       </div>
       <div style="margin-top:10px;">
         <textarea id="postCaption" rows="3" placeholder="टेक्स्ट लिखें..."></textarea>
@@ -167,13 +167,25 @@
     document.addEventListener('cut', e => e.preventDefault());
     document.addEventListener('paste', e => e.preventDefault());
 
-    // फीड डेटा
+    // फीड डेटा (Text + Photo + Video)
     const posts = [
       {
         id: 'tips',
         author: '2friend Tips',
         tag: 'Text Feed',
         caption: '2friend पर केवल टेक्स्ट कमेंट और मैसेज चलते हैं, और मीडिया डाउनलोड/कॉपी-पेस्ट लॉक सक्रिय है।',
+        imageUrl: '',
+        videoUrl: '',
+        likes: 0,
+        liked: false,
+        comments: []
+      },
+      {
+        id: 'photo',
+        author: '2friend Photo',
+        tag: 'Bunny Volume · Image',
+        caption: '2friend Feed Photo Preview — डाउनलोड और कॉपी-पेस्ट लॉक सक्रिय।',
+        imageUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=60',
         videoUrl: '',
         likes: 0,
         liked: false,
@@ -184,6 +196,7 @@
         author: '2friend Official',
         tag: 'Bunny CDN · 480p HLS',
         caption: 'Short Video / Story Preview (HLS 480p / H.264 / AAC 128kbps)',
+        imageUrl: '',
         videoUrl: '',
         likes: 0,
         liked: false,
@@ -203,6 +216,11 @@
             <span class="tag">${post.tag}</span>
           </div>
           ${post.caption ? `<p style="margin:10px 0 4px; font-size:14px; color:#ddd; line-height:1.45;">${post.caption}</p>` : ''}
+          ${post.imageUrl ? `
+            <div class="preview">
+              <img class="post-img" src="${post.imageUrl}" alt="${post.author}" loading="lazy" />
+            </div>
+          ` : ''}
           ${post.videoUrl ? `
             <div class="preview">
               <video src="${post.videoUrl}" controls playsinline preload="metadata" controlsList="nodownload noplaybackrate" disablePictureInPicture></video>
@@ -269,20 +287,23 @@
 
     function createPost() {
       const author = document.getElementById('postTitle').value.trim() || '@2friend_user';
-      const videoUrl = document.getElementById('postVideoUrl').value.trim();
+      const mediaUrl = document.getElementById('postMediaUrl').value.trim();
       const caption = document.getElementById('postCaption').value.trim() || '2friend पोस्ट';
+      const isVideo = /\.(mp4|m3u8|webm)(\?|$)/i.test(mediaUrl);
+
       posts.unshift({
         id: Date.now(),
         author,
-        tag: videoUrl ? 'Bunny CDN · 480p HLS' : 'Text Feed',
+        tag: mediaUrl ? (isVideo ? 'Bunny CDN · 480p HLS' : 'Bunny Volume · Image') : 'Text Feed',
         caption,
-        videoUrl,
+        imageUrl: mediaUrl && !isVideo ? mediaUrl : '',
+        videoUrl: mediaUrl && isVideo ? mediaUrl : '',
         likes: 0,
         liked: false,
         comments: []
       });
       document.getElementById('postTitle').value = '';
-      document.getElementById('postVideoUrl').value = '';
+      document.getElementById('postMediaUrl').value = '';
       document.getElementById('postCaption').value = '';
       renderFeed();
       switchTab(document.querySelector('nav button'), 'feedView');
