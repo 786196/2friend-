@@ -4,652 +4,264 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>2friend</title>
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
   <style>
-    * { box-sizing: border-box; -webkit-user-select: none; user-select: none; }
-    input, textarea { -webkit-user-select: text; user-select: text; }
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, sans-serif;
-      background: #121212;
-      color: #ffffff;
-      padding-bottom: 76px;
-    }
-    header {
-      position: sticky;
-      top: 0;
-      background: #181818;
-      padding: 12px 16px;
-      border-bottom: 1px solid #2a2a2a;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 10;
-    }
-    .logo { font-size: 20px; font-weight: 700; }
-    .badge {
-      font-size: 11px;
-      background: #223824;
-      color: #7ee081;
-      padding: 3px 8px;
-      border-radius: 999px;
-      border: 1px solid #355e38;
-    }
-    .stories {
-      display: flex;
-      gap: 12px;
-      overflow-x: auto;
-      padding: 12px 16px;
-      border-bottom: 1px solid #242424;
-    }
-    .story {
-      min-width: 72px;
-      text-align: center;
-      font-size: 12px;
-      color: #ccc;
-      cursor: pointer;
-    }
-    .avatar {
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      background: #2c2c2c;
-      border: 2px solid #4caf50;
-      margin: 0 auto 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      color: #fff;
-    }
-    .story-box {
-      display: none;
-      margin: 12px 16px 0;
-      background: #1c1c1c;
-      border: 1px solid #2f4b32;
-      border-radius: 12px;
-      padding: 12px;
-    }
-    .story-box.open { display: block; }
-    .tab-section {
-      display: none;
-      padding: 14px 16px;
-      flex-direction: column;
-      gap: 14px;
-    }
-    .tab-section.active { display: flex; }
-    .card {
-      background: #1c1c1c;
-      border: 1px solid #2b2b2b;
-      border-radius: 12px;
-      padding: 14px;
-    }
-    .card-header {
-      font-weight: 600;
-      margin-bottom: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-    }
-    .sub-tag {
-      font-size: 11px;
-      color: #8ab4f8;
-      background: #1e2938;
-      padding: 2px 7px;
-      border-radius: 999px;
-    }
-    .media-box {
-      min-height: 200px;
-      background: #222;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 12px;
-      color: #aaa;
-      margin: 8px 0 10px;
-      overflow: hidden;
-    }
-    video {
-      width: 100%;
-      max-height: 340px;
-      display: block;
-      background: #000;
-    }
-    .actions {
-      display: flex;
-      gap: 16px;
-      font-size: 14px;
-      color: #bbb;
-      align-items: center;
-    }
-    .action-btn {
-      background: none;
-      border: none;
-      color: #bbb;
-      font-size: 14px;
-      padding: 4px 0;
-      cursor: pointer;
-    }
-    .action-btn.liked { color: #ff5252; font-weight: 600; }
-    .delete-btn {
-      background: none;
-      border: 1px solid #4a2626;
-      color: #ff7b7b;
-      border-radius: 6px;
-      padding: 3px 8px;
-      font-size: 12px;
-      cursor: pointer;
-    }
-    .comment-box {
-      display: none;
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid #2a2a2a;
-    }
-    .comment-box.open { display: block; }
-    .comment-list {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 8px;
-      font-size: 13px;
-      color: #ddd;
-    }
-    .comment-item {
-      background: #242424;
-      padding: 7px 10px;
-      border-radius: 6px;
-      word-break: break-word;
-    }
-    .comment-row { display: flex; gap: 8px; }
-    .comment-row input { margin-top: 0; flex: 1; }
-    .comment-row button {
-      background: #4caf50;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 0 12px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    textarea, input {
-      width: 100%;
-      background: #262626;
-      border: 1px solid #3a3a3a;
-      color: #fff;
-      border-radius: 8px;
-      padding: 10px;
-      margin-top: 8px;
-      font-family: inherit;
-    }
-    .primary-btn {
-      margin-top: 10px;
-      background: #4caf50;
-      color: #fff;
-      border: none;
-      padding: 10px 14px;
-      border-radius: 8px;
-      font-weight: 600;
-      width: 100%;
-      cursor: pointer;
-    }
-    .secondary-btn {
-      margin-top: 8px;
-      background: #283545;
-      color: #d6e8ff;
-      border: 1px solid #3d526b;
-      padding: 9px 12px;
-      border-radius: 8px;
-      font-weight: 600;
-      width: 100%;
-      cursor: pointer;
-    }
-    .hint {
-      font-size: 12px;
-      color: #999;
-      margin-top: 6px;
-      line-height: 1.4;
-    }
-    nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: #181818;
-      border-top: 1px solid #2a2a2a;
-      display: flex;
-      justify-content: space-around;
-      padding: 10px 0;
-      z-index: 10;
-    }
-    nav button {
-      background: none;
-      border: none;
-      color: #888;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    nav button.active { color: #4caf50; }
+    * { box-sizing: border-box; user-select: none; -webkit-user-select: none; }
+    body { margin: 0; font-family: system-ui, sans-serif; background: #111; color: #fff; padding-bottom: 72px; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid #222; position: sticky; top: 0; background: #111; z-index: 10; }
+    .brand-wrap { display: flex; align-items: center; gap: 8px; }
+    .badge-green { background: #163826; color: #2ecc71; border: 1px solid #2ecc71; font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 600; }
+    .stories { display: flex; gap: 14px; padding: 14px 16px; overflow-x: auto; border-bottom: 1px solid #222; }
+    .story { text-align: center; font-size: 12px; cursor: pointer; min-width: 72px; }
+    .ring { width: 58px; height: 58px; border-radius: 50%; border: 2px solid #2ecc71; margin: 0 auto 6px; background: #1c1c1c; }
+    .view { display: none; }
+    .view.active { display: block; }
+    .card { margin: 14px; background: #1a1a1a; border-radius: 12px; padding: 14px; border: 1px solid #2a2a2a; }
+    .card-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .tag { font-size: 11px; padding: 3px 8px; border-radius: 999px; background: #1d2b44; color: #7fb3ff; font-weight: 600; }
+    .preview { width: 100%; aspect-ratio: 16/10; background: #000; border-radius: 10px; overflow: hidden; margin: 12px 0; border: 1px solid #2a2a2a; }
+    video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .actions { display: flex; gap: 18px; font-size: 14px; margin-top: 8px; }
+    .actions button { background: none; border: none; color: #fff; font-size: 14px; cursor: pointer; padding: 0; }
+    .actions button.liked { color: #ff4d6d; font-weight: 600; }
+    .comments { margin-top: 10px; border-top: 1px solid #2a2a2a; padding-top: 8px; display: none; }
+    .row { display: flex; gap: 8px; margin-top: 8px; }
+    input, textarea { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; font-family: inherit; user-select: text; -webkit-user-select: text; }
+    .btn { padding: 10px 14px; border: none; border-radius: 8px; background: #2ecc71; color: #000; font-weight: 600; cursor: pointer; white-space: nowrap; }
+    .comment-list { list-style: none; padding: 0; margin: 6px 0 0; font-size: 13px; color: #ddd; }
+    .comment-list li { padding: 5px 0; border-bottom: 1px solid #222; }
+    .story-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 50; padding: 20px; flex-direction: column; justify-content: space-between; }
+    .story-modal.open { display: flex; }
+    nav { position: fixed; bottom: 0; left: 0; right: 0; display: flex; background: #141414; border-top: 1px solid #222; z-index: 20; }
+    nav button { flex: 1; padding: 14px 0; background: none; border: none; color: #aaa; font-size: 14px; cursor: pointer; }
+    nav button.active { color: #2ecc71; font-weight: 600; }
   </style>
 </head>
-<body oncontextmenu="return false;" oncopy="return false;" oncut="return false;">
+<body oncontextmenu="return false;">
   <header>
-    <div style="display:flex; align-items:center; gap:8px;">
-      <span class="logo">2friend</span>
-      <span class="badge">480p · HLS · 128k</span>
+    <div class="brand-wrap">
+      <strong>2friend</strong>
+      <span class="badge-green">480p · HLS · 128k</span>
     </div>
-    <span id="headerUser" style="font-size:12px; color:#aaa;">@2friend_user</span>
+    <span>@2friend_user</span>
   </header>
 
-  <section id="storyStrip" class="stories"></section>
-
-  <section id="storyViewer" class="story-box">
-    <div class="card-header">
-      <span id="storyViewerTitle">स्टोरी</span>
-      <button class="delete-btn" onclick="closeStory()">बंद करें</button>
+  <!-- FEED VIEW -->
+  <section id="feedView" class="view active">
+    <div class="stories">
+      <div class="story" onclick="openStory('आपकी स्टोरी', 'आपकी स्टोरी तैयार है।')"><div class="ring"></div>आपकी स्टोरी</div>
+      <div class="story" onclick="openStory('2friend Demo', '2friend Demo स्टोरी चल रही है।')"><div class="ring"></div>2friend Demo</div>
+      <div class="story" onclick="openStory('दोस्त 1', 'दोस्त 1 की स्टोरी चल रही है।')"><div class="ring"></div>दोस्त 1</div>
+      <div class="story" onclick="openStory('दोस्त 2', 'दोस्त 2 की स्टोरी चल रही है।')"><div class="ring"></div>दोस्त 2</div>
     </div>
-    <div id="storyViewerMedia" class="media-box" style="min-height:120px;"></div>
-    <div id="storyViewerText" class="comment-item"></div>
+    <div id="feedList"></div>
   </section>
 
-  <main id="tab-feed" class="tab-section active">
-    <article class="card" data-post-id="tips">
-      <div class="card-header">
-        <span>2friend Tips</span>
-        <span class="sub-tag">Text Feed</span>
-      </div>
-      <p style="margin:6px 0 10px; color:#ddd;">2friend पर केवल टेक्स्ट कमेंट और मैसेज चलते हैं, और मीडिया डाउनलोड/कॉपी-पेस्ट लॉक सक्रिय है।</p>
-      <div class="actions">
-        <button class="action-btn like-btn" onclick="toggleLike('tips', this)">Like (0)</button>
-        <button class="action-btn comment-toggle" onclick="toggleCommentBox('tips')">Comment (0)</button>
-        <button class="action-btn" onclick="sharePost('tips')">Share</button>
-      </div>
-      <div id="comments-tips" class="comment-box">
-        <div class="comment-list"></div>
-        <div class="comment-row">
-          <input type="text" placeholder="केवल टेक्स्ट कमेंट लिखें..." onkeydown="if(event.key==='Enter') addComment('tips', this)" />
-          <button onclick="addComment('tips', this.previousElementSibling)">भेजें</button>
-        </div>
-      </div>
-    </article>
-
-    <article class="card" data-post-id="official">
-      <div class="card-header">
-        <span>2friend Official</span>
-        <span class="sub-tag">Bunny CDN · 480p HLS</span>
-      </div>
-      <div class="media-box">Short Video / Story Preview (HLS 480p / H.264 / AAC 128kbps)</div>
-      <div class="actions">
-        <button class="action-btn like-btn" onclick="toggleLike('official', this)">Like (0)</button>
-        <button class="action-btn comment-toggle" onclick="toggleCommentBox('official')">Comment (0)</button>
-        <button class="action-btn" onclick="sharePost('official')">Share</button>
-      </div>
-      <div id="comments-official" class="comment-box">
-        <div class="comment-list"></div>
-        <div class="comment-row">
-          <input type="text" placeholder="केवल टेक्स्ट कमेंट लिखें..." onkeydown="if(event.key==='Enter') addComment('official', this)" />
-          <button onclick="addComment('official', this.previousElementSibling)">भेजें</button>
-        </div>
-      </div>
-    </article>
-  </main>
-
-  <section id="tab-stories" class="tab-section">
+  <!-- STORIES VIEW -->
+  <section id="storiesView" class="view">
     <div class="card">
-      <div class="card-header"><span>नई स्टोरी जोड़ें</span></div>
-      <input id="storyInput" type="text" placeholder="स्टोरी का टेक्स्ट लिखें..." />
-      <input id="storyVideoInput" type="url" placeholder="Bunny CDN HLS (.m3u8) या 480p MP4 URL" />
-      <button class="secondary-btn" onclick="prepareBunnyUrl('story')">Direct Bunny HLS URL तैयार करें</button>
-      <button class="primary-btn" onclick="addStory()">स्टोरी डालें</button>
-      <div class="hint">480p · H.264 · AAC 96–128 kbps · HLS · Bunny CDN Cache</div>
-    </div>
-    <div class="card">
-      <div class="card-header"><span>सभी स्टोरीज़</span></div>
-      <div id="storiesList" class="comment-list"></div>
+      <strong>स्टोरीज</strong>
+      <p style="color:#aaa; font-size:14px;">किसी भी स्टोरी पर टैप करके देखें:</p>
+      <div class="row">
+        <button class="btn" onclick="openStory('2friend Demo', '2friend Demo स्टोरी')">2friend Demo</button>
+        <button class="btn" onclick="openStory('दोस्त 1', 'दोस्त 1 स्टोरी')">दोस्त 1</button>
+      </div>
     </div>
   </section>
 
-  <section id="tab-create" class="tab-section">
+  <!-- CREATE VIEW -->
+  <section id="createView" class="view">
     <div class="card">
-      <div class="card-header"><span>नई शॉर्ट वीडियो / पोस्ट बनाएं</span></div>
-      <textarea id="postInput" rows="3" placeholder="टेक्स्ट पोस्ट लिखें..."></textarea>
-      <input id="videoUrlInput" type="url" placeholder="Bunny CDN HLS (.m3u8) या 480p MP4 URL" />
-      <button class="secondary-btn" onclick="prepareBunnyUrl('short')">Direct Bunny HLS URL तैयार करें</button>
-      <button class="primary-btn" onclick="addPost()">पोस्ट करें</button>
-      <div class="hint">डाउनलोड और कॉपी-पेस्ट लॉक सक्रिय हैं।</div>
+      <strong>नई पोस्ट बनाएं</strong>
+      <div style="margin-top:10px;">
+        <input type="text" id="postTitle" placeholder="नाम (जैसे: 2friend Official)" />
+      </div>
+      <div style="margin-top:10px;">
+        <input type="text" id="postVideoUrl" placeholder="Bunny CDN / Volume Network वीडियो लिंक (वैकल्पिक)" />
+      </div>
+      <div style="margin-top:10px;">
+        <textarea id="postCaption" rows="3" placeholder="टेक्स्ट लिखें..."></textarea>
+      </div>
+      <div style="margin-top:12px;">
+        <button class="btn" onclick="createPost()">पोस्ट करें</button>
+      </div>
     </div>
   </section>
 
-  <section id="tab-profile" class="tab-section">
+  <!-- PROFILE VIEW -->
+  <section id="profileView" class="view">
     <div class="card">
-      <div class="card-header"><span>मेरी प्रोफ़ाइल</span></div>
-      <div class="comment-item" style="margin-bottom:8px;">लोकल मोड सक्रिय — डेटा इसी डिवाइस में सेव है (VPS बाद में जुड़ेगा)</div>
-      <p id="profileHandle" style="margin:6px 0;">@2friend_user</p>
-      <p id="profileBio" style="color:#bbb; font-size:13px; margin:6px 0;">बायो अभी सेट नहीं है।</p>
-      <p id="postCount" style="color:#bbb; font-size:14px; margin:6px 0;">पोस्ट: 2 · स्टोरीज़: 0</p>
-      <input id="usernameInput" type="text" placeholder="नया यूज़रनेम (जैसे @rahul)" />
-      <input id="bioInput" type="text" placeholder="अपना बायो लिखें..." />
-      <button class="primary-btn" onclick="saveProfile()">प्रोफ़ाइल सेव करें</button>
+      <strong>@2friend_user</strong>
+      <p style="color:#aaa; font-size:14px;">2friend पर केवल टेक्स्ट कमेंट और मैसेज चलते हैं, और मीडिया डाउनलोड/कॉपी-पेस्ट लॉक सक्रिय है।</p>
+    </div>
+    <div class="card">
+      <strong>टेक्स्ट मैसेज</strong>
+      <ul class="comment-list" id="chatList">
+        <li>2friend: स्वागत है! केवल टेक्स्ट मैसेज सक्रिय है।</li>
+      </ul>
+      <div class="row">
+        <input type="text" id="chatInput" placeholder="टेक्स्ट मैसेज लिखें..." />
+        <button class="btn" onclick="sendChat()">भेजें</button>
+      </div>
     </div>
   </section>
+
+  <!-- STORY MODAL -->
+  <div class="story-modal" id="storyModal">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <strong id="storyUser">स्टोरी</strong>
+      <button class="btn" onclick="closeStory()">बंद करें</button>
+    </div>
+    <div style="text-align:center; padding:20px; background:#1c1c1c; border-radius:12px;">
+      <p id="storyText" style="font-size:16px;"></p>
+      <small style="color:#2ecc71;">480p · HLS · 128k • डाउनलोड/कॉपी-पेस्ट लॉक सक्रिय</small>
+    </div>
+    <div style="text-align:center; color:#888; font-size:12px;">2friend</div>
+  </div>
 
   <nav>
-    <button class="active" onclick="switchTab('feed', this)">Feed</button>
-    <button onclick="switchTab('stories', this)">Stories</button>
-    <button onclick="switchTab('create', this)">Create</button>
-    <button onclick="switchTab('profile', this)">Profile</button>
+    <button class="active" onclick="switchTab(this, 'feedView')">Feed</button>
+    <button onclick="switchTab(this, 'storiesView')">Stories</button>
+    <button onclick="switchTab(this, 'createView')">Create</button>
+    <button onclick="switchTab(this, 'profileView')">Profile</button>
   </nav>
 
   <script>
-    const KEYS = {
-      posts: '2friend_posts_clean_v2',
-      likes: '2friend_likes_clean_v2',
-      comments: '2friend_comments_clean_v2',
-      stories: '2friend_stories_clean_v2',
-      profile: '2friend_profile_clean_v2'
-    };
-    const read = (k, fb) => { try { return JSON.parse(localStorage.getItem(k)) ?? fb; } catch { return fb; } };
-    const write = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+    document.addEventListener('copy', e => e.preventDefault());
+    document.addEventListener('cut', e => e.preventDefault());
+    document.addEventListener('paste', e => e.preventDefault());
 
-    function prepareBunnyUrl(kind) {
-      const url = `https://cdn.2friend.example.com/${kind}_${Date.now()}/playlist.m3u8`;
-      if (kind === 'story') document.getElementById('storyVideoInput').value = url;
-      else document.getElementById('videoUrlInput').value = url;
+    const posts = [
+      {
+        id: 'tips',
+        author: '2friend Tips',
+        tag: 'Text Feed',
+        caption: '2friend पर केवल टेक्स्ट कमेंट और मैसेज चलते हैं, और मीडिया डाउनलोड/कॉपी-पेस्ट लॉक सक्रिय है।',
+        videoUrl: '',
+        likes: 0,
+        liked: false,
+        comments: []
+      },
+      {
+        id: 'official',
+        author: '2friend Official',
+        tag: 'Bunny CDN · 480p HLS',
+        caption: '',
+        videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+        likes: 0,
+        liked: false,
+        comments: []
+      }
+    ];
+
+    function renderFeed() {
+      const list = document.getElementById('feedList');
+      list.innerHTML = '';
+      posts.forEach((post, index) => {
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="card-head">
+            <strong>${post.author}</strong>
+            <span class="tag">${post.tag}</span>
+          </div>
+          ${post.caption ? `<p style="margin:10px 0 4px; font-size:14px; color:#ddd; line-height:1.45;">${post.caption}</p>` : ''}
+          ${post.videoUrl ? `
+            <div class="preview">
+              <video src="${post.videoUrl}" controls playsinline preload="metadata" controlsList="nodownload noplaybackrate" disablePictureInPicture></video>
+            </div>
+          ` : ''}
+          <div class="actions">
+            <button class="${post.liked ? 'liked' : ''}" onclick="toggleLike(${index})">Like (${post.likes})</button>
+            <button onclick="toggleComments(${index})">Comment (${post.comments.length})</button>
+            <button onclick="sharePost()">Share</button>
+          </div>
+          <div class="comments" id="comments-${index}">
+            <ul class="comment-list">
+              ${post.comments.map(c => `<li>${c}</li>`).join('')}
+            </ul>
+            <div class="row">
+              <input type="text" id="input-${index}" placeholder="टेक्स्ट कमेंट लिखें..." />
+              <button class="btn" onclick="addComment(${index})">भेजें</button>
+            </div>
+          </div>
+        `;
+        list.appendChild(card);
+      });
     }
 
-    function attachMedia(container, url) {
-      container.innerHTML = '';
-      if (!url) {
-        container.textContent = 'Short Video / Story Preview (HLS 480p / H.264 / AAC 128kbps)';
-        return;
-      }
-      const video = document.createElement('video');
-      video.controls = true;
-      video.playsInline = true;
-      video.preload = 'metadata';
-      video.controlsList = 'nodownload noremoteplayback';
-      video.disablePictureInPicture = true;
-      video.oncontextmenu = () => false;
-      if (url.includes('.m3u8') && window.Hls && Hls.isSupported()) {
-        const hls = new Hls({ capLevelToPlayerSize: true, maxMaxBufferLength: 15 });
-        hls.loadSource(url);
-        hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED, (_, data) => {
-          const idx = data.levels.findIndex(l => l.height <= 480);
-          if (idx !== -1) hls.currentLevel = idx;
-        });
-      } else {
-        video.src = url;
-      }
-      container.appendChild(video);
+    function toggleLike(i) {
+      posts[i].liked = !posts[i].liked;
+      posts[i].likes += posts[i].liked ? 1 : -1;
+      renderFeed();
     }
 
-    function openStory(author, text, videoUrl = '') {
-      document.getElementById('storyViewerTitle').textContent = `${author} · 480p HLS`;
-      document.getElementById('storyViewerText').textContent = text || 'स्टोरी';
-      attachMedia(document.getElementById('storyViewerMedia'), videoUrl);
-      document.getElementById('storyViewer').classList.add('open');
+    function toggleComments(i) {
+      const el = document.getElementById(`comments-${i}`);
+      el.style.display = el.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function addComment(i) {
+      const input = document.getElementById(`input-${i}`);
+      const val = input.value.trim();
+      if (!val) return;
+      posts[i].comments.push(val);
+      renderFeed();
+      document.getElementById(`comments-${i}`).style.display = 'block';
+    }
+
+    function createPost() {
+      const author = document.getElementById('postTitle').value.trim() || '@2friend_user';
+      const videoUrl = document.getElementById('postVideoUrl').value.trim();
+      const caption = document.getElementById('postCaption').value.trim() || '2friend पोस्ट';
+      posts.unshift({
+        id: Date.now(),
+        author,
+        tag: videoUrl ? 'Bunny CDN · 480p HLS' : 'Text Feed',
+        caption,
+        videoUrl,
+        likes: 0,
+        liked: false,
+        comments: []
+      });
+      document.getElementById('postTitle').value = '';
+      document.getElementById('postVideoUrl').value = '';
+      document.getElementById('postCaption').value = '';
+      renderFeed();
+      switchTab(document.querySelector('nav button'), 'feedView');
+    }
+
+    function openStory(user, text) {
+      document.getElementById('storyUser').textContent = user;
+      document.getElementById('storyText').textContent = text;
+      document.getElementById('storyModal').classList.add('open');
     }
 
     function closeStory() {
-      document.getElementById('storyViewerMedia').innerHTML = '';
-      document.getElementById('storyViewer').classList.remove('open');
+      document.getElementById('storyModal').classList.remove('open');
     }
 
-    function getProfile() {
-      return read(KEYS.profile, { username: '@2friend_user', bio: 'बायो अभी सेट नहीं है।' });
-    }
-
-    function renderProfile() {
-      const p = getProfile();
-      document.getElementById('headerUser').textContent = p.username;
-      document.getElementById('profileHandle').textContent = p.username;
-      document.getElementById('profileBio').textContent = p.bio;
-    }
-
-    function saveProfile() {
-      const u = document.getElementById('usernameInput').value.trim();
-      const b = document.getElementById('bioInput').value.trim();
-      const cur = getProfile();
-      let clean = u || cur.username;
-      if (!clean.startsWith('@')) clean = '@' + clean;
-      write(KEYS.profile, { username: clean, bio: b || cur.bio });
-      document.getElementById('usernameInput').value = '';
-      document.getElementById('bioInput').value = '';
-      renderProfile();
-      renderPosts();
-      renderStories();
-    }
-
-    function updateLikeUI(btn, data) {
-      btn.textContent = `Like (${data.count || 0})`;
-      btn.classList.toggle('liked', Boolean(data.liked));
-    }
-
-    function toggleLike(postId, btn) {
-      const likes = read(KEYS.likes, {});
-      const cur = likes[postId] || { count: 0, liked: false };
-      cur.liked = !cur.liked;
-      cur.count = cur.liked ? cur.count + 1 : Math.max(0, cur.count - 1);
-      likes[postId] = cur;
-      write(KEYS.likes, likes);
-      updateLikeUI(btn, cur);
-    }
-
-    function sharePost(postId) {
-      const link = `${location.origin}${location.pathname}#post=${encodeURIComponent(postId)}`;
-      if (navigator.share) navigator.share({ title: '2friend', url: link }).catch(() => {});
-    }
-
-    function toggleCommentBox(postId) {
-      document.getElementById('comments-' + postId)?.classList.toggle('open');
-    }
-
-    function renderComments(postId) {
-      const all = read(KEYS.comments, {});
-      const list = all[postId] || [];
-      const card = document.querySelector(`[data-post-id="${postId}"]`);
-      if (!card) return;
-      card.querySelector('.comment-toggle').textContent = `Comment (${list.length})`;
-      const box = card.querySelector('.comment-list');
-      box.innerHTML = '';
-      list.forEach(c => {
-        const div = document.createElement('div');
-        div.className = 'comment-item';
-        div.textContent = c;
-        box.appendChild(div);
-      });
-    }
-
-    function addComment(postId, input) {
-      const text = input.value.trim();
-      if (!text) return;
-      const all = read(KEYS.comments, {});
-      all[postId] = all[postId] || [];
-      all[postId].push(text);
-      write(KEYS.comments, all);
+    function sendChat() {
+      const input = document.getElementById('chatInput');
+      const msg = input.value.trim();
+      if (!msg) return;
+      const li = document.createElement('li');
+      li.textContent = 'आप: ' + msg;
+      document.getElementById('chatList').appendChild(li);
       input.value = '';
-      renderComments(postId);
     }
 
-    function renderStories() {
-      const stories = read(KEYS.stories, []);
-      const posts = read(KEYS.posts, []);
-      const profile = getProfile();
-      const strip = document.getElementById('storyStrip');
-      const listEl = document.getElementById('storiesList');
-      const latest = stories.at(-1);
-
-      const items = [
-        { author: 'आपकी स्टोरी', text: latest?.text || 'स्टोरी जोड़ें', videoUrl: latest?.videoUrl || '' },
-        { author: '2friend Demo', text: '480p HLS स्टोरी प्रीव्यू डेमो', videoUrl: '' },
-        { author: 'दोस्त 1', text: 'दोस्त 1 की स्टोरी', videoUrl: '' },
-        { author: 'दोस्त 2', text: 'दोस्त 2 की स्टोरी', videoUrl: '' }
-      ];
-
-      strip.innerHTML = '';
-      items.forEach((s, i) => {
-        const div = document.createElement('div');
-        div.className = 'story';
-        div.innerHTML = `<div class="avatar">${i === 0 && stories.length ? 'Live' : ''}</div>`;
-        const span = document.createElement('span');
-        span.textContent = s.author;
-        div.appendChild(span);
-        div.onclick = () => openStory(s.author, s.text, s.videoUrl);
-        strip.appendChild(div);
-      });
-
-      listEl.innerHTML = '';
-      if (!stories.length) {
-        listEl.innerHTML = '<div class="comment-item">कोई स्टोरी नहीं है।</div>';
-      } else {
-        stories.slice().reverse().forEach(s => {
-          const row = document.createElement('div');
-          row.className = 'comment-item';
-          row.style.cursor = 'pointer';
-          row.textContent = `${profile.username}: ${s.text} ${s.videoUrl ? '[HLS 480p]' : ''}`;
-          row.onclick = () => openStory(profile.username, s.text, s.videoUrl);
-          listEl.appendChild(row);
-        });
-      }
-
-      document.getElementById('postCount').textContent = `पोस्ट: ${2 + posts.length} · स्टोरीज़: ${stories.length}`;
+    function sharePost() {
+      alert('पोस्ट लिंक शेयर करने के लिए तैयार है।');
     }
 
-    function addStory() {
-      const input = document.getElementById('storyInput');
-      const videoInput = document.getElementById('storyVideoInput');
-      const text = input.value.trim();
-      const videoUrl = videoInput.value.trim();
-      if (!text && !videoUrl) return;
-      const stories = read(KEYS.stories, []);
-      stories.push({ id: 'story_' + Date.now(), text: text || 'वीडियो स्टोरी', videoUrl });
-      write(KEYS.stories, stories);
-      input.value = '';
-      videoInput.value = '';
-      renderStories();
-      switchTab('feed', document.querySelector('nav button'));
-    }
-
-    function deletePost(postId) {
-      write(KEYS.posts, read(KEYS.posts, []).filter(p => p.id !== postId));
-      renderPosts();
-      renderStories();
-    }
-
-    function renderPosts() {
-      const feed = document.getElementById('tab-feed');
-      feed.querySelectorAll('.user-post').forEach(e => e.remove());
-
-      const profile = getProfile();
-      const likes = read(KEYS.likes, {});
-      ['tips', 'official'].forEach(id => {
-        const btn = feed.querySelector(`[data-post-id="${id}"] .like-btn`);
-        if (btn) updateLikeUI(btn, likes[id] || {});
-        renderComments(id);
-      });
-
-      const posts = read(KEYS.posts, []);
-      posts.forEach(post => {
-        const card = document.createElement('article');
-        card.className = 'card user-post';
-        card.dataset.postId = post.id;
-
-        const header = document.createElement('div');
-        header.className = 'card-header';
-        const author = document.createElement('span');
-        author.textContent = profile.username;
-        const right = document.createElement('div');
-        right.style.display = 'flex';
-        right.style.gap = '6px';
-        right.style.alignItems = 'center';
-
-        if (post.videoUrl) {
-          const tag = document.createElement('span');
-          tag.className = 'sub-tag';
-          tag.textContent = '480p HLS';
-          right.appendChild(tag);
-        }
-
-        const del = document.createElement('button');
-        del.className = 'delete-btn';
-        del.textContent = 'डिलीट';
-        del.onclick = () => deletePost(post.id);
-        right.appendChild(del);
-        header.append(author, right);
-        card.appendChild(header);
-
-        if (post.videoUrl) {
-          const media = document.createElement('div');
-          media.className = 'media-box';
-          attachMedia(media, post.videoUrl);
-          card.appendChild(media);
-        }
-
-        if (post.text) {
-          const p = document.createElement('p');
-          p.style.margin = '6px 0 10px';
-          p.textContent = post.text;
-          card.appendChild(p);
-        }
-
-        const actions = document.createElement('div');
-        actions.className = 'actions';
-        actions.innerHTML = `
-          <button class="action-btn like-btn" onclick="toggleLike('${post.id}', this)">Like (0)</button>
-          <button class="action-btn comment-toggle" onclick="toggleCommentBox('${post.id}')">Comment (0)</button>
-          <button class="action-btn" onclick="sharePost('${post.id}')">Share</button>
-        `;
-        card.appendChild(actions);
-
-        const cBox = document.createElement('div');
-        cBox.id = 'comments-' + post.id;
-        cBox.className = 'comment-box';
-        cBox.innerHTML = `
-          <div class="comment-list"></div>
-          <div class="comment-row">
-            <input type="text" placeholder="केवल टेक्स्ट कमेंट लिखें..." onkeydown="if(event.key==='Enter') addComment('${post.id}', this)" />
-            <button onclick="addComment('${post.id}', this.previousElementSibling)">भेजें</button>
-          </div>
-        `;
-        card.appendChild(cBox);
-
-        feed.prepend(card);
-        updateLikeUI(card.querySelector('.like-btn'), likes[post.id] || {});
-        renderComments(post.id);
-      });
-
-      const stories = read(KEYS.stories, []);
-      document.getElementById('postCount').textContent = `पोस्ट: ${2 + posts.length} · स्टोरीज़: ${stories.length}`;
-    }
-
-    function switchTab(tabName, btn) {
-      document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+    function switchTab(btn, viewId) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById(viewId).classList.add('active');
       document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-      document.getElementById('tab-' + tabName)?.classList.add('active');
-      btn?.classList.add('active');
+      btn.classList.add('active');
     }
 
-    function addPost() {
-      const text = document.getElementById('postInput').value.trim();
-      const videoUrl = document.getElementById('videoUrlInput').value.trim();
-      if (!text && !videoUrl) return;
-      const posts = read(KEYS.posts, []);
-      posts.push({ id: 'post_' + Date.now(), text, videoUrl });
-      write(KEYS.posts, posts);
-      document.getElementById('postInput').value = '';
-      document.getElementById('videoUrlInput').value = '';
-      renderPosts();
-      switchTab('feed', document.querySelector('nav button'));
-    }
-
-    renderProfile();
-    renderStories();
-    renderPosts();
+    renderFeed();
   </script>
 </body>
 </html>
