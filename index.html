@@ -6,22 +6,14 @@
   <title>2friend</title>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
   <style>
-    * {
-      box-sizing: border-box;
-      -webkit-user-select: none;
-      user-select: none;
-      -webkit-touch-callout: none;
-    }
-    input, textarea {
-      -webkit-user-select: text;
-      user-select: text;
-    }
+    * { box-sizing: border-box; -webkit-user-select: none; user-select: none; }
+    input, textarea { -webkit-user-select: text; user-select: text; }
     body {
       margin: 0;
       font-family: system-ui, -apple-system, sans-serif;
       background: #121212;
       color: #ffffff;
-      padding-bottom: 78px;
+      padding-bottom: 76px;
     }
     header {
       position: sticky;
@@ -70,23 +62,15 @@
       font-size: 11px;
       color: #fff;
     }
-    .story-viewer {
+    .story-box {
+      display: none;
       margin: 12px 16px 0;
       background: #1c1c1c;
       border: 1px solid #2f4b32;
       border-radius: 12px;
       padding: 12px;
-      display: none;
     }
-    .story-viewer.open { display: block; }
-    .story-viewer-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
+    .story-box.open { display: block; }
     .tab-section {
       display: none;
       padding: 14px 16px;
@@ -116,7 +100,7 @@
       border-radius: 999px;
     }
     .media-box {
-      min-height: 220px;
+      min-height: 210px;
       background: #222;
       border-radius: 8px;
       display: flex;
@@ -127,11 +111,10 @@
       color: #aaa;
       margin: 8px 0 10px;
       overflow: hidden;
-      position: relative;
     }
     video {
       width: 100%;
-      max-height: 360px;
+      max-height: 340px;
       display: block;
       background: #000;
     }
@@ -264,20 +247,385 @@
 
   <section id="storyStrip" class="stories"></section>
 
-  <section id="storyViewer" class="story-viewer">
-    <div class="story-viewer-top">
-      <span id="storyViewerAuthor">स्टोरी प्रीव्यू</span>
-      <button class="delete-btn" onclick="closeStoryViewer()">बंद करें</button>
+  <section id="storyViewer" class="story-box">
+    <div class="card-header">
+      <span id="storyViewerTitle">स्टोरी</span>
+      <button class="delete-btn" onclick="closeStory()">बंद करें</button>
     </div>
-    <div id="storyViewerMedia" class="media-box" style="min-height:140px;"></div>
+    <div id="storyViewerMedia" class="media-box" style="min-height:120px;"></div>
     <div id="storyViewerText" class="comment-item"></div>
   </section>
 
-  <!-- Feed Tab -->
   <main id="tab-feed" class="tab-section active">
     <article class="card" data-post-id="official">
       <div class="card-header">
         <span>2friend Official</span>
         <span class="sub-tag">Bunny CDN · 480p HLS</span>
       </div>
-      <div class="media-box">Short Video
+      <div class="media-box">Short Video / Story Preview (HLS 480p / H.264 / AAC 128kbps)</div>
+      <div class="actions">
+        <button class="action-btn like-btn" onclick="toggleLike('official', this)">Like (0)</button>
+        <button class="action-btn comment-toggle" onclick="toggleCommentBox('official')">Comment (0)</button>
+        <button class="action-btn" onclick="sharePost('official')">Share</button>
+      </div>
+      <div id="comments-official" class="comment-box">
+        <div class="comment-list"></div>
+        <div class="comment-row">
+          <input type="text" placeholder="केवल टेक्स्ट कमेंट लिखें..." onkeydown="if(event.key==='Enter') addComment('official', this)" />
+          <button onclick="addComment('official', this.previousElementSibling)">भेजें</button>
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <section id="tab-stories" class="tab-section">
+    <div class="card">
+      <div class="card-header"><span>नई स्टोरी जोड़ें</span></div>
+      <input id="storyInput" type="text" placeholder="स्टोरी का टेक्स्ट लिखें..." />
+      <input id="storyVideoInput" type="url" placeholder="Bunny CDN HLS (.m3u8) या 480p MP4 URL" />
+      <button class="secondary-btn" onclick="prepareBunnyUrl('story')">Direct Bunny HLS URL तैयार करें</button>
+      <button class="primary-btn" onclick="addStory()">स्टोरी डालें</button>
+      <div class="hint">480p · H.264 · AAC 96–128 kbps · HLS · Bunny CDN Cache</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span>सभी स्टोरीज़</span></div>
+      <div id="storiesList" class="comment-list"></div>
+    </div>
+  </section>
+
+  <section id="tab-create" class="tab-section">
+    <div class="card">
+      <div class="card-header"><span>नई शॉर्ट वीडियो / पोस्ट बनाएं</span></div>
+      <textarea id="postInput" rows="3" placeholder="टेक्स्ट पोस्ट लिखें..."></textarea>
+      <input id="videoUrlInput" type="url" placeholder="Bunny CDN HLS (.m3u8) या 480p MP4 URL" />
+      <button class="secondary-btn" onclick="prepareBunnyUrl('short')">Direct Bunny HLS URL तैयार करें</button>
+      <button class="primary-btn" onclick="addPost()">पोस्ट करें</button>
+      <div class="hint">डाउनलोड और कॉपी-पेस्ट लॉक सक्रिय हैं।</div>
+    </div>
+  </section>
+
+  <section id="tab-profile" class="tab-section">
+    <div class="card">
+      <div class="card-header"><span>मेरी प्रोफ़ाइल</span></div>
+      <p id="profileHandle" style="margin:6px 0;">@2friend_user</p>
+      <p id="profileBio" style="color:#bbb; font-size:13px; margin:6px 0;">बायो अभी सेट नहीं है।</p>
+      <p id="postCount" style="color:#bbb; font-size:14px; margin:6px 0;">पोस्ट: 1 · स्टोरीज़: 0</p>
+      <input id="usernameInput" type="text" placeholder="नया यूज़रनेम (जैसे @rahul)" />
+      <input id="bioInput" type="text" placeholder="अपना बायो लिखें..." />
+      <button class="primary-btn" onclick="saveProfile()">प्रोफ़ाइल सेव करें</button>
+    </div>
+  </section>
+
+  <nav>
+    <button class="active" onclick="switchTab('feed', this)">Feed</button>
+    <button onclick="switchTab('stories', this)">Stories</button>
+    <button onclick="switchTab('create', this)">Create</button>
+    <button onclick="switchTab('profile', this)">Profile</button>
+  </nav>
+
+  <script>
+    const KEYS = {
+      posts: '2friend_posts_clean_v1',
+      likes: '2friend_likes_clean_v1',
+      comments: '2friend_comments_clean_v1',
+      stories: '2friend_stories_clean_v1',
+      profile: '2friend_profile_clean_v1'
+    };
+    const read = (k, fb) => { try { return JSON.parse(localStorage.getItem(k)) ?? fb; } catch { return fb; } };
+    const write = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+
+    function prepareBunnyUrl(kind) {
+      const url = `https://cdn.2friend.example.com/${kind}_${Date.now()}/playlist.m3u8`;
+      if (kind === 'story') document.getElementById('storyVideoInput').value = url;
+      else document.getElementById('videoUrlInput').value = url;
+    }
+
+    function attachMedia(container, url) {
+      container.innerHTML = '';
+      if (!url) {
+        container.textContent = 'Short Video / Story Preview (HLS 480p / H.264 / AAC 128kbps)';
+        return;
+      }
+      const video = document.createElement('video');
+      video.controls = true;
+      video.playsInline = true;
+      video.preload = 'metadata';
+      video.controlsList = 'nodownload noremoteplayback';
+      video.disablePictureInPicture = true;
+      video.oncontextmenu = () => false;
+      if (url.includes('.m3u8') && window.Hls && Hls.isSupported()) {
+        const hls = new Hls({ capLevelToPlayerSize: true, maxMaxBufferLength: 15 });
+        hls.loadSource(url);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, (_, data) => {
+          const idx = data.levels.findIndex(l => l.height <= 480);
+          if (idx !== -1) hls.currentLevel = idx;
+        });
+      } else {
+        video.src = url;
+      }
+      container.appendChild(video);
+    }
+
+    function openStory(author, text, videoUrl = '') {
+      document.getElementById('storyViewerTitle').textContent = `${author} · 480p HLS`;
+      document.getElementById('storyViewerText').textContent = text || 'स्टोरी';
+      attachMedia(document.getElementById('storyViewerMedia'), videoUrl);
+      document.getElementById('storyViewer').classList.add('open');
+    }
+
+    function closeStory() {
+      document.getElementById('storyViewerMedia').innerHTML = '';
+      document.getElementById('storyViewer').classList.remove('open');
+    }
+
+    function getProfile() {
+      return read(KEYS.profile, { username: '@2friend_user', bio: 'बायो अभी सेट नहीं है।' });
+    }
+
+    function renderProfile() {
+      const p = getProfile();
+      document.getElementById('headerUser').textContent = p.username;
+      document.getElementById('profileHandle').textContent = p.username;
+      document.getElementById('profileBio').textContent = p.bio;
+    }
+
+    function saveProfile() {
+      const u = document.getElementById('usernameInput').value.trim();
+      const b = document.getElementById('bioInput').value.trim();
+      const cur = getProfile();
+      let clean = u || cur.username;
+      if (!clean.startsWith('@')) clean = '@' + clean;
+      write(KEYS.profile, { username: clean, bio: b || cur.bio });
+      document.getElementById('usernameInput').value = '';
+      document.getElementById('bioInput').value = '';
+      renderProfile();
+      renderPosts();
+      renderStories();
+    }
+
+    function updateLikeUI(btn, data) {
+      btn.textContent = `Like (${data.count || 0})`;
+      btn.classList.toggle('liked', Boolean(data.liked));
+    }
+
+    function toggleLike(postId, btn) {
+      const likes = read(KEYS.likes, {});
+      const cur = likes[postId] || { count: 0, liked: false };
+      cur.liked = !cur.liked;
+      cur.count = cur.liked ? cur.count + 1 : Math.max(0, cur.count - 1);
+      likes[postId] = cur;
+      write(KEYS.likes, likes);
+      updateLikeUI(btn, cur);
+    }
+
+    function sharePost(postId) {
+      const link = `${location.origin}${location.pathname}#post=${encodeURIComponent(postId)}`;
+      if (navigator.share) navigator.share({ title: '2friend', url: link }).catch(() => {});
+    }
+
+    function toggleCommentBox(postId) {
+      document.getElementById('comments-' + postId)?.classList.toggle('open');
+    }
+
+    function renderComments(postId) {
+      const all = read(KEYS.comments, {});
+      const list = all[postId] || [];
+      const card = document.querySelector(`[data-post-id="${postId}"]`);
+      if (!card) return;
+      card.querySelector('.comment-toggle').textContent = `Comment (${list.length})`;
+      const box = card.querySelector('.comment-list');
+      box.innerHTML = '';
+      list.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'comment-item';
+        div.textContent = c;
+        box.appendChild(div);
+      });
+    }
+
+    function addComment(postId, input) {
+      const text = input.value.trim();
+      if (!text) return;
+      const all = read(KEYS.comments, {});
+      all[postId] = all[postId] || [];
+      all[postId].push(text);
+      write(KEYS.comments, all);
+      input.value = '';
+      renderComments(postId);
+    }
+
+    function renderStories() {
+      const stories = read(KEYS.stories, []);
+      const posts = read(KEYS.posts, []);
+      const profile = getProfile();
+      const strip = document.getElementById('storyStrip');
+      const listEl = document.getElementById('storiesList');
+      const latest = stories.at(-1);
+
+      const items = [
+        { author: 'आपकी स्टोरी', text: latest?.text || 'स्टोरी जोड़ें', videoUrl: latest?.videoUrl || '' },
+        { author: 'दोस्त 1', text: 'दोस्त 1 की स्टोरी', videoUrl: '' },
+        { author: 'दोस्त 2', text: 'दोस्त 2 की स्टोरी', videoUrl: '' },
+        { author: 'दोस्त 3', text: 'दोस्त 3 की स्टोरी', videoUrl: '' }
+      ];
+
+      strip.innerHTML = '';
+      items.forEach((s, i) => {
+        const div = document.createElement('div');
+        div.className = 'story';
+        div.innerHTML = `<div class="avatar">${i === 0 && stories.length ? 'Live' : ''}</div>`;
+        const span = document.createElement('span');
+        span.textContent = s.author;
+        div.appendChild(span);
+        div.onclick = () => openStory(s.author, s.text, s.videoUrl);
+        strip.appendChild(div);
+      });
+
+      listEl.innerHTML = '';
+      if (!stories.length) {
+        listEl.innerHTML = '<div class="comment-item">कोई स्टोरी नहीं है।</div>';
+      } else {
+        stories.slice().reverse().forEach(s => {
+          const row = document.createElement('div');
+          row.className = 'comment-item';
+          row.style.cursor = 'pointer';
+          row.textContent = `${profile.username}: ${s.text} ${s.videoUrl ? '[HLS 480p]' : ''}`;
+          row.onclick = () => openStory(profile.username, s.text, s.videoUrl);
+          listEl.appendChild(row);
+        });
+      }
+
+      document.getElementById('postCount').textContent = `पोस्ट: ${1 + posts.length} · स्टोरीज़: ${stories.length}`;
+    }
+
+    function addStory() {
+      const input = document.getElementById('storyInput');
+      const videoInput = document.getElementById('storyVideoInput');
+      const text = input.value.trim();
+      const videoUrl = videoInput.value.trim();
+      if (!text && !videoUrl) return;
+      const stories = read(KEYS.stories, []);
+      stories.push({ id: 'story_' + Date.now(), text: text || 'वीडियो स्टोरी', videoUrl });
+      write(KEYS.stories, stories);
+      input.value = '';
+      videoInput.value = '';
+      renderStories();
+      switchTab('feed', document.querySelector('nav button'));
+    }
+
+    function deletePost(postId) {
+      write(KEYS.posts, read(KEYS.posts, []).filter(p => p.id !== postId));
+      renderPosts();
+      renderStories();
+    }
+
+    function renderPosts() {
+      const feed = document.getElementById('tab-feed');
+      feed.querySelectorAll('.user-post').forEach(e => e.remove());
+
+      const profile = getProfile();
+      const likes = read(KEYS.likes, {});
+      updateLikeUI(feed.querySelector('[data-post-id="official"] .like-btn'), likes['official'] || {});
+      renderComments('official');
+
+      const posts = read(KEYS.posts, []);
+      posts.forEach(post => {
+        const card = document.createElement('article');
+        card.className = 'card user-post';
+        card.dataset.postId = post.id;
+
+        const header = document.createElement('div');
+        header.className = 'card-header';
+        const author = document.createElement('span');
+        author.textContent = profile.username;
+        const right = document.createElement('div');
+        right.style.display = 'flex';
+        right.style.gap = '6px';
+        right.style.alignItems = 'center';
+
+        if (post.videoUrl) {
+          const tag = document.createElement('span');
+          tag.className = 'sub-tag';
+          tag.textContent = '480p HLS';
+          right.appendChild(tag);
+        }
+
+        const del = document.createElement('button');
+        del.className = 'delete-btn';
+        del.textContent = 'डिलीट';
+        del.onclick = () => deletePost(post.id);
+        right.appendChild(del);
+        header.append(author, right);
+        card.appendChild(header);
+
+        if (post.videoUrl) {
+          const media = document.createElement('div');
+          media.className = 'media-box';
+          attachMedia(media, post.videoUrl);
+          card.appendChild(media);
+        }
+
+        if (post.text) {
+          const p = document.createElement('p');
+          p.style.margin = '6px 0 10px';
+          p.textContent = post.text;
+          card.appendChild(p);
+        }
+
+        const actions = document.createElement('div');
+        actions.className = 'actions';
+        actions.innerHTML = `
+          <button class="action-btn like-btn" onclick="toggleLike('${post.id}', this)">Like (0)</button>
+          <button class="action-btn comment-toggle" onclick="toggleCommentBox('${post.id}')">Comment (0)</button>
+          <button class="action-btn" onclick="sharePost('${post.id}')">Share</button>
+        `;
+        card.appendChild(actions);
+
+        const cBox = document.createElement('div');
+        cBox.id = 'comments-' + post.id;
+        cBox.className = 'comment-box';
+        cBox.innerHTML = `
+          <div class="comment-list"></div>
+          <div class="comment-row">
+            <input type="text" placeholder="केवल टेक्स्ट कमेंट लिखें..." onkeydown="if(event.key==='Enter') addComment('${post.id}', this)" />
+            <button onclick="addComment('${post.id}', this.previousElementSibling)">भेजें</button>
+          </div>
+        `;
+        card.appendChild(cBox);
+
+        feed.prepend(card);
+        updateLikeUI(card.querySelector('.like-btn'), likes[post.id] || {});
+        renderComments(post.id);
+      });
+
+      const stories = read(KEYS.stories, []);
+      document.getElementById('postCount').textContent = `पोस्ट: ${1 + posts.length} · स्टोरीज़: ${stories.length}`;
+    }
+
+    function switchTab(tabName, btn) {
+      document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + tabName)?.classList.add('active');
+      btn?.classList.add('active');
+    }
+
+    function addPost() {
+      const text = document.getElementById('postInput').value.trim();
+      const videoUrl = document.getElementById('videoUrlInput').value.trim();
+      if (!text && !videoUrl) return;
+      const posts = read(KEYS.posts, []);
+      posts.push({ id: 'post_' + Date.now(), text, videoUrl });
+      write(KEYS.posts, posts);
+      document.getElementById('postInput').value = '';
+      document.getElementById('videoUrlInput').value = '';
+      renderPosts();
+      switchTab('feed', document.querySelector('nav button'));
+    }
+
+    renderProfile();
+    renderStories();
+    renderPosts();
+  </script>
+</body>
+</html>
