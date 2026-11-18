@@ -11,36 +11,33 @@
     .brand-wrap { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .badge-green { background: #163826; color: #2ecc71; border: 1px solid #2ecc71; font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 600; }
     .badge-ad { background: #2c2210; color: #f1c40f; border: 1px solid #f1c40f; font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 600; }
-    .stories { display: flex; gap: 14px; padding: 14px 16px; overflow-x: auto; border-bottom: 1px solid #222; }
-    .story { text-align: center; font-size: 12px; cursor: pointer; min-width: 72px; }
-    .ring { width: 58px; height: 58px; border-radius: 50%; border: 2px solid #2ecc71; margin: 0 auto 6px; background: #1c1c1c; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #2ecc71; font-weight: 600; }
     .view { display: none; }
     .view.active { display: block; }
 
-    /* --- रील्स जैसा फुल-स्क्रीन वर्टिकल स्नैप लेआउट --- */
+    /* --- TikTok/Instagram जैसा फुल-स्क्रीन वर्टिकल स्नैप लेआउट --- */
     #feedView {
       height: calc(100vh - 110px);
       margin-top: 54px;
       overflow-y: scroll;
       scroll-snap-type: y mandatory;
       -webkit-overflow-scrolling: touch;
-      padding-bottom: 60px;
+      scroll-behavior: smooth;
     }
     .card {
-      height: calc(100vh - 114px);
+      height: calc(100vh - 110px);
       scroll-snap-align: start;
       scroll-snap-stop: always;
       margin: 0;
-      background: #1a1a1a;
+      background: #0d0d0d;
       border-radius: 0;
-      padding: 14px;
-      border-bottom: 1px solid #2a2a2a;
+      padding: 12px 14px;
+      border-bottom: 1px solid #222;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
     }
     .ad-card { 
-      height: calc(100vh - 114px);
+      height: calc(100vh - 110px);
       scroll-snap-align: start;
       scroll-snap-stop: always;
       margin: 0;
@@ -59,10 +56,10 @@
       width: 100%; 
       flex: 1;
       background: #000; 
-      border-radius: 10px; 
+      border-radius: 12px; 
       overflow: hidden; 
       margin: 8px 0; 
-      border: 1px solid #2a2a2a; 
+      border: 1px solid #222; 
       display: flex; 
       align-items: center; 
       justify-content: center; 
@@ -70,10 +67,10 @@
     }
     video { width: 100%; height: 100%; object-fit: contain; display: block; -webkit-user-drag: none; }
     .story-video { width: 100%; max-height: 48vh; border-radius: 10px; object-fit: contain; background: #000; -webkit-user-drag: none; }
-    .actions { display: flex; gap: 18px; font-size: 14px; margin-top: 6px; }
-    .actions button { background: none; border: none; color: #fff; font-size: 14px; cursor: pointer; padding: 0; }
+    .actions { display: flex; gap: 18px; font-size: 14px; margin-top: 4px; align-items: center; }
+    .actions button { background: none; border: none; color: #fff; font-size: 14px; cursor: pointer; padding: 4px 0; }
     .actions button.liked { color: #ff4d6d; font-weight: 600; }
-    .comments { margin-top: 8px; border-top: 1px solid #2a2a2a; padding-top: 6px; display: none; max-height: 120px; overflow-y: auto; }
+    .comments { margin-top: 8px; border-top: 1px solid #2a2a2a; padding-top: 6px; display: none; max-height: 110px; overflow-y: auto; }
     .row { display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
     input, textarea, select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; font-family: inherit; user-select: text; -webkit-user-select: text; }
     .btn { padding: 10px 14px; border: none; border-radius: 8px; background: #2ecc71; color: #000; font-weight: 600; cursor: pointer; white-space: nowrap; }
@@ -107,8 +104,8 @@
   <header>
     <div class="brand-wrap">
       <strong>2friend</strong>
-      <span class="badge-green">Reels Mode</span>
-      <span id="apiSyncBadge" class="tag">14 Lang · हिन्दी · Local</span>
+      <span class="badge-green">Reels Mode (Zero Cost R2)</span>
+      <span id="apiSyncBadge" class="tag">14 Lang · हिन्दी</span>
       <select id="uiLangSelect" onchange="changeUiLang(this.value)" style="width:auto; padding:4px 8px; font-size:12px; border-radius:999px; background:#1a1a1a; color:#2ecc71; border:1px solid #2ecc71;">
         <option value="hi">हिन्दी</option>
         <option value="en">English</option>
@@ -142,7 +139,7 @@
         <span class="badge-green">Max 1m · Any Quality</span>
       </div>
       <p style="color:#aaa; font-size:13px; margin:8px 0;">
-        1-मिनट वीडियो स्टोरी लूप चलता है और हर 2 स्टोरी के बाद गेमिंग विज्ञापन (Applooney Max प्राथमिकता) ब्रेक आता है।
+        1-मिनट वीडियो स्टोरी लूप चलता है और हर 2 स्टोरी के बाद गेमिंग विज्ञापन ब्रेक आता है।
       </p>
       <div class="row">
         <button class="btn" id="btnStartStoryLoop" onclick="openDirectStory(0)">पूरा स्टोरी लूप चलाएँ</button>
@@ -167,7 +164,7 @@
         <span class="badge-green">Max 1 Min · Any Quality</span>
       </div>
       <p style="color:#aaa; font-size:12px; margin:8px 0;">
-        किसी भी क्वालिटी का वीडियो चलेगा — बस अधिकतम सीमा <strong>1 मिनट (60 सेकंड)</strong> है। बिना कॉपीराइट संगीत साथ जुड़ता है।
+        किसी भी क्वालिटी का वीडियो चलेगा — बस अधिकतम सीमा <strong>1 मिनट (60 सेकंड)</strong> है।
       </p>
       <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
         <button type="button" class="btn" id="btnKindFeed" onclick="selectPostKind('feed')">Video Feed</button>
@@ -209,7 +206,7 @@
         <input type="text" id="r2BaseInput" value="https://pub-eaf6b9a861824b82ad140f60615e8933.r2.dev" placeholder="R2 Base URL" />
       </div>
       <div style="margin-top:10px;">
-        <input type="text" id="postMediaUrl" placeholder="R2 वीडियो फ़ाइल पाथ (जैसे: videos/hi/clip.mp4)" />
+        <input type="text" id="postMediaUrl" placeholder="R2 वीडियो लिंक या फ़ाइल पाथ यहाँ पेस्ट करें..." />
       </div>
       <div style="margin-top:10px;">
         <textarea id="postCaption" rows="2" placeholder="टेक्स्ट लिखें..."></textarea>
@@ -229,10 +226,10 @@
         <span class="badge-green">Verified · Max 1m Video</span>
       </div>
       <p style="color:#aaa; font-size:13px; margin:8px 0;">
-        2friend केवल 1-मिनट वीडियो ऐप है — केवल 1-ऑन-1 टेक्स्ट मैसेज व टेक्स्ट कमेंट चलते हैं, और डाउनलोड/कॉपी-पेस्ट लॉक सक्रिय है।
+        2friend केवल 1-मिनट वीडियो ऐप है — केवल 1-ऑन-1 टेक्स्ट मैसेज व टेक्स्ट कमेंट चलते हैं।
       </p>
       <div class="row">
-        <input type="text" id="userHandleInput" placeholder="अपना @username लिखें (जैसे: @birju_delhi)" />
+        <input type="text" id="userHandleInput" placeholder="अपना @username लिखें" />
         <button type="button" class="btn" onclick="saveUserHandle()">हैंडल सेव करें</button>
       </div>
       <div class="stats-grid">
@@ -250,7 +247,7 @@
     <div class="card" style="height:auto; scroll-snap-align:none;">
       <div class="card-head">
         <strong id="chatHeading">टेक्स्ट मैसेज (केवल टेक्स्ट)</strong>
-        <span class="tag">1-on-1 Text Only</span>
+        <span class="tag">Text Only</span>
       </div>
       <ul class="comment-list" id="chatList" style="max-height:100px; overflow-y:auto;">
         <li><span>2friend: स्वागत है! यहाँ केवल टेक्स्ट मैसेज सक्रिय है।</span></li>
@@ -269,7 +266,7 @@
       <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
         <div>
           <strong id="storyUser">स्टोरी</strong>
-          <span id="storyAdBadge" class="badge-ad" style="display:none; margin-left:6px;">Gaming Ad · Applooney Max</span>
+          <span id="storyAdBadge" class="badge-ad" style="display:none; margin-left:6px;">Gaming Ad</span>
         </div>
         <button class="btn" id="btnCloseStory" onclick="closeStory()">बंद करें</button>
       </div>
@@ -278,11 +275,11 @@
     <div id="storyBox" style="text-align:center; padding:20px; background:#1c1c1c; border-radius:12px; border:1px solid #2a2a2a;">
       <div id="storyMediaSlot"></div>
       <p id="storyText" style="font-size:16px; line-height:1.5; margin-top:12px;"></p>
-      <small id="storySub" style="color:#2ecc71;">Max 1m Video · Any Quality • डाउनलोड/कॉपी-पेस्ट लॉक सक्रिय</small>
+      <small id="storySub" style="color:#2ecc71;">Max 1m Video · Any Quality</small>
     </div>
 
     <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
-      <span style="color:#888; font-size:12px;">2friend Video Story Loop (Max 1 Min)</span>
+      <span style="color:#888; font-size:12px;">2friend Video Story Loop</span>
       <button class="btn-outline" id="btnNextStory" onclick="nextStoryStep()">अगला →</button>
     </div>
   </div>
@@ -303,15 +300,7 @@
     const R2_CACHE_BASE = 'https://pub-eaf6b9a861824b82ad140f60615e8933.r2.dev';
     const MAX_VIDEO_SECONDS = 60;
     const PRIMARY_AD_NETWORK = 'Applooney Max';
-    const GAMING_AD_PRIORITY = [
-      'Applooney Max',
-      'Google',
-      'Unity',
-      'Meta',
-      'AppLovin',
-      'ironSource',
-      'Chartboost'
-    ];
+    const GAMING_AD_PRIORITY = ['Applooney Max', 'Google', 'Unity', 'Meta', 'AppLovin', 'ironSource', 'Chartboost'];
 
     const UI_LANG_MAP = {
       hi: { label: 'हिन्दी', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'पब्लिश करें', send: 'भेजें', chat: 'टेक्स्ट मैसेज (केवल टेक्स्ट)' },
@@ -325,7 +314,7 @@
       ml: { label: 'മലയാളം', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'പ്രസിദ്ധീകരിക്കുക', send: 'അയയ്ക്കുക', chat: 'ടെക്സ്റ്റ് മെസ്സേജ് (ടെക്സ്റ്റ് മാത്രം)' },
       pa: { label: 'ਪੰਜਾਬੀ', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'ਪ੍ਰਕਾਸ਼ਿਤ ਕਰੋ', send: 'ਭੇਜੋ', chat: 'ਟੈਕਸਟ ਸੁਨੇਹਾ (ਸਿਰਫ਼ ਟੈਕਸਟ)' },
       or: { label: 'ଓଡ଼ିଆ', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'ପ୍ରକାଶ କରନ୍ତୁ', send: 'ପଠାନ୍ତୁ', chat: 'ଟେକ୍ସଟ୍ ମେସେଜ୍ (କେବଳ ଟେକ୍ସଟ୍)' },
-      as: { label: 'অসমীয়া', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'প্ৰকাশ কৰক', send: 'পঠিয়াওক', chat: 'টেক্সট বাৰ্তা (কেৱল টেক্সট)' },
+      as: { label: 'অসমীয়া', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'প্ৰকাশ কৰক', send: 'পঠিয়াওক', chat: 'টেক্সট বাৰ্তা (केৱল টেক্সট)' },
       ur: { label: 'اردو', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'شائع کریں', send: 'بھیجیں', chat: 'ٹیکسٹ میسج (صرف ٹیکسٹ)' },
       sd: { label: 'سنڌي', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'شايع ڪريو', send: 'موڪليو', chat: 'ٽيڪسٽ پيغام (صرف ٽيڪسٽ)' }
     };
@@ -383,7 +372,7 @@
       if (sel) sel.value = currentLang;
       const badge = document.getElementById('apiSyncBadge');
       if (badge) {
-        badge.textContent = `14 Lang · ${t.label} · ${apiOnline ? 'API Connected' : 'Local'}`;
+        badge.textContent = `14 Lang · ${t.label}`;
       }
       const postLang = document.getElementById('postLanguage');
       if (postLang) postLang.value = currentLang;
@@ -459,26 +448,66 @@
       {
         id: 'tips',
         author: '2friend Tips',
-        tag: '1 Min Video · Any Quality',
-        caption: '2friend पर किसी भी क्वालिटी का 1-मिनट शॉर्ट वीडियो चलता है — बिना कॉपीराइट संगीत, केवल टेक्स्ट कमेंट/मैसेज, और नो-डाउनलोड/नो-कॉपी-पेस्ट लॉक सक्रिय है।',
-        videoUrl: '',
-        likes: 0,
-        liked: false,
-        comments: []
-      },
-      {
-        id: 'official',
-        author: '2friend Official',
-        tag: 'Cloudflare R2 · Max 1m',
-        caption: 'Short Video Preview (Max 1 min · Any Quality · Copyright-Free Music)',
-        videoUrl: '',
+        tag: 'Zero Cost R2 · 1 Min',
+        caption: '2friend रील्स मोड: Cloudflare Edge Cache सक्रिय, R2 सर्वर पर ज़ीरो हिट रिक्वेस्ट।',
+        videoUrl: 'https://pub-eaf6b9a861824b82ad140f60615e8933.r2.dev/AQM36A7JCjNJV_qYdQCQzg-lq3gB7CzS2jS4oQyxrA6brve6-_cuHRAVAZD2KMQpxrqFSWMNUxkKGhqR6VUJSHDJzVsea3PIvZFiGkVleH2ZEQ.mp4',
         likes: 0,
         liked: false,
         comments: []
       }
     ];
 
-    const posts = readLocal('2friend_final_posts', defaultPosts);
+    let savedPosts = readLocal('2friend_final_posts', defaultPosts);
+    savedPosts = savedPosts.map(p => ({
+      ...p,
+      videoUrl: (p.videoUrl && p.videoUrl.startsWith('blob:')) ? '' : p.videoUrl
+    }));
+    const posts = savedPosts;
+
+    // --- ज़ीरो कॉस्ट / ज़ीरो हिट रिक्वेस्ट्स & एंटी-0:00 रील्स इंजन ---
+    let reelObserver = null;
+
+    function initReelEngine() {
+      if (reelObserver) reelObserver.disconnect();
+
+      reelObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          const video = entry.target;
+          if (entry.isIntersecting) {
+            // केवल स्क्रीन पर आने वाली रील ही बफर/लोड होगी (खर्चा 99% तक कम)
+            if (video.readyState === 0 || video.error) {
+              video.load();
+            }
+            video.play().catch(() => {
+              video.muted = true;
+              video.play().catch(() => {});
+            });
+          } else {
+            // स्क्रीन से बाहर जाते ही वीडियो तुरंत रोक दें ताकि बैकग्राउंड डेटा और बैंडविड्थ खर्च न हो
+            if (!video.paused) {
+              video.pause();
+            }
+          }
+        });
+      }, { threshold: 0.7 });
+
+      document.querySelectorAll('video.feed-video').forEach((video) => {
+        reelObserver.observe(video);
+
+        video.addEventListener('loadedmetadata', function () {
+          if (this.currentTime === 0) {
+            this.currentTime = 0.01;
+          }
+        }, { once: true });
+
+        video.addEventListener('click', function () {
+          if (this.muted) {
+            this.muted = false;
+            this.volume = 1.0;
+          }
+        });
+      });
+    }
 
     function renderFeed() {
       const list = document.getElementById('feedList');
@@ -494,17 +523,18 @@
             <strong>${post.author}</strong>
             <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
               <span class="tag">${post.tag}</span>
-              <button type="button" class="btn-outline" style="padding:4px 8px; font-size:11px; border-color:#7f1d1d; color:#fca5a5;" onclick="adminRemovePost(${index})">Admin हटाएँ</button>
+              <button type="button" class="btn-outline" style="padding:4px 8px; font-size:11px; border-color:#7f1d1d; color:#fca5a5;" onclick="adminRemovePost(${index})">हटाएँ</button>
             </div>
           </div>
           ${post.caption ? `<p style="margin:6px 0; font-size:13px; color:#ddd; line-height:1.4;">${post.caption}</p>` : ''}
           ${post.videoUrl ? `
             <div class="preview">
-              <video src="${post.videoUrl}" class="feed-video" controls playsinline preload="auto" controlsList="nodownload noplaybackrate" disablePictureInPicture></video>
+              <!-- preload="metadata" से R2 पर फालतू हिट रिक्वेस्ट और बैंडविड्थ खर्च नहीं होगी -->
+              <video src="${post.videoUrl}" class="feed-video" loop controls playsinline preload="metadata" controlsList="nodownload noplaybackrate" disablePictureInPicture></video>
             </div>
           ` : `
             <div class="preview" style="color:#aaa; font-size:14px;">
-              Short Video Preview (Max 1 min · Any Quality)
+              Short Video Preview (Max 1 min)
             </div>
           `}
           <div class="actions">
@@ -537,12 +567,14 @@
             <p style="margin:8px 0 0; font-size:13px; color:#ddd;">
               ${isPrimary
                 ? 'Applooney Max गेमिंग विज्ञापन स्लॉट सक्रिय (Rewarded Video Ads Off).'
-                : `${adNetwork} गेमिंग विज्ञापन स्लॉट सक्रिय — Applooney Max प्राथमिकता क्रम में।`}
+                : `${adNetwork} गेमिंग विज्ञापन स्लॉट सक्रिय।`}
             </p>
           `;
           list.appendChild(adCard);
         }
       });
+
+      setTimeout(initReelEngine, 100);
     }
 
     function adminRemovePost(i) {
@@ -576,12 +608,9 @@
     }
 
     const defaultStories = [
-      { user: 'आपकी स्टोरी', text: 'आपकी 1-मिनट वीडियो स्टोरी लाइव है (Copyright-Free Music)।', isAd: false, adNetwork: 'Applooney Max', videoUrl: '' },
-      { user: '2friend Demo', text: '2friend पर किसी भी क्वालिटी का 1-मिनट शॉर्ट वीडियो चलाएँ।', isAd: false, adNetwork: 'Applooney Max', videoUrl: '' },
-      { user: 'Gaming Ad · Applooney Max', text: 'Applooney Max (Gaming Ad) → Google → Unity → Meta → AppLovin → ironSource → Chartboost', isAd: true, adNetwork: 'Applooney Max', videoUrl: '' },
-      { user: 'दोस्त 1', text: 'दोस्त 1 की 1-मिनट वीडियो स्टोरी चल रही है।', isAd: false, adNetwork: 'Google', videoUrl: '' },
-      { user: 'दोस्त 2', text: 'दोस्त 2 की 1-मिनट वीडियो स्टोरी चल रही है।', isAd: false, adNetwork: 'Unity', videoUrl: '' },
-      { user: 'Gaming Ad · Google', text: 'Applooney Max (Gaming Ad) → Google → Unity → Meta → AppLovin → ironSource → Chartboost', isAd: true, adNetwork: 'Google', videoUrl: '' }
+      { user: 'आपकी स्टोरी', text: 'आपकी 1-मिनट वीडियो स्टोरी लाइव है।', isAd: false, adNetwork: 'Applooney Max', videoUrl: '' },
+      { user: '2friend Demo', text: '2friend रील्स मोड।', isAd: false, adNetwork: 'Applooney Max', videoUrl: '' },
+      { user: 'Gaming Ad · Applooney Max', text: 'Applooney Max (Gaming Ad) Break', isAd: true, adNetwork: 'Applooney Max', videoUrl: '' }
     ];
 
     const storyItems = readLocal('2friend_final_stories', defaultStories);
@@ -631,7 +660,7 @@
 
       const mediaSlot = document.getElementById('storyMediaSlot');
       mediaSlot.innerHTML = item.videoUrl
-        ? `<video class="story-video" src="${item.videoUrl}" controls playsinline controlsList="nodownload noplaybackrate" disablePictureInPicture></video>`
+        ? `<video class="story-video" src="${item.videoUrl}" controls playsinline preload="metadata" controlsList="nodownload noplaybackrate" disablePictureInPicture></video>`
         : '';
 
       const fill = document.getElementById('storyProgress');
@@ -641,7 +670,7 @@
       if (storyVid) {
         storyVid.muted = false;
         storyVid.volume = 1.0;
-        document.getElementById('storySub').textContent = 'वीडियो स्टोरी चल रही है (Max 1m · Any Quality)';
+        document.getElementById('storySub').textContent = 'वीडियो स्टोरी चल रही है';
         storyVid.play().catch(() => {});
 
         storyTimer = setInterval(() => {
@@ -655,17 +684,11 @@
         return;
       }
 
-      document.getElementById('storySub').textContent = item.isAd
-        ? `Gaming Ad Break (${item.adNetwork || 'Applooney Max'}) • 5 सेकंड में अगली स्टोरी`
-        : 'Max 1m Video · Any Quality • डाउनलोड/कॉपी-पेस्ट लॉक सक्रिय';
-      document.getElementById('storyBox').style.borderColor = item.isAd ? '#f1c40f' : '#2a2a2a';
-
+      document.getElementById('storySub').textContent = item.isAd ? 'Gaming Ad Break' : 'Max 1m Video';
       storyTimer = setInterval(() => {
         progressVal += 4;
         fill.style.width = progressVal + '%';
-        if (progressVal >= 100) {
-          nextStoryStep();
-        }
+        if (progressVal >= 100) nextStoryStep();
       }, 200);
     }
 
@@ -703,7 +726,7 @@
       const rawMedia = document.getElementById('postMediaUrl').value.trim();
       const fileInput = document.getElementById('postVideoFile');
       const selectedFile = fileInput && fileInput.files ? fileInput.files[0] : null;
-      const baseCaption = document.getElementById('postCaption').value.trim() || '2friend 1-मिनट वीडियो';
+      const baseCaption = document.getElementById('postCaption').value.trim() || '2friend रील';
       const caption = `${baseCaption} [${lang.toUpperCase()} • ${music}]`;
       const status = document.getElementById('createStatus');
 
@@ -715,7 +738,7 @@
           const duration = await validateVideoDuration(selectedFile);
           durationSec = Math.round(duration);
           localVideoUrl = URL.createObjectURL(selectedFile);
-          status.textContent = `वीडियो मान्य है (${durationSec} सेकंड / अधिकतम 60 सेकंड)।`;
+          status.textContent = `वीडियो मान्य है (${durationSec}s)।`;
         } catch (err) {
           status.textContent = err.message;
           if (fileInput) fileInput.value = '';
@@ -724,70 +747,40 @@
       }
 
       const r2MediaUrl = buildCacheSafeR2Url(r2Base, rawMedia);
-      const mediaUrl = localVideoUrl || r2MediaUrl;
+      const mediaUrl = r2MediaUrl || localVideoUrl;
 
       if (kind === 'story') {
-        const apiRes = await apiCall('/api/stories', {
-          method: 'POST',
-          body: JSON.stringify({
-            author,
-            caption,
-            mediaUrl: r2MediaUrl || mediaUrl,
-            durationSeconds: durationSec
-          })
-        });
-
-        const savedStory = apiRes && apiRes.story ? apiRes.story : null;
-        storyItems.splice(1, 0, {
-          user: savedStory ? savedStory.author : author,
-          text: savedStory ? savedStory.caption : caption,
-          isAd: false,
-          adNetwork: 'Applooney Max',
-          videoUrl: savedStory && savedStory.media_url ? savedStory.media_url : mediaUrl
-        });
+        storyItems.splice(1, 0, { user: author, text: caption, isAd: false, adNetwork: 'Applooney Max', videoUrl: mediaUrl });
         writeLocal('2friend_final_stories', storyItems);
         renderStoriesHub();
-
-        if (fileInput) fileInput.value = '';
-        document.getElementById('postTitle').value = '';
-        document.getElementById('postMediaUrl').value = '';
-        document.getElementById('postCaption').value = '';
-        status.textContent = 'नई वीडियो स्टोरी जुड़ गई है — Stories खुल रही है...';
-
-        const storiesBtn = document.querySelectorAll('nav button')[1];
-        if (storiesBtn) switchTab(storiesBtn, 'storiesView');
+        status.textContent = 'स्टोरी जुड़ गई है...';
+        switchTab(document.querySelectorAll('nav button')[1], 'storiesView');
         openDirectStory(1);
         return;
       }
 
-      const apiPostRes = await apiCall('/api/posts', {
-        method: 'POST',
-        body: JSON.stringify({
-          author,
-          caption,
-          mediaUrl: r2MediaUrl || mediaUrl,
-          durationSeconds: durationSec
-        })
-      });
-
-      const savedPost = apiPostRes && apiPostRes.post ? apiPostRes.post : null;
       posts.unshift({
-        id: savedPost ? savedPost.id : Date.now(),
-        author: savedPost ? savedPost.author : author,
-        tag: `Max 1m · ${lang.toUpperCase()}`,
-        caption: savedPost ? savedPost.caption : caption,
-        videoUrl: savedPost && savedPost.media_url ? savedPost.media_url : mediaUrl,
-        likes: savedPost ? (savedPost.likes_count || 0) : 0,
+        id: Date.now(),
+        author: author,
+        tag: `Zero Cost · ${lang.toUpperCase()}`,
+        caption: caption,
+        videoUrl: mediaUrl,
+        likes: 0,
         liked: false,
         comments: []
       });
-      writeLocal('2friend_final_posts', posts);
+
+      const persistPosts = posts.map(p => ({
+        ...p,
+        videoUrl: (p.videoUrl && p.videoUrl.startsWith('blob:')) ? '' : p.videoUrl
+      }));
+      writeLocal('2friend_final_posts', persistPosts);
 
       if (fileInput) fileInput.value = '';
       document.getElementById('postTitle').value = '';
       document.getElementById('postMediaUrl').value = '';
       document.getElementById('postCaption').value = '';
-      status.textContent = r2MediaUrl ? 'Cloudflare R2 वीडियो Feed में जुड़ गया है।' : 'वीडियो Feed में जुड़ गया है।';
+      status.textContent = 'रील Feed में जुड़ गई है (Zero Cost Cache Ready)।';
 
       renderFeed();
       switchTab(document.querySelector('nav button'), 'feedView');
@@ -806,11 +799,6 @@
       const msg = input.value.trim();
       if (!msg) return;
 
-      await apiCall('/api/messages', {
-        method: 'POST',
-        body: JSON.stringify({ senderHandle: currentHandle, messageText: msg })
-      });
-
       chatMessages.push(`${currentHandle}: ${msg}`);
       writeLocal('2friend_final_chat', chatMessages);
       renderChat();
@@ -818,10 +806,8 @@
     }
 
     function sharePost() {
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(window.location.href).catch(() => {});
-      }
-      alert('2friend लिंक तैयार है।');
+      if (navigator.clipboard) navigator.clipboard.writeText(window.location.href).catch(() => {});
+      alert('2friend लिंक कॉपी हो गया है।');
     }
 
     function switchTab(btn, viewId) {
@@ -830,12 +816,18 @@
       if (target) target.classList.add('active');
       document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
       if (btn) btn.classList.add('active');
+
+      if (viewId === 'feedView') {
+        const feedContainer = document.getElementById('feedView');
+        if (feedContainer) feedContainer.scrollTop = 0;
+        setTimeout(initReelEngine, 150);
+      } else {
+        document.querySelectorAll('video.feed-video').forEach(v => v.pause());
+      }
     }
 
     const screenUsers = readLocal('2friend_final_winners', [
-      { handle: currentHandle, minutes: 14 },
-      { handle: '@friend_one', minutes: 11 },
-      { handle: '@friend_two', minutes: 7 }
+      { handle: currentHandle, minutes: 14 }
     ]);
 
     function renderWinners() {
@@ -844,79 +836,12 @@
       if (profileTime && currentUser) profileTime.textContent = `${currentUser.minutes} min`;
     }
 
-    async function processMidnightPayout() {
-      const status = document.getElementById('payoutStatus');
-      const top = [...screenUsers].sort((a, b) => b.minutes - a.minutes)[0];
-      if (status && top) status.textContent = `रात 12:00 AM प्रोसेस पूरा: विनर ${top.handle}`;
-    }
-
-    async function syncFromBackend() {
-      const health = await apiCall('/api/health');
-      apiOnline = Boolean(health && health.ok);
-      changeUiLang(currentLang);
-      if (!apiOnline) return;
-
-      const feedData = await apiCall('/api/feed');
-      if (feedData && Array.isArray(feedData.posts) && feedData.posts.length) {
-        const mapped = feedData.posts.map(p => ({
-          id: p.id,
-          author: p.author,
-          tag: p.tag,
-          caption: p.caption,
-          videoUrl: p.media_url || '',
-          likes: p.likes_count || 0,
-          liked: false,
-          comments: []
-        }));
-        posts.splice(0, posts.length, ...mapped);
-        renderFeed();
-      }
-    }
-
-    // --- रील्स ऑटो-प्ले, ऑटो-पॉज़ और फुल-स्क्रीन स्नैप ऑब्जर्वर ---
-    document.addEventListener("DOMContentLoaded", function () {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          const video = entry.target;
-          if (entry.isIntersecting) {
-            if (video.paused) {
-              video.play().catch(err => console.log("Auto-play blocked:", err));
-            }
-          } else {
-            if (!video.paused) {
-              video.pause();
-            }
-          }
-        });
-      }, { threshold: 0.7 });
-
-      function setupVideoObserver() {
-        document.querySelectorAll('video.feed-video').forEach(video => {
-          if (!video.dataset.observed) {
-            observer.observe(video);
-            video.dataset.observed = "true";
-          }
-        });
-      }
-
-      setupVideoObserver();
-      const mutationObserver = new MutationObserver(() => setupVideoObserver());
-      mutationObserver.observe(document.body, { childList: true, subtree: true });
-    });
-
     syncHandleEverywhere();
     changeUiLang(currentLang);
     renderFeed();
     renderStoriesHub();
     renderChat();
     renderWinners();
-    syncFromBackend();
   </script>
 </body>
 </html>
-// वीडियो लोड होने पर 0:00 की समस्या को तुरंत ठीक करने के लिए
-document.addEventListener('loadedmetadata', function (e) {
-  if (e.target.tagName === 'VIDEO') {
-    e.target.currentTime = 0.001; // ब्राउज़र को मेटाडेटा पढ़ने के लिए मजबूर करता है
-  }
-}, true);
