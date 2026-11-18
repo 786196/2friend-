@@ -16,7 +16,7 @@
     .view { display: none; height: 100vh; width: 100vw; }
     .view.active { display: block; }
 
-    /* --- फुल-स्क्रीन रील्स स्नैप मोड --- */
+    /* --- इंस्टाग्राम/टिकटॉक जैसा फुल-स्क्रीन रील्स स्नैप मोड --- */
     #feedView {
       height: 100vh;
       width: 100vw;
@@ -111,10 +111,6 @@
       <strong>2friend</strong>
       <span class="badge-green">Reels Mode</span>
       <span id="apiSyncBadge" class="tag">14 Lang</span>
-      <select id="uiLangSelect" onchange="changeUiLang(this.value)" style="width:auto; padding:2px 6px; font-size:11px; border-radius:999px; background:#1a1a1a; color:#2ecc71; border:1px solid #2ecc71;">
-        <option value="hi">हिन्दी</option>
-        <option value="en">English</option>
-      </select>
     </div>
     <span id="headerHandle" style="font-size:13px; font-weight:600;">@2friend_user</span>
   </header>
@@ -156,17 +152,6 @@
       </div>
       <input type="hidden" id="postKind" value="feed" />
       <div style="margin-top:8px;"><input type="text" id="postTitle" placeholder="नाम / हैंडल (खाली छोड़ने पर आपका हैंडल लगेगा)" /></div>
-      <div style="margin-top:8px;">
-        <select id="postLanguage">
-          <option value="hi">भाषा: हिन्दी</option>
-          <option value="en">भाषा: English</option>
-        </select>
-      </div>
-      <div style="margin-top:8px;">
-        <select id="postMusicTrack">
-          <option value="2friend Beat 01 (Copyright-Free)">संगीत: 2friend Beat 01</option>
-        </select>
-      </div>
       <div style="margin-top:8px;"><input type="file" id="postVideoFile" accept="video/mp4,video/webm,video/*" /></div>
       <div style="margin-top:8px;"><input type="text" id="r2BaseInput" value="https://pub-eaf6b9a861824b82ad140f60615e8933.r2.dev" placeholder="R2 Base URL" /></div>
       <div style="margin-top:8px;"><input type="text" id="postMediaUrl" placeholder="R2 वीडियो फ़ाइल पाथ (जैसे: videos/hi/clip.mp4)" /></div>
@@ -272,7 +257,7 @@
         id: 'tips',
         author: '2friend Tips',
         tag: 'Zero Cost R2',
-        caption: '2friend रील्स मोड: Cloudflare Edge Cache सक्रिय।',
+        caption: '2friend रील्स मोड: Cloudflare Edge Cache और ऑटोप्ले सक्रिय।',
         videoUrl: 'https://pub-eaf6b9a861824b82ad140f60615e8933.r2.dev/AQM36A7JCjNJV_qYdQCQzg-lq3gB7CzS2jS4oQyxrA6brve6-_cuHRAVAZD2KMQpxrqFSWMNUxkKGhqR6VUJSHDJzVsea3PIvZFiGkVleH2ZEQ.mp4',
         likes: 0,
         liked: false,
@@ -281,9 +266,9 @@
     ];
 
     let posts = JSON.parse(localStorage.getItem('2friend_final_posts') || JSON.stringify(defaultPosts));
-
     let reelObserver = null;
 
+    // --- ऑटोप्ले और रील्स स्नैप इंजन ---
     function initReelEngine() {
       if (reelObserver) reelObserver.disconnect();
 
@@ -305,218 +290,4 @@
         });
       }, { threshold: 0.7 });
 
-      document.querySelectorAll('video.feed-video').forEach((video) => {
-        reelObserver.observe(video);
-
-        video.addEventListener('loadedmetadata', function () {
-          if (this.currentTime === 0) {
-            this.currentTime = 0.01;
-          }
-        }, { once: true });
-
-        video.addEventListener('click', function () {
-          if (this.muted) {
-            this.muted = false;
-            this.volume = 1.0;
-          }
-        });
-      });
-    }
-
-    function renderFeed() {
-      const list = document.getElementById('feedList');
-      if (!list) return;
-      list.innerHTML = '';
-      adBreakCounter = 0;
-
-      posts.forEach((post, index) => {
-        const card = document.createElement('article');
-        card.className = 'card';
-        card.innerHTML = `
-          <div class="card-head">
-            <strong style="font-size:13px; color:#2ecc71;">${post.author}</strong>
-            <div style="display:flex; align-items:center; gap:4px;">
-              <span class="tag">${post.tag}</span>
-              <button class="btn-outline" style="padding:2px 6px; font-size:10px;" onclick="adminRemovePost(${index})">हटाएँ</button>
-            </div>
-          </div>
-          ${post.caption ? `<p style="margin:2px 0; font-size:12px; color:#ccc;">${post.caption}</p>` : ''}
-          <div class="preview">
-            <video src="${post.videoUrl}" class="feed-video" loop playsinline preload="metadata" controls controlsList="nodownload noplaybackrate" disablePictureInPicture></video>
-          </div>
-          <div class="actions">
-            <button class="${post.liked ? 'liked' : ''}" onclick="toggleLike(${index})">❤️ (${post.likes})</button>
-            <button onclick="toggleComments(${index})">💬 (${post.comments.length})</button>
-            <button onclick="sharePost()">↗️ शेयर</button>
-          </div>
-          <div class="comments" id="comments-${index}">
-            <ul class="comment-list">${post.comments.map(c => `<li><span>${c}</span></li>`).join('')}</ul>
-            <div class="row">
-              <input type="text" id="input-${index}" placeholder="कमेंट लिखें..." />
-              <button class="btn" style="padding:4px 8px; font-size:11px;" onclick="addComment(${index})">भेजें</button>
-            </div>
-          </div>
-        `;
-        list.appendChild(card);
-
-        if ((index + 1) % 2 === 0) {
-          const adNet = getNextAdNetwork();
-          const adCard = document.createElement('aside');
-          adCard.className = 'ad-card';
-          adCard.innerHTML = `<div class="card-head"><strong>Gaming Ad · ${adNet}</strong><span class="badge-ad">${adNet}</span></div><p style="font-size:12px; color:#ddd; margin:4px 0;">विज्ञापन स्लॉट सक्रिय।</p>`;
-          list.appendChild(adCard);
-        }
-      });
-
-      setTimeout(initReelEngine, 100);
-    }
-
-    function adminRemovePost(i) {
-      posts.splice(i, 1);
-      localStorage.setItem('2friend_final_posts', JSON.stringify(posts));
-      renderFeed();
-    }
-
-    function toggleLike(i) {
-      posts[i].liked = !posts[i].liked;
-      posts[i].likes += posts[i].liked ? 1 : -1;
-      localStorage.setItem('2friend_final_posts', JSON.stringify(posts));
-      renderFeed();
-    }
-
-    function toggleComments(i) {
-      const el = document.getElementById(`comments-${i}`);
-      if (el) el.style.display = el.style.display === 'block' ? 'none' : 'block';
-    }
-
-    function addComment(i) {
-      const input = document.getElementById(`input-${i}`);
-      if (!input || !input.value.trim()) return;
-      posts[i].comments.push(`${currentHandle}: ${input.value.trim()}`);
-      localStorage.setItem('2friend_final_posts', JSON.stringify(posts));
-      renderFeed();
-      document.getElementById(`comments-${i}`).style.display = 'block';
-    }
-
-    const defaultStories = [{ user: 'आपकी स्टोरी', text: '1-मिनट वीडियो स्टोरी लाइव।', isAd: false, videoUrl: '' }];
-    let storyItems = JSON.parse(localStorage.getItem('2friend_final_stories') || JSON.stringify(defaultStories));
-
-    function renderStoriesHub() {
-      const hub = document.getElementById('storiesHubList');
-      if (!hub) return;
-      hub.innerHTML = storyItems.map((s, idx) => `<li><span><strong>${s.user}</strong></span><button class="btn-outline" style="padding:2px 6px; font-size:10px;" onclick="openDirectStory(${idx})">देखें</button></li>`).join('');
-    }
-
-    let currentStoryIdx = 0, storyTimer = null;
-    function openDirectStory(idx) {
-      currentStoryIdx = Number(idx) || 0;
-      document.getElementById('storyModal').classList.add('open');
-      showCurrentStory();
-    }
-
-    function showCurrentStory() {
-      clearInterval(storyTimer);
-      const item = storyItems[currentStoryIdx] || storyItems[0];
-      document.getElementById('storyUser').textContent = item.user;
-      document.getElementById('storyText').textContent = item.text;
-      document.getElementById('storyMediaSlot').innerHTML = item.videoUrl ? `<video class="story-video" src="${item.videoUrl}" controls playsinline></video>` : '';
-      storyTimer = setInterval(() => nextStoryStep(), 5000);
-    }
-
-    function nextStoryStep() {
-      currentStoryIdx = (currentStoryIdx + 1) % storyItems.length;
-      showCurrentStory();
-    }
-
-    function closeStory() {
-      clearInterval(storyTimer);
-      document.getElementById('storyMediaSlot').innerHTML = '';
-      document.getElementById('storyModal').classList.remove('open');
-    }
-
-    function selectPostKind(kind) {
-      document.getElementById('postKind').value = kind;
-      document.getElementById('btnKindFeed').className = kind === 'feed' ? 'btn' : 'btn-outline';
-      document.getElementById('btnKindStory').className = kind === 'story' ? 'btn' : 'btn-outline';
-    }
-
-    async function createPost() {
-      const kind = document.getElementById('postKind').value;
-      const rawAuthor = document.getElementById('postTitle').value.trim();
-      const author = rawAuthor ? normalizeHandle(rawAuthor) : currentHandle;
-      const r2Base = document.getElementById('r2BaseInput').value.trim() || R2_CACHE_BASE;
-      const rawMedia = document.getElementById('postMediaUrl').value.trim();
-      const fileInput = document.getElementById('postVideoFile');
-      const caption = document.getElementById('postCaption').value.trim() || '2friend रील';
-      const status = document.getElementById('createStatus');
-
-      let mediaUrl = '';
-
-      // अगर यूजर ने फाइल चुनी है, तो उसे Local Blob URL में बदलें ताकि तुरंत प्ले हो सके
-      if (fileInput.files && fileInput.files[0]) {
-        mediaUrl = URL.createObjectURL(fileInput.files[0]);
-      } else {
-        mediaUrl = buildCacheSafeR2Url(r2Base, rawMedia);
-      }
-
-      if (!mediaUrl) {
-        status.textContent = 'कृपया वीडियो फ़ाइल चुनें या R2 पाथ दर्ज करें!';
-        status.style.color = '#ff4d6d';
-        return;
-      }
-
-      if (kind === 'story') {
-        storyItems.splice(1, 0, { user: author, text: caption, videoUrl: mediaUrl });
-        localStorage.setItem('2friend_final_stories', JSON.stringify(storyItems));
-        renderStoriesHub();
-        status.style.color = '#2ecc71';
-        status.textContent = 'स्टोरी जुड़ गई है!';
-        switchTab(document.querySelectorAll('nav button')[1], 'storiesView');
-        openDirectStory(1);
-        return;
-      }
-
-      posts.unshift({ id: Date.now(), author: author, tag: 'Zero Cost', caption: caption, videoUrl: mediaUrl, likes: 0, liked: false, comments: [] });
-      localStorage.setItem('2friend_final_posts', JSON.stringify(posts));
-      status.style.color = '#2ecc71';
-      status.textContent = 'रील Feed में सफलतापूर्वक जुड़ गई है!';
-      renderFeed();
-      switchTab(document.querySelector('nav button'), 'feedView');
-    }
-
-    function sharePost() {
-      if (navigator.clipboard) navigator.clipboard.writeText(window.location.href);
-      alert('लिंक कॉपी हो गया है!');
-    }
-
-    function sendChat() {
-      const inp = document.getElementById('chatInput');
-      const list = document.getElementById('chatList');
-      if (!inp || !inp.value.trim() || !list) return;
-      const li = document.createElement('li');
-      li.innerHTML = `<span>${currentHandle}: ${inp.value.trim()}</span>`;
-      list.appendChild(li);
-      inp.value = '';
-      list.scrollTop = list.scrollHeight;
-    }
-
-    function switchTab(btn, viewId) {
-      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-      document.getElementById(viewId).classList.add('active');
-      document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-      if (btn) btn.classList.add('active');
-
-      if (viewId === 'feedView') {
-        document.getElementById('feedView').scrollTop = 0;
-        setTimeout(initReelEngine, 150);
-      } else {
-        document.querySelectorAll('video.feed-video').forEach(v => v.pause());
-      }
-    }
-
-    syncHandleEverywhere();
-    renderFeed();
-    renderStoriesHub();
-  </script>
-</body>
-</html>
+      document.querySelectorAll
