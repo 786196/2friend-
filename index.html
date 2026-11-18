@@ -4,18 +4,17 @@
     document.addEventListener('paste', function(e) { e.preventDefault(); });
 
     var STORAGE_KEYS = {
-      posts: '2friend_videos_v5',
-      stories: '2friend_stories_v5',
-      messages: '2friend_messages_v5',
-      screenUsers: '2friend_screen_users_v5',
-      deletedIds: '2friend_deleted_ids_v5',
-      uiLang: '2friend_ui_lang_v5',
-      userHandle: '2friend_user_handle_v5'
+      posts: '2friend_videos_v6',
+      stories: '2friend_stories_v6',
+      messages: '2friend_messages_v6',
+      screenUsers: '2friend_screen_users_v6',
+      deletedIds: '2friend_deleted_ids_v6',
+      uiLang: '2friend_ui_lang_v6',
+      userHandle: '2friend_user_handle_v6'
     };
 
     var R2_CACHE_BASE = 'https://pub-eaf6b9a861824b82ad140f60615e8933.r2.dev';
     var MAX_VIDEO_SECONDS = 60;
-    var MAX_VIDEO_HEIGHT = 480;
     var REWARDED_VIDEO_ADS_ENABLED = false;
     var PRIMARY_AD_NETWORK = 'Applooney Max';
 
@@ -147,7 +146,7 @@
       var lang = UI_LANGUAGES.find(function(l) { return l.code === langCode; }) || UI_LANGUAGES[0];
       var badge = document.getElementById('apiSyncBadge');
       if (badge) {
-        badge.textContent = '14 Lang · ' + lang.label + ' · 1m Video';
+        badge.textContent = '14 Lang · ' + lang.label + ' · Max 1m';
         badge.style.background = '#163826';
         badge.style.color = '#2ecc71';
       }
@@ -174,6 +173,7 @@
       if (chatHeading) chatHeading.textContent = lang.chatTitle;
     }
 
+    // केवल 1 मिनट (60 सेकंड) की जाँच — किसी भी क्वालिटी/रिज़ॉल्यूशन का वीडियो मान्य
     function validateVideoFile(file) {
       return new Promise(function(resolve, reject) {
         var tempUrl = URL.createObjectURL(file);
@@ -182,7 +182,6 @@
 
         probe.onloadedmetadata = function() {
           var duration = probe.duration;
-          var height = probe.videoHeight || 0;
           URL.revokeObjectURL(tempUrl);
 
           if (!isFinite(duration) || duration <= 0) {
@@ -190,14 +189,10 @@
             return;
           }
           if (duration > MAX_VIDEO_SECONDS) {
-            reject(new Error('1 मिनट से अधिक का वीडियो मान्य नहीं है (' + Math.ceil(duration) + ' सेकंड)।'));
+            reject(new Error('केवल 1 मिनट (60 सेकंड) या उससे छोटा वीडियो मान्य है (' + Math.ceil(duration) + ' सेकंड का वीडियो नहीं चलेगा)।'));
             return;
           }
-          if (height > MAX_VIDEO_HEIGHT) {
-            reject(new Error('केवल 480p या उससे कम रिज़ॉल्यूशन वाला वीडियो मान्य है (वर्तमान: ' + height + 'p)।'));
-            return;
-          }
-          resolve({ duration: duration, height: height });
+          resolve({ duration: duration });
         };
 
         probe.onerror = function() {
@@ -213,8 +208,8 @@
       {
         id: 'tips',
         author: '2friend Tips',
-        tag: '1 Min Video · 480p',
-        caption: '2friend केवल 1 मिनट (480p) शॉर्ट-वीडियो ऐप है — बिना कॉपीराइट संगीत, केवल टेक्स्ट कमेंट/मैसेज, और डाउनलोड/कॉपी-पेस्ट लॉक सक्रिय है।',
+        tag: '1 Min Video · Any Quality',
+        caption: '2friend पर किसी भी क्वालिटी का 1-मिनट वीडियो चल सकता है — बिना कॉपीराइट संगीत, केवल टेक्स्ट कमेंट/मैसेज, और डाउनलोड/कॉपी-पेस्ट लॉक सक्रिय है।',
         videoUrl: '',
         likes: 0,
         liked: false,
@@ -223,8 +218,8 @@
       {
         id: 'official',
         author: '2friend Official',
-        tag: 'Cloudflare R2 · 480p · Max 1m',
-        caption: 'Short Video Preview (Max 1 min · 480p / H.264 / AAC 128kbps)',
+        tag: 'Cloudflare R2 · Max 1m',
+        caption: 'Short Video Preview (Max 1 min · Any Quality)',
         videoUrl: '',
         likes: 0,
         liked: false,
@@ -257,7 +252,7 @@
           (post.caption ? '<p style="margin:10px 0 4px; font-size:14px; color:#ddd; line-height:1.45;">' + post.caption + '</p>' : '') +
           (post.videoUrl
             ? '<div class="preview"><video src="' + post.videoUrl + '" controls playsinline preload="metadata" controlsList="nodownload noplaybackrate" disablePictureInPicture></video></div>'
-            : '<div class="preview" style="color:#aaa; font-size:14px;">Short Video Preview (Max 1 min · 480p / H.264 / AAC 128kbps)</div>') +
+            : '<div class="preview" style="color:#aaa; font-size:14px;">Short Video Preview (Max 1 min · Any Quality)</div>') +
           '<div class="actions">' +
             '<button class="' + (post.liked ? 'liked' : '') + '" onclick="toggleLike(' + index + ')">Like (' + post.likes + ')</button>' +
             '<button onclick="toggleComments(' + index + ')">Comment (' + post.comments.length + ')</button>' +
@@ -329,8 +324,8 @@
     }
 
     var defaultStories = [
-      { user: 'आपकी स्टोरी', text: 'आपकी 480p वीडियो स्टोरी लाइव है (Max 1 Min • Copyright-Free Music)。', isAd: false, adNetwork: 'Applooney Max', videoUrl: '' },
-      { user: '2friend Demo', text: '2friend पर तेज़ 480p शॉर्ट वीडियो और 128k ऑडियो का अनुभव लें।', isAd: false, adNetwork: 'Applooney Max', videoUrl: '' },
+      { user: 'आपकी स्टोरी', text: 'आपकी वीडियो स्टोरी लाइव है (Max 1 Min • Copyright-Free Music)。', isAd: false, adNetwork: 'Applooney Max', videoUrl: '' },
+      { user: '2friend Demo', text: '2friend पर किसी भी क्वालिटी का 1-मिनट शॉर्ट वीडियो चलाएँ।', isAd: false, adNetwork: 'Applooney Max', videoUrl: '' },
       { user: 'Gaming Ad · Applooney Max', text: 'Applooney Max (Gaming Ad) → Google → Unity → Meta → AppLovin → ironSource → Chartboost', isAd: true, adNetwork: 'Applooney Max', videoUrl: '' },
       { user: 'दोस्त 1', text: 'दोस्त 1 की 1-मिनट वीडियो स्टोरी चल रही है।', isAd: false, adNetwork: 'Google', videoUrl: '' },
       { user: 'दोस्त 2', text: 'दोस्त 2 की 1-मिनट वीडियो स्टोरी चल रही है।', isAd: false, adNetwork: 'Unity', videoUrl: '' },
@@ -392,7 +387,7 @@
       if (storyVid) {
         storyVid.muted = false;
         storyVid.volume = 1.0;
-        document.getElementById('storySub').textContent = 'वीडियो स्टोरी चल रही है (Max 1m · 480p)';
+        document.getElementById('storySub').textContent = 'वीडियो स्टोरी चल रही है (Max 1m · Any Quality)';
         storyVid.play().catch(function() {});
 
         storyTimer = setInterval(function() {
@@ -408,7 +403,7 @@
 
       document.getElementById('storySub').textContent = item.isAd
         ? 'Gaming Ad Break (' + (item.adNetwork || PRIMARY_AD_NETWORK) + ') • 5 सेकंड में अगली स्टोरी'
-        : '480p · HLS · 128k · Max 1m • डाउनलोड/कॉपी-पेस्ट लॉक सक्रिय';
+        : 'Max 1m · Any Quality • डाउनलोड/कॉपी-पेस्ट लॉक सक्रिय';
       document.getElementById('storyBox').style.borderColor = item.isAd ? '#f1c40f' : '#2a2a2a';
 
       storyTimer = setInterval(function() {
@@ -488,8 +483,8 @@
         posts.unshift({
           id: Date.now(),
           author: author,
-          tag: 'Cloudflare R2 · 480p · Max 1m · ' + language.toUpperCase(),
-          caption: caption + ' (Max 1 min · 480p / 128kbps)',
+          tag: 'Cloudflare R2 · Max 1m · ' + language.toUpperCase(),
+          caption: caption + ' (Max 1 min · Any Quality)',
           videoUrl: mediaUrl,
           likes: 0,
           liked: false,
@@ -511,7 +506,7 @@
         validateVideoFile(selectedFile).then(function(meta) {
           var durationSec = Math.round(meta.duration);
           var localVideoUrl = URL.createObjectURL(selectedFile);
-          status.textContent = 'वीडियो मान्य है (' + durationSec + 's / Max 60s, ' + meta.height + 'p / Max 480p)।';
+          status.textContent = 'वीडियो मान्य है (' + durationSec + 's / Max 60s)।';
           finishCreate(localVideoUrl, durationSec);
         }).catch(function(err) {
           status.textContent = err.message;
