@@ -5,14 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>2friend - India's Own Social Video App</title>
     <style>
+        /* सुरक्षा नियम: कॉपी-पेस्ट और राइट-क्लिक पूरी तरह बंद */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
             user-select: none;
+            -webkit-touch-callout: none;
         }
+        /* केवल चैट और कैप्शन लिखने के लिए टाइपिंग की अनुमति */
         input, textarea {
             -webkit-user-select: text;
             user-select: text;
@@ -29,34 +34,40 @@
 
         /* हेडर बार */
         header {
-            height: 50px;
+            height: 54px;
             background: #111;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 14px;
+            padding: 0 16px;
             border-bottom: 1px solid #262626;
             z-index: 50;
             flex-shrink: 0;
         }
         .brand-logo {
-            font-size: 22px;
+            font-size: 24px;
             font-weight: 800;
+            letter-spacing: -0.5px;
             background: linear-gradient(45deg, #ff9933, #ff2a6d, #00d2ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         .lang-dropdown {
             background: #1e1e1e;
             color: #fff;
             border: 1px solid #333;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 12px;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 13px;
             outline: none;
         }
 
-        /* नीचे का नेविगेशन बार (अब सबसे ऊपर फिक्स किया गया है ताकि कभी न छिपे) */
+        /* मुख्य नेविगेशन बार (Instagram/TikTok स्टाइल - केवल आइकॉन, कोई लिखावट नहीं) */
         nav {
             height: 52px;
             background: #0f0f0f;
@@ -65,25 +76,35 @@
             justify-content: space-around;
             align-items: center;
             flex-shrink: 0;
-            z-index: 100;
+            z-index: 60;
         }
         .nav-tab {
             background: none;
             border: none;
-            color: #888;
+            color: #777;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            gap: 2px;
-            font-size: 10px;
+            width: 56px;
+            height: 44px;
             cursor: pointer;
+            transition: color 0.2s, transform 0.15s;
         }
         .nav-tab.active {
             color: #fff;
-            font-weight: bold;
+            transform: scale(1.08);
         }
-        .nav-icon {
-            font-size: 18px;
+        .nav-tab svg {
+            width: 26px;
+            height: 26px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .nav-tab.active svg.fill-active {
+            fill: currentColor;
         }
 
         /* मुख्य स्क्रीन क्षेत्र */
@@ -104,11 +125,11 @@
             display: flex;
         }
 
-        /* स्टोरीज़ सेक्शन */
+        /* स्टोरीज़ सेक्शन (केवल गोल रिंग्स और आइकॉन, बिना नाम/टेक्स्ट के) */
         .stories-bar {
             display: flex;
-            gap: 12px;
-            padding: 8px 12px;
+            gap: 14px;
+            padding: 10px 14px;
             background: #0d0d0d;
             border-bottom: 1px solid #222;
             overflow-x: auto;
@@ -120,18 +141,20 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 3px;
+            justify-content: center;
             cursor: pointer;
             flex-shrink: 0;
         }
         .story-ring {
-            width: 54px;
-            height: 54px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
-            padding: 2px;
-            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
+            padding: 2.5px;
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
         }
-        .story-ring.add-ring { background: #333; }
+        .story-ring.add-ring {
+            background: #333;
+        }
         .story-avatar {
             width: 100%;
             height: 100%;
@@ -141,23 +164,16 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 20px;
+            font-size: 22px;
+            font-weight: bold;
             color: #fff;
-        }
-        .story-name {
-            font-size: 10px;
-            color: #ccc;
-            max-width: 56px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
         }
 
         /* विज्ञापन बैनर */
         .ad-slot-banner {
             background: linear-gradient(90deg, #1a1a2e, #16213e);
             border-bottom: 1px solid #2a2a4a;
-            padding: 5px 10px;
+            padding: 6px 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -169,10 +185,10 @@
             background: #ff9900;
             color: #000;
             font-weight: bold;
-            padding: 1px 4px;
+            padding: 1px 5px;
             border-radius: 3px;
             font-size: 9px;
-            margin-right: 4px;
+            margin-right: 6px;
         }
 
         /* रील्स फीड */
@@ -200,255 +216,108 @@
         }
         .center-play-btn {
             position: absolute;
-            width: 64px;
-            height: 64px;
+            width: 72px;
+            height: 72px;
             border-radius: 50%;
             background: rgba(0, 0, 0, 0.55);
             border: 2px solid rgba(255, 255, 255, 0.85);
             color: #fff;
-            font-size: 24px;
+            font-size: 28px;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
             z-index: 15;
-            padding-left: 3px;
+            padding-left: 4px;
         }
         .quality-tag {
             position: absolute;
-            top: 10px;
-            left: 10px;
+            top: 12px;
+            left: 12px;
             background: rgba(0, 0, 0, 0.6);
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
             color: #4ade80;
             border: 1px solid rgba(74, 222, 128, 0.3);
             z-index: 10;
         }
         .reel-bottom-info {
             position: absolute;
-            bottom: 16px;
-            left: 12px;
-            right: 70px;
+            bottom: 20px;
+            left: 14px;
+            right: 76px;
             z-index: 10;
             text-shadow: 0 1px 4px rgba(0,0,0,0.9);
         }
         .reel-user {
             font-weight: 700;
-            font-size: 15px;
-            margin-bottom: 4px;
+            font-size: 16px;
+            margin-bottom: 6px;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
         .follow-chip {
             background: #ff2a6d;
             color: #fff;
             border: none;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 10px;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
             font-weight: bold;
             cursor: pointer;
         }
         .reel-desc {
-            font-size: 13px;
+            font-size: 14px;
             color: #f1f1f1;
-            line-height: 1.3;
+            line-height: 1.4;
         }
         .reel-music {
-            font-size: 11px;
+            font-size: 12px;
             color: #ccc;
-            margin-top: 4px;
+            margin-top: 6px;
         }
         .reel-side-actions {
             position: absolute;
-            bottom: 20px;
-            right: 10px;
+            bottom: 24px;
+            right: 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 14px;
+            gap: 18px;
             z-index: 10;
         }
         .side-btn-wrap {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 2px;
+            gap: 4px;
         }
         .side-btn {
-            width: 42px;
-            height: 42px;
+            width: 46px;
+            height: 46px;
             border-radius: 50%;
             background: rgba(25, 25, 25, 0.75);
             border: 1px solid rgba(255,255,255,0.15);
             color: #fff;
-            font-size: 18px;
+            font-size: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
         }
-        .side-btn.liked { color: #ff2a6d; border-color: #ff2a6d; }
-        .side-count { font-size: 11px; font-weight: 600; }
-
-        /* अपलोड स्क्रीन */
-        .create-wrapper {
-            flex: 1;
-            padding: 16px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        .side-btn.liked {
+            color: #ff2a6d;
+            border-color: #ff2a6d;
         }
-        .rule-card {
-            background: #141414;
-            border: 1px solid #2a2a2a;
-            border-radius: 10px;
-            padding: 12px;
-            width: 100%;
-            max-width: 400px;
-            margin-bottom: 14px;
+        .side-count {
             font-size: 12px;
-            color: #ccc;
-        }
-        .rule-card strong { color: #4ade80; }
-        .drop-zone {
-            width: 100%;
-            max-width: 400px;
-            border: 2px dashed #444;
-            border-radius: 14px;
-            padding: 24px 14px;
-            text-align: center;
-            background: #111;
-            cursor: pointer;
-            margin-bottom: 14px;
-        }
-        .caption-input {
-            width: 100%;
-            max-width: 400px;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            color: #fff;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 13px;
-            margin-bottom: 12px;
-            outline: none;
-        }
-        .primary-btn {
-            width: 100%;
-            max-width: 400px;
-            background: linear-gradient(45deg, #ff2a6d, #ff9933);
-            color: #fff;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .primary-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        /* चैट स्क्रीन */
-        .chat-header-info {
-            padding: 8px 14px;
-            background: #141414;
-            border-bottom: 1px solid #262626;
-            font-size: 11px;
-            color: #aaa;
-            display: flex;
-            justify-content: space-between;
-        }
-        .chat-box-area {
-            flex: 1;
-            padding: 14px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .msg-bubble {
-            max-width: 78%;
-            padding: 9px 12px;
-            border-radius: 14px;
-            font-size: 13px;
-            line-height: 1.3;
-            word-wrap: break-word;
-        }
-        .msg-received { background: #222; align-self: flex-start; }
-        .msg-sent { background: #0084ff; align-self: flex-end; }
-        .chat-footer {
-            padding: 8px 10px;
-            background: #111;
-            border-top: 1px solid #262626;
-            display: flex;
-            gap: 6px;
-        }
-        .chat-footer input {
-            flex: 1;
-            background: #222;
-            border: 1px solid #333;
-            color: #fff;
-            padding: 8px 14px;
-            border-radius: 20px;
-            font-size: 13px;
-            outline: none;
-        }
-        .chat-footer button {
-            background: #0084ff;
-            color: #fff;
-            border: none;
-            padding: 0 16px;
-            border-radius: 20px;
-            font-weight: bold;
-            cursor: pointer;
+            font-weight: 600;
+            text-shadow: 0 1px 2px #000;
         }
 
-        /* प्रोफाइल स्क्रीन */
-        .profile-wrapper {
-            flex: 1;
-            overflow-y: auto;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .profile-pic {
-            width: 76px;
-            height: 76px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, #ff9933, #ff2a6d);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 32px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        .stats-row {
-            display: flex;
-            gap: 24px;
-            margin: 14px 0;
-            text-align: center;
-        }
-        .stat-box strong { display: block; font-size: 16px; }
-        .stat-box span { font-size: 11px; color: #888; }
-        .profile-ad-box {
-            width: 100%;
-            background: #181818;
-            border: 1px solid #2e2e2e;
-            border-radius: 8px;
-            padding: 10px;
-            margin-top: 10px;
-            text-align: center;
-            font-size: 11px;
-            color: #bbb;
-        }
-
-        /* स्टोरी और कमेंट मोडल */
+        /* स्टोरी व्यूअर मोडल */
         .story-modal {
             position: fixed;
             inset: 0;
@@ -458,15 +327,173 @@
             flex-direction: column;
         }
         .story-modal.open { display: flex; }
-        .story-progress-bar { height: 3px; background: #333; margin: 8px; border-radius: 2px; overflow: hidden; }
+        .story-progress-bar { height: 3px; background: #333; margin: 10px; border-radius: 2px; overflow: hidden; }
         .story-progress-fill { height: 100%; width: 0%; background: #fff; transition: width 0.1s linear; }
+        .story-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 4px 16px; }
+        .story-modal-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 24px; text-align: center; background: radial-gradient(circle at center, #222, #000); }
+
+        /* अपलोड स्क्रीन */
+        .create-wrapper {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .rule-card {
+            background: #141414;
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 14px;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 18px;
+            font-size: 13px;
+            color: #ccc;
+        }
+        .rule-card strong { color: #4ade80; }
+        .drop-zone {
+            width: 100%;
+            max-width: 400px;
+            border: 2px dashed #444;
+            border-radius: 16px;
+            padding: 28px 16px;
+            text-align: center;
+            background: #111;
+            cursor: pointer;
+            margin-bottom: 16px;
+        }
+        .caption-input {
+            width: 100%;
+            max-width: 400px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            margin-bottom: 14px;
+            outline: none;
+        }
+        .primary-btn {
+            width: 100%;
+            max-width: 400px;
+            background: linear-gradient(45deg, #ff2a6d, #ff9933);
+            color: #fff;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .primary-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* चैट स्क्रीन */
+        .chat-header-info {
+            padding: 10px 16px;
+            background: #141414;
+            border-bottom: 1px solid #262626;
+            font-size: 12px;
+            color: #aaa;
+            display: flex;
+            justify-content: space-between;
+        }
+        .chat-box-area {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .msg-bubble {
+            max-width: 78%;
+            padding: 10px 14px;
+            border-radius: 16px;
+            font-size: 14px;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+        .msg-received { background: #222; align-self: flex-start; border-bottom-left-radius: 4px; }
+        .msg-sent { background: #0084ff; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .chat-footer {
+            padding: 10px 12px;
+            background: #111;
+            border-top: 1px solid #262626;
+            display: flex;
+            gap: 8px;
+        }
+        .chat-footer input {
+            flex: 1;
+            background: #222;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 10px 16px;
+            border-radius: 22px;
+            font-size: 14px;
+            outline: none;
+        }
+        .chat-footer button {
+            background: #0084ff;
+            color: #fff;
+            border: none;
+            padding: 0 18px;
+            border-radius: 22px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* प्रोफाइल स्क्रीन */
+        .profile-wrapper {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .profile-pic {
+            width: 86px;
+            height: 86px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff9933, #ff2a6d);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+        .stats-row {
+            display: flex;
+            gap: 28px;
+            margin: 16px 0;
+            text-align: center;
+        }
+        .stat-box strong { display: block; font-size: 18px; }
+        .stat-box span { font-size: 12px; color: #888; }
+        .profile-ad-box {
+            width: 100%;
+            background: #181818;
+            border: 1px solid #2e2e2e;
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 12px;
+            text-align: center;
+            font-size: 12px;
+            color: #bbb;
+        }
+
+        /* कमेंट मोडल */
         .comment-sheet {
             position: fixed;
             bottom: 0; left: 0; right: 0;
-            height: 52%;
+            height: 55%;
             background: #161616;
-            border-top-left-radius: 16px;
-            border-top-right-radius: 16px;
+            border-top-left-radius: 18px;
+            border-top-right-radius: 18px;
             z-index: 150;
             display: none;
             flex-direction: column;
@@ -480,73 +507,77 @@
     <!-- हेडर -->
     <header>
         <div class="brand-logo">2friend</div>
-        <select class="lang-dropdown" id="languageSelect" onchange="applyLanguage()">
-            <option value="hi">हिन्दी</option>
-            <option value="en">English</option>
-            <option value="bn">বাংলা</option>
-            <option value="te">తెలుగు</option>
-            <option value="mr">मराठी</option>
-            <option value="ta">தமிழ்</option>
-            <option value="gu">ગુજરાતી</option>
-            <option value="ur">اردو</option>
-            <option value="kn">ಕನ್ನಡ</option>
-            <option value="ml">മലയാളം</option>
-            <option value="pa">ਪੰਜਾਬੀ</option>
-            <option value="or">ଓଡ଼ିଆ</option>
-            <option value="as">অসমীয়া</option>
-            <option value="ks">कश्मीरी</option>
-        </select>
+        <div class="header-right">
+            <select class="lang-dropdown" id="languageSelect" onchange="applyLanguage()">
+                <option value="hi">हिन्दी</option>
+                <option value="en">English</option>
+                <option value="bn">বাংলা</option>
+                <option value="te">తెలుగు</option>
+                <option value="mr">मराठी</option>
+                <option value="ta">தமிழ்</option>
+                <option value="gu">ગુજરાતી</option>
+                <option value="ur">اردو</option>
+                <option value="kn">ಕನ್ನಡ</option>
+                <option value="ml">മലയാളം</option>
+                <option value="pa">ਪੰਜਾਬੀ</option>
+                <option value="or">ଓଡ଼ିଆ</option>
+                <option value="as">অসমীয়া</option>
+                <option value="ks">कश्मीरी</option>
+            </select>
+        </div>
     </header>
 
-    <!-- नेविगेशन बार (अब स्क्रीन पर सबसे ऊपर हेडर के तुरंत नीचे फिक्स है ताकि हमेशा दिखाई दे) -->
+    <!-- नेविगेशन बार (Instagram/TikTok स्टाइल - केवल आइकॉन) -->
     <nav>
-        <button class="nav-tab active" onclick="navigateTab('home', this)">
-            <span class="nav-icon">🏠</span>
-            <span data-key="navHome">होम</span>
+        <button class="nav-tab active" onclick="navigateTab('home', this)" aria-label="Home">
+            <svg class="fill-active" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
         </button>
-        <button class="nav-tab" onclick="navigateTab('create', this)">
-            <span class="nav-icon">➕</span>
-            <span data-key="navCreate">बनाएं</span>
+        <button class="nav-tab" onclick="navigateTab('create', this)" aria-label="Create">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5" ry="5"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
         </button>
-        <button class="nav-tab" onclick="navigateTab('chat', this)">
-            <span class="nav-icon">💬</span>
-            <span data-key="navChat">चैट</span>
+        <button class="nav-tab" onclick="navigateTab('chat', this)" aria-label="Chat">
+            <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
         </button>
-        <button class="nav-tab" onclick="navigateTab('profile', this)">
-            <span class="nav-icon">👤</span>
-            <span data-key="navProfile">प्रोफाइल</span>
+        <button class="nav-tab" onclick="navigateTab('profile', this)" aria-label="Profile">
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
         </button>
     </nav>
 
     <!-- मुख्य बॉडी -->
     <div class="app-body">
 
-        <!-- 1. होम स्क्रीन -->
+        <!-- 1. होम स्क्रीन (स्टोरीज़ + रील्स) -->
         <div id="view-home" class="screen-view active">
+            <!-- स्टोरीज़ ट्रे (केवल गोल आइकॉन रिंग्स) -->
             <div class="stories-bar">
                 <div class="story-item" onclick="addMyStory()">
-                    <div class="story-ring add-ring"><div class="story-avatar">+</div></div>
-                    <span class="story-name" data-key="myStory">मेरी स्टोरी</span>
+                    <div class="story-ring add-ring">
+                        <div class="story-avatar">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        </div>
+                    </div>
                 </div>
-                <div class="story-item" onclick="openStory('Verender Rawat', '2friend ऐप R2 स्टोरेज पर लाइव है! 🚀')">
+                <div class="story-item" onclick="openStory('Verender Rawat', '2friend ऐप अब Cloudflare R2 स्टोरेज पर लाइव है! 🚀')">
                     <div class="story-ring"><div class="story-avatar">V</div></div>
-                    <span class="story-name">Verender</span>
                 </div>
-                <div class="story-item" onclick="openStory('दिल्ली क्रिएटर्स', '1 मिनट की शानदार 480p रील्स देखें!')">
+                <div class="story-item" onclick="openStory('दिल्ली क्रिएटर्स', 'नई दिल्ली से 1 मिनट की शानदार 480p रील्स देखें!')">
                     <div class="story-ring"><div class="story-avatar">D</div></div>
-                    <span class="story-name">दिल्ली</span>
                 </div>
                 <div class="story-item" onclick="openStory('Sanchi Trust', 'बच्चों की शिक्षा और स्टेशनरी वितरण अभियान 📚')">
                     <div class="story-ring"><div class="story-avatar">S</div></div>
-                    <span class="story-name">Sanchi Trust</span>
+                </div>
+                <div class="story-item" onclick="openStory('गेमिंग ज़ोन', 'नया मोबाइल रेसिंग गेम अभी खेलें! 🎮')">
+                    <div class="story-ring"><div class="story-avatar">G</div></div>
                 </div>
             </div>
 
+            <!-- विज्ञापन बैनर -->
             <div class="ad-slot-banner">
-                <div><span class="ad-badge">AD</span> <strong>Ludo & Cricket Arena</strong> - खेलें!</div>
+                <div><span class="ad-badge">AD</span> <strong>Ludo & Cricket Arena</strong> - अभी खेलें!</div>
                 <span style="color:#fff; text-decoration:underline; cursor:pointer;" onclick="alert('विज्ञापन खुला')">Open</span>
             </div>
 
+            <!-- रील्स फीड -->
             <div class="reels-feed" id="reelsFeedContainer">
                 <div class="reel-slide">
                     <span class="quality-tag">480p • Cloud4R2 CDN</span>
@@ -555,9 +586,9 @@
                     <div class="reel-bottom-info">
                         <div class="reel-user">
                             @verender_rawat 
-                            <button class="follow-chip" onclick="this.innerText='Following ✓';">Follow</button>
+                            <button class="follow-chip" onclick="this.innerText='Following ✓'; this.style.background='#333';">Follow</button>
                         </div>
-                        <div class="reel-desc">2friend ऐप का शानदार 480p वीडियो! #2friend #Delhi</div>
+                        <div class="reel-desc">2friend ऐप पर आपका स्वागत है! 480p क्वालिटी, तेज़ लोडिंग और शून्य डेटा बर्बादी। #2friend #India</div>
                         <div class="reel-music">🎵 Original Audio (Copyright-Free)</div>
                     </div>
                     <div class="reel-side-actions">
@@ -581,24 +612,26 @@
         <!-- 2. क्रिएट / अपलोड स्क्रीन -->
         <div id="view-create" class="screen-view">
             <div class="create-wrapper">
-                <h3 style="margin-bottom: 12px;" data-key="uploadTitle">नया वीडियो अपलोड करें</h3>
+                <h2 style="margin-bottom: 14px;" data-key="uploadTitle">नया वीडियो अपलोड करें</h2>
                 
                 <div class="rule-card">
-                    <div>✅ <strong>सीमा:</strong> अधिकतम 1 मिनट (60 सेकंड)</div>
-                    <div style="margin-top:3px;">✅ <strong>स्टोरेज:</strong> Cloudflare R2 (Cloud4R2) • 480p</div>
+                    <div>✅ <strong>अधिकतम समय:</strong> 1 मिनट (60 सेकंड)</div>
+                    <div style="margin-top:4px;">✅ <strong>क्वालिटी और स्टोरेज:</strong> 480p • Cloudflare R2 (Cloud4R2)</div>
+                    <div style="margin-top:4px;">🔒 <strong>सुरक्षा:</strong> वीडियो डाउनलोड पूरी तरह लॉक रहेगा</div>
                 </div>
 
                 <div class="drop-zone" onclick="document.getElementById('videoFileInput').click()">
-                    <div style="font-size: 32px; margin-bottom: 6px;">📁</div>
-                    <div id="selectedFileName" style="font-weight: bold; margin-bottom: 2px;">मोबाइल से वीडियो चुनें</div>
-                    <div style="font-size: 11px; color: #888;">MP4 / WebM (मैक्स 60 सेकंड)</div>
+                    <div style="font-size: 38px; margin-bottom: 8px;">🎬</div>
+                    <div id="selectedFileName" style="font-weight: bold; margin-bottom: 4px;">मोबाइल से वीडियो चुनें</div>
+                    <div style="font-size: 12px; color: #888;">MP4 / WebM (अधिकतम 60 सेकंड)</div>
                     <input type="file" id="videoFileInput" accept="video/*" style="display:none;" onchange="validateSelectedVideo(this)">
                 </div>
 
-                <input type="text" id="videoCaptionInput" class="caption-input" placeholder="वीडियो का कैप्शन लिखें (#hashtags)...">
+                <input type="text" id="videoCaptionInput" class="caption-input" placeholder="वीडियो के बारे में कुछ लिखें (#hashtags)...">
 
                 <button id="publishBtn" class="primary-btn" onclick="publishVideoToFeed()" disabled>Cloudflare R2 पर अपलोड करें</button>
-                <div id="uploadFeedback" style="margin-top: 12px; font-size: 12px; color: #4ade80; text-align: center;"></div>
+                
+                <div id="uploadFeedback" style="margin-top: 14px; font-size: 13px; color: #4ade80; text-align: center;"></div>
             </div>
         </div>
 
@@ -606,11 +639,16 @@
         <div id="view-chat" class="screen-view">
             <div class="chat-header-info">
                 <span>💬 1-to-1 टेक्स्ट चैट (सुरक्षित)</span>
-                <span>फोटो/फाइल बंद</span>
+                <span>फोटो/फाइल/कॉलिंग बंद</span>
+            </div>
+            <div class="ad-slot-banner">
+                <div><span class="ad-badge">AD</span> <strong>Car Racing 3D</strong> - डाउनलोड करें</div>
+                <span>AppLovin MAX</span>
             </div>
             <div class="chat-box-area" id="chatHistory">
-                <div class="msg-bubble msg-received">नमस्ते Verender जी! चैट बॉक्स में आपका स्वागत है।</div>
-                <div class="msg-bubble msg-sent">नमस्ते! ऐप बहुत बढ़िया चल रहा है।</div>
+                <div class="msg-bubble msg-received">नमस्ते Verender जी! 2friend चैट बॉक्स में आपका स्वागत है।</div>
+                <div class="msg-bubble msg-received">यहाँ केवल सुरक्षित टेक्स्ट मैसेज भेजे जा सकते हैं।</div>
+                <div class="msg-bubble msg-sent">बहुत बढ़िया! ऐप के सभी नियम बिल्कुल सही काम कर रहे हैं।</div>
             </div>
             <div class="chat-footer">
                 <input type="text" id="chatTextInput" placeholder="केवल टेक्स्ट संदेश लिखें..." onkeypress="if(event.key==='Enter') sendChatMsg()">
@@ -622,9 +660,9 @@
         <div id="view-profile" class="screen-view">
             <div class="profile-wrapper">
                 <div class="profile-pic">V</div>
-                <h3>Verender Singh Rawat</h3>
-                <p style="color:#aaa; font-size:12px; margin-top:2px;">संस्थापक • 2friend & Sanchi Trust</p>
-                <p style="color:#4ade80; font-size:11px; margin-top:2px;">📍 New Delhi, India</p>
+                <h2>Verender Singh Rawat</h2>
+                <p style="color:#aaa; font-size:13px; margin-top:4px;">Founder & President • Sanchi Trust | 2friend</p>
+                <p style="color:#4ade80; font-size:12px; margin-top:4px;">📍 New Delhi, India</p>
 
                 <div class="stats-row">
                     <div class="stat-box"><strong id="userPostCount">1</strong><span>Posts</span></div>
@@ -633,13 +671,14 @@
                 </div>
 
                 <div class="profile-ad-box">
-                    <span class="ad-badge">AD</span> <strong>Gaming Ads Mediation Active</strong> (AdMob / AppLovin)
+                    <span class="ad-badge">AD</span> <strong>Fantasy & Casual Gaming Ads</strong> (AdMob / Meta / Unity Mediation Active)
                 </div>
 
-                <div style="width:100%; margin-top:14px; background:#121212; padding:12px; border-radius:10px; border:1px solid #262626; font-size:12px;">
-                    <div style="font-weight:bold; margin-bottom:6px; color:#fff;">⚙️ Cloudflare R2 स्टेटस:</div>
-                    <div style="color:#4ade80;">● Connected: Cloud4R2 Bucket</div>
-                    <div style="color:#aaa; margin-top:2px;">● Credentials Configured (Active)</div>
+                <div style="width:100%; margin-top:18px; background:#121212; padding:14px; border-radius:12px; border:1px solid #262626; font-size:13px;">
+                    <div style="font-weight:bold; margin-bottom:8px; color:#fff;">⚙️ Cloudflare R2 स्टोरेज स्टेटस:</div>
+                    <div style="color:#4ade80;">● Connected: Cloud4R2 Bucket (Active)</div>
+                    <div style="color:#aaa; margin-top:4px;">● Streaming: 480p HLS / CDN Zero Egress</div>
+                    <div style="color:#aaa; margin-top:4px;">● Security: No Download / No Copy-Paste</div>
                 </div>
             </div>
         </div>
@@ -649,23 +688,23 @@
     <!-- स्टोरी व्यूअर मोडल -->
     <div class="story-modal" id="storyModal">
         <div class="story-progress-bar"><div class="story-progress-fill" id="storyProgress"></div></div>
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:4px 14px;">
+        <div class="story-modal-header">
             <strong id="storyModalUser">User</strong>
-            <button onclick="closeStory()" style="background:none; border:none; color:#fff; font-size:20px;">✕</button>
+            <button onclick="closeStory()" style="background:none; border:none; color:#fff; font-size:22px; cursor:pointer;">✕</button>
         </div>
-        <div style="flex:1; display:flex; justify-content:center; align-items:center; padding:20px; text-align:center;">
-            <p id="storyModalText" style="font-size:18px; line-height:1.4;"></p>
+        <div class="story-modal-content">
+            <p id="storyModalText" style="font-size:20px; line-height:1.5; font-weight:500;"></p>
         </div>
     </div>
 
     <!-- कमेंट शीट मोडल -->
     <div class="comment-sheet" id="commentSheet">
-        <div style="padding:10px 14px; border-bottom:1px solid #333; display:flex; justify-content:space-between; align-items:center;">
+        <div style="padding:12px 16px; border-bottom:1px solid #333; display:flex; justify-content:space-between; align-items:center;">
             <strong>Comments (केवल टेक्स्ट)</strong>
-            <button onclick="closeComments()" style="background:none; border:none; color:#fff; font-size:16px;">✕</button>
+            <button onclick="closeComments()" style="background:none; border:none; color:#fff; font-size:18px;">✕</button>
         </div>
-        <div id="commentsList" style="flex:1; padding:12px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; font-size:12px;">
-            <div><strong>@rahul:</strong> शानदार ऐप है! 🔥</div>
+        <div id="commentsList" style="flex:1; padding:14px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; font-size:13px;">
+            <div><strong>@rahul_delhi:</strong> बहुत ही तेज़ और साफ वीडियो चल रहा है! 🔥</div>
         </div>
         <div class="chat-footer">
             <input type="text" id="commentInput" placeholder="कमेंट लिखें...">
@@ -674,6 +713,15 @@
     </div>
 
     <script>
+        // Cloudflare R2 Configuration (Cloud4R2 Active)
+        const R2_CONFIG = {
+            bucketName: "2friend-videos",
+            accessKeyId: "b813abe1ec44ae818502be1fd0a50148",
+            endpoint: "https://a3b69d20333d041a02f96a4e4.r2.cloudflarestorage.com",
+            resolution: "480p",
+            maxDurationSeconds: 60
+        };
+
         let pendingVideoURL = null;
         let videoCounter = 1;
         let storyTimer = null;
@@ -731,22 +779,22 @@
             const fileNameDisplay = document.getElementById('selectedFileName');
 
             feedback.style.color = "#facc15";
-            feedback.innerText = "वीडियो की जाँच हो रही है (60s नियम)...";
+            feedback.innerText = "वीडियो की लंबाई (60 सेकंड नियम) जाँची जा रही है...";
             publishBtn.disabled = true;
 
             const tempVideo = document.createElement('video');
             tempVideo.preload = 'metadata';
             tempVideo.onloadedmetadata = function() {
-                if (tempVideo.duration > 61) {
+                if (tempVideo.duration > R2_CONFIG.maxDurationSeconds + 0.5) {
                     feedback.style.color = "#f87171";
-                    feedback.innerText = "❌ वीडियो 1 मिनट से बड़ा है! अधिकतम 60 सेकंड मान्य है।";
+                    feedback.innerText = "❌ अस्वीकृत: वीडियो 1 मिनट से बड़ा है! अधिकतम 60 सेकंड मान्य है।";
                     input.value = "";
                     pendingVideoURL = null;
                 } else {
                     pendingVideoURL = URL.createObjectURL(file);
                     fileNameDisplay.innerText = "✅ " + file.name + " (" + Math.round(tempVideo.duration) + "s)";
                     feedback.style.color = "#4ade80";
-                    feedback.innerText = "Cloud4R2 स्टोरेज के लिए तैयार!";
+                    feedback.innerText = "Cloud4R2 स्टोरेज पर अपलोड के लिए तैयार!";
                     publishBtn.disabled = false;
                 }
             };
@@ -756,12 +804,12 @@
         function publishVideoToFeed() {
             if (!pendingVideoURL) return;
 
-            const caption = document.getElementById('videoCaptionInput').value.trim() || "मेरा नया वीडियो #2friend";
+            const caption = document.getElementById('videoCaptionInput').value.trim() || "मेरा नया 480p वीडियो #2friend";
             const feedback = document.getElementById('uploadFeedback');
             const publishBtn = document.getElementById('publishBtn');
 
             publishBtn.disabled = true;
-            feedback.innerText = "Cloudflare R2 (Cloud4R2) बकेट पर अपलोड हो रहा है...";
+            feedback.innerText = "Cloudflare R2 (Cloud4R2) पर अपलोड हो रहा है...";
 
             setTimeout(() => {
                 videoCounter++;
@@ -776,7 +824,7 @@
                     <video id="${newVidId}" src="${pendingVideoURL}" loop playsinline controlsList="nodownload" disablePictureInPicture oncontextmenu="return false;"></video>
                     <div class="center-play-btn" id="${newBtnId}" onclick="toggleVideo('${newVidId}', '${newBtnId}')">▶</div>
                     <div class="reel-bottom-info">
-                        <div class="reel-user">@verender_rawat <span style="font-size:10px; color:#4ade80;">(Just Now)</span></div>
+                        <div class="reel-user">@verender_rawat <span style="font-size:11px; color:#4ade80;">(Just Now)</span></div>
                         <div class="reel-desc">${caption}</div>
                         <div class="reel-music">🎵 Original Audio - 2friend</div>
                     </div>
@@ -790,7 +838,7 @@
                             <span class="side-count">0</span>
                         </div>
                         <div class="side-btn-wrap">
-                            <button class="side-btn" onclick="alert('शेर किया गया')">➤</button>
+                            <button class="side-btn" onclick="alert('लिंक शेयर किया गया')">➤</button>
                             <span class="side-count">Share</span>
                         </div>
                     </div>
@@ -807,43 +855,51 @@
 
                 alert("🎉 बधाई हो Verender जी! आपका वीडियो R2 पर सेव होकर रील्स फीड में आ गया है।");
                 navigateTab('home', document.querySelectorAll('.nav-tab')[0]);
-            }, 1000);
+            }, 1200);
         }
 
-        function openStory(userName, text) {
-            document.getElementById('storyModalUser').innerText = userName;
-            document.getElementById('storyModalText').innerText = text;
-            document.getElementById('storyModal').classList.add('open');
+        function openStory(userName, storyText) {
+            const modal = document.getElementById('storyModal');
             const progress = document.getElementById('storyProgress');
+            document.getElementById('storyModalUser').innerText = userName;
+            document.getElementById('storyModalText').innerText = storyText;
+            
+            modal.classList.add('open');
             progress.style.width = '0%';
-            let w = 0;
+            
+            let width = 0;
             clearInterval(storyTimer);
             storyTimer = setInterval(() => {
-                w += 2;
-                progress.style.width = w + '%';
-                if (w >= 100) closeStory();
-            }, 80);
+                width += 2;
+                progress.style.width = width + '%';
+                if (width >= 100) closeStory();
+            }, 100);
         }
+
         function closeStory() {
             clearInterval(storyTimer);
             document.getElementById('storyModal').classList.remove('open');
         }
+
         function addMyStory() {
-            const txt = prompt("स्टोरी संदेश लिखें:");
-            if (txt) openStory("Verender Rawat (मेरी स्टोरी)", txt);
+            const text = prompt("अपनी स्टोरी के लिए संदेश लिखें:");
+            if (text && text.trim() !== "") {
+                openStory("Verender Rawat", text.trim());
+            }
         }
 
         function sendChatMsg() {
             const input = document.getElementById('chatTextInput');
             const msg = input.value.trim();
             if (!msg) return;
-            const box = document.getElementById('chatHistory');
+
+            const chatBox = document.getElementById('chatHistory');
             const div = document.createElement('div');
             div.className = 'msg-bubble msg-sent';
             div.innerText = msg;
-            box.appendChild(div);
+            chatBox.appendChild(div);
             input.value = '';
-            box.scrollTop = box.scrollHeight;
+            chatBox.scrollTop = chatBox.scrollHeight;
         }
 
         function openComments() { document.getElementById('commentSheet').classList.add('open'); }
@@ -859,16 +915,16 @@
         }
 
         const translations = {
-            hi: { navHome: "होम", navCreate: "बनाएं", navChat: "चैट", navProfile: "प्रोफाइल", myStory: "मेरी स्टोरी", uploadTitle: "नया वीडियो अपलोड करें" },
-            en: { navHome: "Home", navCreate: "Create", navChat: "Chat", navProfile: "Profile", myStory: "My Story", uploadTitle: "Upload New Video" }
+            hi: { uploadTitle: "नया वीडियो अपलोड करें" },
+            en: { uploadTitle: "Upload New Video" }
         };
 
         function applyLanguage() {
-            const sel = document.getElementById('languageSelect').value;
-            const dict = translations[sel] || translations['hi'];
+            const selected = document.getElementById('languageSelect').value;
+            const dict = translations[selected] || translations['hi'];
             document.querySelectorAll('[data-key]').forEach(el => {
-                const k = el.getAttribute('data-key');
-                if (dict[k]) el.innerText = dict[k];
+                const key = el.getAttribute('data-key');
+                if (dict[key]) el.innerText = dict[key];
             });
         }
     </script>
