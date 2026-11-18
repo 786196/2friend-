@@ -21,7 +21,7 @@
         body {
             background-color: #000;
             color: #fff;
-            height: 100vh;
+            height: 100dvh; /* मोबाइल स्क्रीन के हिसाब से सही ऊंचाई */
             width: 100vw;
             display: flex;
             flex-direction: column;
@@ -288,6 +288,20 @@
             border: 1px solid rgba(74, 222, 128, 0.3);
             z-index: 10;
         }
+        /* आवाज़ चालू/बंद करने का बटन */
+        .sound-toggle-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            color: #fff;
+            cursor: pointer;
+            z-index: 10;
+        }
         .reel-bottom-info {
             position: absolute;
             bottom: 16px;
@@ -401,13 +415,12 @@
         }
         .primary-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* चैट स्क्रीन - फिक्स्ड इनपुट बार */
+        /* चैट स्क्रीन - फिक्स्ड इनपुट बार (अब कभी नहीं छिपेलगा) */
         .chat-container {
             display: flex;
             flex-direction: column;
             height: 100%;
             background: #000;
-            position: relative;
         }
         .chat-header-info {
             padding: 8px 14px;
@@ -426,7 +439,6 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            padding-bottom: 70px; /* ताकि मैसेज इनपुट के नीचे न छिपें */
         }
         .msg-bubble {
             max-width: 78%;
@@ -440,21 +452,17 @@
         .msg-sent { background: #0084ff; align-self: flex-end; }
         
         .chat-footer {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: #111;
+            background: #141414;
             border-top: 1px solid #262626;
             display: flex;
             gap: 8px;
             padding: 10px 14px;
-            z-index: 100;
+            flex-shrink: 0; /* यह सुनिश्चित करता है कि इनपुट बार हमेशा दिखे */
         }
         .chat-footer input {
             flex: 1;
             background: #222;
-            border: 1px solid #333;
+            border: 1px solid #4ade80; /* स्पष्ट हरा बॉर्डर ताकि टाइपिंग बॉक्स साफ दिखे */
             color: #fff;
             padding: 10px 14px;
             border-radius: 20px;
@@ -471,7 +479,7 @@
             cursor: pointer;
         }
 
-        /* प्रोफाइल स्क्रीन - सांची ट्रस्ट नाम हटाया गया */
+        /* प्रोफाइल स्क्रीन */
         .profile-wrapper {
             flex: 1;
             overflow-y: auto;
@@ -526,14 +534,14 @@
 </head>
 <body oncontextmenu="return false;">
 
-    <!-- लॉगिन / साइन-अप स्क्रीन -->
+    <!-- लॉगिन स्क्रीन -->
     <div id="auth-screen">
         <div class="auth-card">
             <div class="auth-logo">2friend</div>
             <p style="color: #aaa; font-size: 13px; margin-bottom: 20px;">अपने क्रिएटर अकाउंट से लॉगिन करें</p>
             <input type="text" id="loginUsername" class="auth-input" placeholder="यूज़रनेम (जैसे @verender_rawat)">
             <input type="password" id="loginPassword" class="auth-input" placeholder="पासवर्ड दर्ज करें">
-            <button class="auth-btn" onclick="handleLogin()">लॉगिन करें (Google Login)</button>
+            <button class="auth-btn" onclick="handleLogin()">लॉगिन करें</button>
         </div>
     </div>
 
@@ -580,7 +588,7 @@
     <!-- मुख्य बॉडी -->
     <div class="app-body">
 
-        <!-- 1. होम स्क्रीन (वीडियो ब्लैंक स्क्रीन फिक्स) -->
+        <!-- 1. होम स्क्रीन (वीडियो और आवाज़ फिक्स) -->
         <div id="view-home" class="screen-view active">
             <div class="stories-bar">
                 <div class="story-item" onclick="addMyStory()">
@@ -605,8 +613,9 @@
 
             <div class="reels-feed" id="reelsFeedContainer">
                 <div class="reel-slide">
-                    <span class="quality-tag">480p • Cloud4R2 CDN + D1 DB</span>
-                    <!-- वीडियो ब्लैंक फिक्स: playsinline, autoplay, muted और preload जोड़ा गया है -->
+                    <span class="quality-tag">480p • Cloud4R2 CDN</span>
+                    <button class="sound-toggle-btn" id="sound-btn-1" onclick="toggleAudio('vid-1', 'sound-btn-1')">🔇 Muted</button>
+                    <!-- वीडियो लैग फिक्स: playsinline, preload="auto", muted -->
                     <video id="vid-1" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" loop autoplay muted playsinline preload="auto" controlsList="nodownload" disablePictureInPicture oncontextmenu="return false;"></video>
                     <div class="center-play-btn" id="btn-1" style="display:none;" onclick="toggleVideo('vid-1', 'btn-1')">▶</div>
                     <div class="reel-bottom-info">
@@ -641,7 +650,7 @@
                 <h3 style="margin-bottom: 12px;">नया वीडियो अपलोड करें</h3>
                 <div class="rule-card">
                     <div>✅ <strong>अधिकतम समय:</strong> 1 मिनट (60 सेकंड)</div>
-                    <div style="margin-top:3px;">✅ <strong>स्टोरेज & डेटाबेस:</strong> Cloudflare R2 + Cloudflare D1</div>
+                    <div style="margin-top:3px;">✅ <strong>क्वालिटी नियम:</strong> 480p ऑप्टिमाइज्ड</div>
                 </div>
                 <div class="drop-zone" onclick="document.getElementById('videoFileInput').click()">
                     <div style="font-size: 32px; margin-bottom: 6px;">🎬</div>
@@ -650,12 +659,12 @@
                     <input type="file" id="videoFileInput" accept="video/*" style="display:none;" onchange="validateSelectedVideo(this)">
                 </div>
                 <input type="text" id="videoCaptionInput" class="caption-input" placeholder="वीडियो का कैप्शन लिखें (#hashtags)...">
-                <button id="publishBtn" class="primary-btn" onclick="publishVideoToFeed()" disabled>Cloudflare R2 और D1 पर सेव करें</button>
+                <button id="publishBtn" class="primary-btn" onclick="publishVideoToFeed()" disabled>Cloudflare R2 पर सेव करें</button>
                 <div id="uploadFeedback" style="margin-top: 12px; font-size: 12px; color: #4ade80; text-align: center;"></div>
             </div>
         </div>
 
-        <!-- 3. चैट स्क्रीन (मैसेज इनपुट बार फिक्स) -->
+        <!-- 3. चैट स्क्रीन (टाइपिंग इनपुट फिक्स) -->
         <div id="view-chat" class="screen-view">
             <div class="chat-container">
                 <div class="chat-header-info">
@@ -667,13 +676,13 @@
                     <div class="msg-bubble msg-sent">नमस्ते! लॉगिन सफल रहा।</div>
                 </div>
                 <div class="chat-footer">
-                    <input type="text" id="chatTextInput" placeholder="केवल टेक्स्ट संदेश लिखें..." onkeypress="if(event.key==='Enter') sendChatMsg()">
+                    <input type="text" id="chatTextInput" placeholder="यहाँ संदेश टाइप करें..." onkeypress="if(event.key==='Enter') sendChatMsg()">
                     <button onclick="sendChatMsg()">भेजें</button>
                 </div>
             </div>
         </div>
 
-        <!-- 4. प्रोफाइल स्क्रीन (सांची ट्रस्ट नाम पूरी तरह हटाया गया) -->
+        <!-- 4. प्रोफाइल स्क्रीन -->
         <div id="view-profile" class="screen-view">
             <div class="profile-wrapper">
                 <div class="profile-pic">V</div>
@@ -691,12 +700,10 @@
                     <div style="font-weight:bold; margin-bottom:6px; color:#fff;">⚙️ क्लाउड स्टोरेज और डेटाबेस स्टेटस:</div>
                     <div style="color:#4ade80;">● Cloudflare R2 (Cloud4R2): Connected</div>
                     <div style="color:#4ade80; margin-top:2px;">● Cloudflare D1 Database: Synced</div>
-                    <div style="color:#aaa; margin-top:2px;">● Auth: Secure User Session Active</div>
                 </div>
-                <!-- गूगल पॉलिसी लिंक्स -->
                 <div class="policy-links">
                     <a href="#" onclick="alert('Google Privacy Policy: User data is protected.')">Privacy Policy</a> | 
-                    <a href="#" onclick="alert('Google Terms of Service: 1-minute limits & text chat apply.')">Terms of Service</a>
+                    <a href="#" onclick="alert('Google Terms of Service: 1-minute limits apply.')">Terms of Service</a>
                 </div>
             </div>
         </div>
@@ -733,9 +740,6 @@
     <script>
         const CLOUD_CONFIG = {
             bucketName: "2friend-videos",
-            accessKeyId: "b813abe1ec44ae818502be1fd0a50148",
-            endpoint: "https://a3b69d20333d041a02f96a4e4.r2.cloudflarestorage.com",
-            databaseAPI: "https://api.cloudflare.com/client/v4/accounts/d1-database-2friend",
             resolution: "480p",
             maxDurationSeconds: 60
         };
@@ -774,19 +778,27 @@
         function toggleVideo(videoId, btnId) {
             const video = document.getElementById(videoId);
             const btn = document.getElementById(btnId);
-            document.querySelectorAll('video').forEach(v => {
-                if (v.id !== videoId) {
-                    v.pause();
-                    const otherBtn = document.getElementById(v.id.replace('vid-', 'btn-'));
-                    if (otherBtn) otherBtn.style.display = 'flex';
-                }
-            });
             if (video.paused) {
                 video.play();
                 btn.style.display = 'none';
             } else {
                 video.pause();
                 btn.style.display = 'flex';
+            }
+        }
+
+        // आवाज़ ऑन/ऑफ करने का नया फंक्शन
+        function toggleAudio(videoId, soundBtnId) {
+            const video = document.getElementById(videoId);
+            const btn = document.getElementById(soundBtnId);
+            if (video.muted) {
+                video.muted = false;
+                btn.innerText = "🔊 Sound On";
+                btn.style.borderColor = "#4ade80";
+            } else {
+                video.muted = true;
+                btn.innerText = "🔇 Muted";
+                btn.style.borderColor = "rgba(255,255,255,0.3)";
             }
         }
 
@@ -826,7 +838,7 @@
                     pendingVideoURL = URL.createObjectURL(file);
                     fileNameDisplay.innerText = "✅ " + file.name + " (" + Math.round(tempVideo.duration) + "s)";
                     feedback.style.color = "#4ade80";
-                    feedback.innerText = "Cloudflare R2 और D1 डेटाबेस पर अपलोड के लिए तैयार!";
+                    feedback.innerText = "Cloudflare R2 पर अपलोड के लिए तैयार!";
                     publishBtn.disabled = false;
                 }
             };
@@ -841,22 +853,24 @@
             const publishBtn = document.getElementById('publishBtn');
 
             publishBtn.disabled = true;
-            feedback.innerText = "Cloudflare R2 और D1 डेटाबेस पर सिंक हो रहा है...";
+            feedback.innerText = "Cloudflare R2 पर सिंक हो रहा है...";
 
             setTimeout(() => {
                 videoCounter++;
                 const newVidId = 'vid-' + videoCounter;
                 const newBtnId = 'btn-' + videoCounter;
+                const newSoundBtnId = 'sound-btn-' + videoCounter;
                 const newLikeId = 'like-' + videoCounter;
 
                 const newSlide = document.createElement('div');
                 newSlide.className = 'reel-slide';
                 newSlide.innerHTML = `
-                    <span class="quality-tag">480p • R2 + D1 Active</span>
+                    <span class="quality-tag">480p • R2 CDN</span>
+                    <button class="sound-toggle-btn" id="${newSoundBtnId}" onclick="toggleAudio('${newVidId}', '${newSoundBtnId}')">🔇 Muted</button>
                     <video id="${newVidId}" src="${pendingVideoURL}" loop autoplay muted playsinline preload="auto" controlsList="nodownload" disablePictureInPicture oncontextmenu="return false;"></video>
                     <div class="center-play-btn" id="${newBtnId}" style="display:none;" onclick="toggleVideo('${newVidId}', '${newBtnId}')">▶</div>
                     <div class="reel-bottom-info">
-                        <div class="reel-user">${loggedInUser} <span style="font-size:10px; color:#4ade80;">(Database Synced)</span></div>
+                        <div class="reel-user">${loggedInUser} <span style="font-size:10px; color:#4ade80;">(Synced)</span></div>
                         <div class="reel-desc">${caption}</div>
                         <div class="reel-music">🎵 Original Audio - 2friend</div>
                     </div>
@@ -885,7 +899,7 @@
                 feedback.innerText = "";
                 pendingVideoURL = null;
 
-                alert("🎉 बधाई हो! आपका वीडियो R2 स्टोरेज और D1 डेटाबेस पर सफलतापूप्रक सेव हो गया है।");
+                alert("🎉 बधाई हो! आपका वीडियो R2 स्टोरेज पर सफलतापूप्रक सेव हो गया है।");
                 navigateTab('home', document.querySelectorAll('.nav-tab')[0]);
             }, 1000);
         }
