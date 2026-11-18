@@ -23,10 +23,44 @@
     .ad-card { margin: 14px; background: #191712; border-radius: 12px; padding: 16px; border: 1px dashed #f1c40f; }
     .card-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
     .tag { font-size: 11px; padding: 3px 8px; border-radius: 999px; background: #1d2b44; color: #7fb3ff; font-weight: 600; }
-    .preview { width: 100%; aspect-ratio: 16/10; background: #000; border-radius: 10px; overflow: hidden; margin: 12px 0; border: 1px solid #2a2a2a; display: flex; align-items: center; justify-content: center; flex-direction: column; position: relative; }
-    video { width: 100%; height: 100%; object-fit: cover; display: block; -webkit-user-drag: none; background: #000; }
+    .preview { width: 100%; aspect-ratio: 16/10; background: #000; border-radius: 10px; overflow: hidden; margin: 12px 0; border: 1px solid #2a2a2a; display: flex; align-items: center; justify-content: center; flex-direction: column; position: relative; cursor: pointer; }
+    video { width: 100%; height: 100%; object-fit: cover; display: block; -webkit-user-drag: none; background: #000; pointer-events: none; }
     img.post-img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; -webkit-user-drag: none; }
     .story-video { width: 100%; max-height: 50vh; border-radius: 10px; object-fit: contain; background: #000; -webkit-user-drag: none; }
+    
+    /* Tap-to-Fullscreen / TikTok Style Overlay Modal */
+    .fullscreen-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 99999;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      touch-action: manipulation;
+    }
+    .fullscreen-modal.open { display: flex; }
+    .fullscreen-modal video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      pointer-events: auto;
+    }
+    .close-fs-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(0,0,0,0.7);
+      color: #fff;
+      border: 1px solid #444;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 14px;
+      cursor: pointer;
+      z-index: 100000;
+    }
+
     .actions { display: flex; gap: 20px; font-size: 14px; margin-top: 12px; }
     .actions button { background: none; border: none; color: #fff; font-size: 14px; cursor: pointer; padding: 0; }
     .actions button.liked { color: #ff4d6d; font-weight: 600; }
@@ -77,7 +111,7 @@
         <option value="mr">मराठी</option>
         <option value="ta">தமிழ்</option>
         <option value="ur">اردو</option>
-        <option value="gu">ગુજરાती</option>
+        <option value="gu">ગુજરાતી</option>
         <option value="kn">ಕನ್ನಡ</option>
         <option value="ml">മലയാളം</option>
         <option value="or">ଓଡ଼ିଆ</option>
@@ -232,6 +266,12 @@
     </div>
   </section>
 
+  <!-- TAP-TO-FULLSCREEN VIDEO MODAL (TikTok / Facebook Watch Style) -->
+  <div class="fullscreen-modal" id="fsVideoModal">
+    <button class="close-fs-btn" onclick="closeFullscreenVideo()">✕ बंद करें</button>
+    <div id="fsVideoContainer" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;"></div>
+  </div>
+
   <!-- STORY LOOP & AD BREAK MODAL -->
   <div class="story-modal" id="storyModal">
     <div>
@@ -272,7 +312,6 @@
     const R2_CACHE_BASE = 'https://pub-eaf6b9a861824b82ad140f60615e8933.r2.dev';
     const MAX_VIDEO_SECONDS = 60;
 
-    // Ad Mediation Stack: Applooney Max is Main, followed by Google, Unity, Meta, AppLovin
     const AD_NETWORKS = [
       'Applooney Max (Main)',
       'Google AdMob',
@@ -343,6 +382,27 @@
       });
     }
 
+    // Tap to open Fullscreen / TikTok style view
+    function openFullscreenVideo(url) {
+      if (!url) return;
+      const modal = document.getElementById('fsVideoModal');
+      const container = document.getElementById('fsVideoContainer');
+      container.innerHTML = `<video id="fsActiveVid" controls autoplay playsinline controlsList="nodownload noplaybackrate" disablePictureInPicture></video>`;
+      const fsVid = document.getElementById('fsActiveVid');
+      attachVideoSource(fsVid, url, false);
+      fsVid.play().catch(() => {});
+      modal.classList.add('open');
+    }
+
+    function closeFullscreenVideo() {
+      const modal = document.getElementById('fsVideoModal');
+      const container = document.getElementById('fsVideoContainer');
+      const fsVid = document.getElementById('fsActiveVid');
+      if (fsVid) fsVid.pause();
+      container.innerHTML = '';
+      modal.classList.remove('open');
+    }
+
     function validateVideoDuration(file) {
       return new Promise((resolve, reject) => {
         const tempUrl = URL.createObjectURL(file);
@@ -399,7 +459,7 @@
         id: 'official',
         author: '2friend Official',
         tag: 'Cloudflare R2 · 480p · Max 1m',
-        caption: 'Short Reel Preview (Max 1 min · 480p / H.264 / AAC 128kbps · Scroll Auto-Play/Pause)',
+        caption: 'Short Reel Preview (Max 1 min · 480p / H.264 / AAC 128kbps · Tap Video to Expand)',
         imageUrl: '',
         videoUrl: '',
         likes: 0,
@@ -429,12 +489,13 @@
             </div>
           ` : ''}
           ${post.videoUrl ? `
-            <div class="preview">
-              <video id="feed-vid-${index}" controls playsinline preload="metadata" controlsList="nodownload noplaybackrate" disablePictureInPicture></video>
+            <div class="preview" onclick="openFullscreenVideo('${post.videoUrl}')">
+              <video id="feed-vid-${index}" muted playsinline preload="metadata"></video>
+              <div style="position:absolute; bottom:8px; right:8px; background:rgba(0,0,0,0.6); padding:4px 8px; border-radius:4px; font-size:11px; color:#2ecc71;">🔍 टैप करके बड़ा करें</div>
             </div>
           ` : (post.id === 'official' ? `
-            <div class="preview" style="color:#aaa; font-size:14px;">
-              480p HLS Video Ready (Max 1 min · Scroll Auto-Play/Pause Active)
+            <div class="preview" onclick="openFullscreenVideo('https://pub-eaf6b9a861824b82ad140f60615e8933.r2.dev/sample.mp4')" style="color:#aaa; font-size:14px;">
+              ▶ वीडियो पर उंगली मारें (Tap to Play Fullscreen)
             </div>
           ` : '')}
           <div class="actions">
