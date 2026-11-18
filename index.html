@@ -17,7 +17,6 @@
             user-select: none;
             -webkit-touch-callout: none;
         }
-        /* केवल चैट और कैप्शन लिखने के लिए टाइपिंग की अनुमति */
         input, textarea {
             -webkit-user-select: text;
             user-select: text;
@@ -30,6 +29,58 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+        }
+
+        /* लॉगिन स्क्रीन ओवरले */
+        #auth-screen {
+            position: fixed;
+            inset: 0;
+            background: #0b0b0b;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .auth-card {
+            width: 100%;
+            max-width: 360px;
+            background: #141414;
+            border: 1px solid #282828;
+            border-radius: 16px;
+            padding: 28px 20px;
+            text-align: center;
+        }
+        .auth-logo {
+            font-size: 32px;
+            font-weight: 900;
+            background: linear-gradient(45deg, #ff9933, #ff2a6d, #00d2ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+        .auth-input {
+            width: 100%;
+            background: #1e1e1e;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 14px;
+            margin-bottom: 12px;
+            outline: none;
+        }
+        .auth-btn {
+            width: 100%;
+            background: linear-gradient(45deg, #ff2a6d, #ff9933);
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 6px;
         }
 
         /* हेडर बार */
@@ -67,7 +118,7 @@
             outline: none;
         }
 
-        /* मुख्य नेविगेशन बार (Instagram/TikTok स्टाइल - केवल आइकॉन, कोई लिखावट नहीं) */
+        /* नेविगेशन बार (केवल आइकॉन) */
         nav {
             height: 52px;
             background: #0f0f0f;
@@ -125,7 +176,7 @@
             display: flex;
         }
 
-        /* स्टोरीज़ सेक्शन (केवल गोल रिंग्स और आइकॉन, बिना नाम/टेक्स्ट के) */
+        /* स्टोरीज़ सेक्शन */
         .stories-bar {
             display: flex;
             gap: 14px;
@@ -152,9 +203,7 @@
             padding: 2.5px;
             background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
         }
-        .story-ring.add-ring {
-            background: #333;
-        }
+        .story-ring.add-ring { background: #333; }
         .story-avatar {
             width: 100%;
             height: 100%;
@@ -307,30 +356,8 @@
             align-items: center;
             cursor: pointer;
         }
-        .side-btn.liked {
-            color: #ff2a6d;
-            border-color: #ff2a6d;
-        }
-        .side-count {
-            font-size: 12px;
-            font-weight: 600;
-            text-shadow: 0 1px 2px #000;
-        }
-
-        /* स्टोरी व्यूअर मोडल */
-        .story-modal {
-            position: fixed;
-            inset: 0;
-            background: #000;
-            z-index: 200;
-            display: none;
-            flex-direction: column;
-        }
-        .story-modal.open { display: flex; }
-        .story-progress-bar { height: 3px; background: #333; margin: 10px; border-radius: 2px; overflow: hidden; }
-        .story-progress-fill { height: 100%; width: 0%; background: #fff; transition: width 0.1s linear; }
-        .story-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 4px 16px; }
-        .story-modal-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 24px; text-align: center; background: radial-gradient(circle at center, #222, #000); }
+        .side-btn.liked { color: #ff2a6d; border-color: #ff2a6d; }
+        .side-count { font-size: 12px; font-weight: 600; }
 
         /* अपलोड स्क्रीन */
         .create-wrapper {
@@ -416,8 +443,8 @@
             line-height: 1.4;
             word-wrap: break-word;
         }
-        .msg-received { background: #222; align-self: flex-start; border-bottom-left-radius: 4px; }
-        .msg-sent { background: #0084ff; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .msg-received { background: #222; align-self: flex-start; }
+        .msg-sent { background: #0084ff; align-self: flex-end; }
         .chat-footer {
             padding: 10px 12px;
             background: #111;
@@ -486,28 +513,38 @@
             color: #bbb;
         }
 
-        /* कमेंट मोडल */
-        .comment-sheet {
+        /* स्टोरी और कमेंट मोडल */
+        .story-modal {
             position: fixed;
-            bottom: 0; left: 0; right: 0;
-            height: 55%;
-            background: #161616;
-            border-top-left-radius: 18px;
-            border-top-right-radius: 18px;
-            z-index: 150;
-            display: none;
-            flex-direction: column;
-            border-top: 1px solid #333;
+            inset: 0; background: #000; z-index: 200; display: none; flex-direction: column;
+        }
+        .story-modal.open { display: flex; }
+        .comment-sheet {
+            position: fixed; bottom: 0; left: 0; right: 0; height: 55%;
+            background: #161616; border-top-left-radius: 18px; border-top-right-radius: 18px;
+            z-index: 150; display: none; flex-direction: column; border-top: 1px solid #333;
         }
         .comment-sheet.open { display: flex; }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
+    <!-- लॉगिन / साइन-अप स्क्रीन (ऐप खुलते ही सबसे पहले दिखेगी) -->
+    <div id="auth-screen">
+        <div class="auth-card">
+            <div class="auth-logo">2friend</div>
+            <p style="color: #aaa; font-size: 13px; margin-bottom: 20px;">अपने क्रिएटर अकाउंट से लॉगिन करें</p>
+            <input type="text" id="loginUsername" class="auth-input" placeholder="यूनरनेम (जैसे @verender_rawat)">
+            <input type="password" id="loginPassword" class="auth-input" placeholder="पासवर्ड दर्ज करें">
+            <button class="auth-btn" onclick="handleLogin()">लॉगिन करें (Login)</button>
+        </div>
+    </div>
+
     <!-- हेडर -->
     <header>
         <div class="brand-logo">2friend</div>
         <div class="header-right">
+            <span id="displayUser" style="font-size: 12px; color: #4ade80;">@verender_rawat</span>
             <select class="lang-dropdown" id="languageSelect" onchange="applyLanguage()">
                 <option value="hi">हिन्दी</option>
                 <option value="en">English</option>
@@ -527,7 +564,7 @@
         </div>
     </header>
 
-    <!-- नेविगेशन बार (Instagram/TikTok स्टाइल - केवल आइकॉन) -->
+    <!-- नेविगेशन बार (केवल आइकॉन) -->
     <nav>
         <button class="nav-tab active" onclick="navigateTab('home', this)" aria-label="Home">
             <svg class="fill-active" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
@@ -546,9 +583,8 @@
     <!-- मुख्य बॉडी -->
     <div class="app-body">
 
-        <!-- 1. होम स्क्रीन (स्टोरीज़ + रील्स) -->
+        <!-- 1. होम स्क्रीन -->
         <div id="view-home" class="screen-view active">
-            <!-- स्टोरीज़ ट्रे (केवल गोल आइकॉन रिंग्स) -->
             <div class="stories-bar">
                 <div class="story-item" onclick="addMyStory()">
                     <div class="story-ring add-ring">
@@ -557,27 +593,22 @@
                         </div>
                     </div>
                 </div>
-                <div class="story-item" onclick="openStory('Verender Rawat', '2friend ऐप अब Cloudflare R2 स्टोरेज पर लाइव है! 🚀')">
+                <div class="story-item" onclick="openStory('Verender Rawat', '2friend ऐप R2 स्टोरेज पर लाइव है! 🚀')">
                     <div class="story-ring"><div class="story-avatar">V</div></div>
                 </div>
-                <div class="story-item" onclick="openStory('दिल्ली क्रिएटर्स', 'नई दिल्ली से 1 मिनट की शानदार 480p रील्स देखें!')">
+                <div class="story-item" onclick="openStory('दिल्ली क्रिएटर्स', '1 मिनट की शानदार 480p रील्स देखें!')">
                     <div class="story-ring"><div class="story-avatar">D</div></div>
                 </div>
                 <div class="story-item" onclick="openStory('Sanchi Trust', 'बच्चों की शिक्षा और स्टेशनरी वितरण अभियान 📚')">
                     <div class="story-ring"><div class="story-avatar">S</div></div>
                 </div>
-                <div class="story-item" onclick="openStory('गेमिंग ज़ोन', 'नया मोबाइल रेसिंग गेम अभी खेलें! 🎮')">
-                    <div class="story-ring"><div class="story-avatar">G</div></div>
-                </div>
             </div>
 
-            <!-- विज्ञापन बैनर -->
             <div class="ad-slot-banner">
-                <div><span class="ad-badge">AD</span> <strong>Ludo & Cricket Arena</strong> - अभी खेलें!</div>
+                <div><span class="ad-badge">AD</span> <strong>Ludo & Cricket Arena</strong> - खेलें!</div>
                 <span style="color:#fff; text-decoration:underline; cursor:pointer;" onclick="alert('विज्ञापन खुला')">Open</span>
             </div>
 
-            <!-- रील्स फीड -->
             <div class="reels-feed" id="reelsFeedContainer">
                 <div class="reel-slide">
                     <span class="quality-tag">480p • Cloud4R2 CDN</span>
@@ -585,7 +616,7 @@
                     <div class="center-play-btn" id="btn-1" onclick="toggleVideo('vid-1', 'btn-1')">▶</div>
                     <div class="reel-bottom-info">
                         <div class="reel-user">
-                            @verender_rawat 
+                            <span id="reelAuthorName">@verender_rawat</span>
                             <button class="follow-chip" onclick="this.innerText='Following ✓'; this.style.background='#333';">Follow</button>
                         </div>
                         <div class="reel-desc">2friend ऐप पर आपका स्वागत है! 480p क्वालिटी, तेज़ लोडिंग और शून्य डेटा बर्बादी। #2friend #India</div>
@@ -616,8 +647,7 @@
                 
                 <div class="rule-card">
                     <div>✅ <strong>अधिकतम समय:</strong> 1 मिनट (60 सेकंड)</div>
-                    <div style="margin-top:4px;">✅ <strong>क्वालिटी और स्टोरेज:</strong> 480p • Cloudflare R2 (Cloud4R2)</div>
-                    <div style="margin-top:4px;">🔒 <strong>सुरक्षा:</strong> वीडियो डाउनलोड पूरी तरह लॉक रहेगा</div>
+                    <div style="margin-top:4px;">✅ <strong>स्टोरेज:</strong> Cloudflare R2 (Cloud4R2) • 480p</div>
                 </div>
 
                 <div class="drop-zone" onclick="document.getElementById('videoFileInput').click()">
@@ -630,7 +660,6 @@
                 <input type="text" id="videoCaptionInput" class="caption-input" placeholder="वीडियो के बारे में कुछ लिखें (#hashtags)...">
 
                 <button id="publishBtn" class="primary-btn" onclick="publishVideoToFeed()" disabled>Cloudflare R2 पर अपलोड करें</button>
-                
                 <div id="uploadFeedback" style="margin-top: 14px; font-size: 13px; color: #4ade80; text-align: center;"></div>
             </div>
         </div>
@@ -639,16 +668,11 @@
         <div id="view-chat" class="screen-view">
             <div class="chat-header-info">
                 <span>💬 1-to-1 टेक्स्ट चैट (सुरक्षित)</span>
-                <span>फोटो/फाइल/कॉलिंग बंद</span>
-            </div>
-            <div class="ad-slot-banner">
-                <div><span class="ad-badge">AD</span> <strong>Car Racing 3D</strong> - डाउनलोड करें</div>
-                <span>AppLovin MAX</span>
+                <span>फोटो/फाइल बंद</span>
             </div>
             <div class="chat-box-area" id="chatHistory">
-                <div class="msg-bubble msg-received">नमस्ते Verender जी! 2friend चैट बॉक्स में आपका स्वागत है।</div>
-                <div class="msg-bubble msg-received">यहाँ केवल सुरक्षित टेक्स्ट मैसेज भेजे जा सकते हैं।</div>
-                <div class="msg-bubble msg-sent">बहुत बढ़िया! ऐप के सभी नियम बिल्कुल सही काम कर रहे हैं।</div>
+                <div class="msg-bubble msg-received">नमस्ते! 2friend चैट बॉक्स में आपका स्वागत है।</div>
+                <div class="msg-bubble msg-sent">नमस्ते! लॉगिन सफल रहा।</div>
             </div>
             <div class="chat-footer">
                 <input type="text" id="chatTextInput" placeholder="केवल टेक्स्ट संदेश लिखें..." onkeypress="if(event.key==='Enter') sendChatMsg()">
@@ -660,7 +684,7 @@
         <div id="view-profile" class="screen-view">
             <div class="profile-wrapper">
                 <div class="profile-pic">V</div>
-                <h2>Verender Singh Rawat</h2>
+                <h2 id="profileUsername">Verender Singh Rawat</h2>
                 <p style="color:#aaa; font-size:13px; margin-top:4px;">Founder & President • Sanchi Trust | 2friend</p>
                 <p style="color:#4ade80; font-size:12px; margin-top:4px;">📍 New Delhi, India</p>
 
@@ -671,14 +695,13 @@
                 </div>
 
                 <div class="profile-ad-box">
-                    <span class="ad-badge">AD</span> <strong>Fantasy & Casual Gaming Ads</strong> (AdMob / Meta / Unity Mediation Active)
+                    <span class="ad-badge">AD</span> <strong>Gaming Ads Mediation Active</strong> (AdMob / AppLovin)
                 </div>
 
                 <div style="width:100%; margin-top:18px; background:#121212; padding:14px; border-radius:12px; border:1px solid #262626; font-size:13px;">
                     <div style="font-weight:bold; margin-bottom:8px; color:#fff;">⚙️ Cloudflare R2 स्टोरेज स्टेटस:</div>
                     <div style="color:#4ade80;">● Connected: Cloud4R2 Bucket (Active)</div>
-                    <div style="color:#aaa; margin-top:4px;">● Streaming: 480p HLS / CDN Zero Egress</div>
-                    <div style="color:#aaa; margin-top:4px;">● Security: No Download / No Copy-Paste</div>
+                    <div style="color:#aaa; margin-top:4px;">● Auth: Secure User Session Active</div>
                 </div>
             </div>
         </div>
@@ -688,12 +711,12 @@
     <!-- स्टोरी व्यूअर मोडल -->
     <div class="story-modal" id="storyModal">
         <div class="story-progress-bar"><div class="story-progress-fill" id="storyProgress"></div></div>
-        <div class="story-modal-header">
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:4px 16px;">
             <strong id="storyModalUser">User</strong>
             <button onclick="closeStory()" style="background:none; border:none; color:#fff; font-size:22px; cursor:pointer;">✕</button>
         </div>
-        <div class="story-modal-content">
-            <p id="storyModalText" style="font-size:20px; line-height:1.5; font-weight:500;"></p>
+        <div style="flex:1; display:flex; justify-content:center; align-items:center; padding:24px; text-align:center; background:radial-gradient(circle at center, #222, #000);">
+            <p id="storyModalText" style="font-size:20px; line-height:1.5;"></p>
         </div>
     </div>
 
@@ -722,9 +745,24 @@
             maxDurationSeconds: 60
         };
 
+        let loggedInUser = "@verender_rawat";
         let pendingVideoURL = null;
         let videoCounter = 1;
         let storyTimer = null;
+
+        // लॉगिन हैंडलर
+        function handleLogin() {
+            const uInput = document.getElementById('loginUsername').value.trim();
+            if (uInput !== "") {
+                loggedInUser = uInput.startsWith('@') ? uInput : '@' + uInput;
+            }
+            document.getElementById('displayUser').innerText = loggedInUser;
+            document.getElementById('reelAuthorName').innerText = loggedInUser;
+            document.getElementById('profileUsername').innerText = loggedInUser.replace('@', '');
+            
+            // लॉगिन स्क्रीन छुपाएं
+            document.getElementById('auth-screen').style.display = 'none';
+        }
 
         function navigateTab(tabId, btnElement) {
             document.querySelectorAll('.screen-view').forEach(view => view.classList.remove('active'));
@@ -824,7 +862,7 @@
                     <video id="${newVidId}" src="${pendingVideoURL}" loop playsinline controlsList="nodownload" disablePictureInPicture oncontextmenu="return false;"></video>
                     <div class="center-play-btn" id="${newBtnId}" onclick="toggleVideo('${newVidId}', '${newBtnId}')">▶</div>
                     <div class="reel-bottom-info">
-                        <div class="reel-user">@verender_rawat <span style="font-size:11px; color:#4ade80;">(Just Now)</span></div>
+                        <div class="reel-user">${loggedInUser} <span style="font-size:11px; color:#4ade80;">(Just Now)</span></div>
                         <div class="reel-desc">${caption}</div>
                         <div class="reel-music">🎵 Original Audio - 2friend</div>
                     </div>
@@ -853,7 +891,7 @@
                 feedback.innerText = "";
                 pendingVideoURL = null;
 
-                alert("🎉 बधाई हो Verender जी! आपका वीडियो R2 पर सेव होकर रील्स फीड में आ गया है।");
+                alert("🎉 बधाई हो! आपका वीडियो आपके अकाउंट (" + loggedInUser + ") से R2 पर अपलोड होकर फीड में आ गया है।");
                 navigateTab('home', document.querySelectorAll('.nav-tab')[0]);
             }, 1200);
         }
@@ -884,7 +922,7 @@
         function addMyStory() {
             const text = prompt("अपनी स्टोरी के लिए संदेश लिखें:");
             if (text && text.trim() !== "") {
-                openStory("Verender Rawat", text.trim());
+                openStory(loggedInUser, text.trim());
             }
         }
 
@@ -909,7 +947,7 @@
             if (!input.value.trim()) return;
             const list = document.getElementById('commentsList');
             const item = document.createElement('div');
-            item.innerHTML = `<strong>@verender_rawat:</strong> ${input.value.trim()}`;
+            item.innerHTML = `<strong>${loggedInUser}:</strong> ${input.value.trim()}`;
             list.appendChild(item);
             input.value = '';
         }
