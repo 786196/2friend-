@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>2friend - TikTok Style Reels</title>
-  <!-- HLS.js for 480p Adaptive Streaming -->
+  <title>2friend - Reels Player</title>
+  <!-- HLS.js for Adaptive Streaming -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <style>
     * { box-sizing: border-box; user-select: none; -webkit-user-select: none; }
@@ -24,25 +24,25 @@
     .card-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
     .tag { font-size: 11px; padding: 3px 8px; border-radius: 999px; background: #1d2b44; color: #7fb3ff; font-weight: 600; }
     
-    /* TikTok Style Vertical Reel Preview Card */
-    .preview { width: 100%; aspect-ratio: 9/16; background: #000; border-radius: 12px; overflow: hidden; margin: 12px 0; border: 1px solid #2a2a2a; display: flex; align-items: center; justify-content: center; flex-direction: column; position: relative; cursor: pointer; }
-    video { width: 100%; height: 100%; object-fit: cover; display: block; -webkit-user-drag: none; background: #000; pointer-events: none; }
+    /* Vertical Reel Preview Card */
+    .preview { width: 100%; aspect-ratio: 9/16; background: #111; border-radius: 12px; overflow: hidden; margin: 12px 0; border: 1px solid #2a2a2a; display: flex; align-items: center; justify-content: center; flex-direction: column; position: relative; cursor: pointer; }
+    video { width: 100%; height: 100%; object-fit: cover; display: block; -webkit-user-drag: none; background: #111; pointer-events: none; }
     img.post-img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; -webkit-user-drag: none; }
     
-    /* TikTok Fullscreen Reels Viewer (रील टू रील Swipe Mode) */
-    .tiktok-modal {
+    /* Fullscreen Clean Reels Viewer */
+    .reels-modal {
       display: none;
       position: fixed;
       inset: 0;
       background: #000;
       z-index: 99999;
       flex-direction: column;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
       touch-action: pan-y;
     }
-    .tiktok-modal.open { display: flex; }
-    .tiktok-container {
+    .reels-modal.open { display: flex; }
+    .reels-container {
       width: 100%;
       height: 100%;
       position: relative;
@@ -50,23 +50,14 @@
       align-items: center;
       justify-content: center;
     }
-    .tiktok-video {
+    .reels-video {
       width: 100%;
       height: 100%;
       object-fit: cover;
       background: #000;
+      pointer-events: auto;
     }
-    .tiktok-overlay {
-      position: absolute;
-      bottom: 30px;
-      left: 16px;
-      right: 16px;
-      z-index: 10;
-      background: linear-gradient(transparent, rgba(0,0,0,0.85));
-      padding: 16px;
-      border-radius: 12px;
-    }
-    .close-tiktok-btn {
+    .close-reels-btn {
       position: absolute;
       top: 20px;
       right: 20px;
@@ -79,21 +70,6 @@
       cursor: pointer;
       z-index: 100;
     }
-    .nav-reels-btn {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background: rgba(0,0,0,0.6);
-      color: #fff;
-      border: none;
-      padding: 14px 18px;
-      font-size: 18px;
-      cursor: pointer;
-      border-radius: 50%;
-      z-index: 100;
-    }
-    .prev-reel { left: 10px; }
-    .next-reel { right: 10px; }
 
     .actions { display: flex; gap: 20px; font-size: 14px; margin-top: 12px; }
     .actions button { background: none; border: none; color: #fff; font-size: 14px; cursor: pointer; padding: 0; }
@@ -133,7 +109,7 @@
   <header>
     <div class="brand-wrap">
       <strong>2friend</strong>
-      <span class="badge-green">TikTok Style Reels</span>
+      <span class="badge-green">Reels Player</span>
       <span class="tag">R2 Cache &gt; 99% · Zero Cost</span>
     </div>
     <div style="display:flex; align-items:center; gap:8px;">
@@ -192,7 +168,7 @@
     <div class="card">
       <div class="card-head">
         <strong>Stories Auto-Loop (Applooney Max Main Ad)</strong>
-        <span class="badge-green">480p · 128k · Max 1m</span>
+        <span class="badge-green">Zero Cost</span>
       </div>
       <p style="color:#aaa; font-size:13px; margin:8px 0;">
         Applooney Max मुख्य विज्ञापन नेटवर्क है, साथ ही Google, Unity, Meta और AppLovin बैकअप मेडिएशन के रूप में जुड़े हैं।
@@ -217,10 +193,10 @@
     <div class="card">
       <div class="card-head">
         <strong>नई पोस्ट / स्टोरी बनाएं</strong>
-        <span class="badge-green">Max 1 Min (60s) · R2 Zero Cost</span>
+        <span class="badge-green">R2 Zero Cost</span>
       </div>
       <p style="color:#aaa; font-size:12px; margin:8px 0;">
-        अधिकतम वीडियो सीमा <strong>1 मिनट (60 सेकंड)</strong> है। R2 CDN के कारण वीडियो देखने का कोई खर्च नहीं है।
+        आप किसी भी आकार या क्वालिटी का वीडियो अपलोड कर सकते हैं। R2 CDN के कारण कोई खर्च नहीं है।
       </p>
       <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
         <button type="button" class="btn" id="btnKindFeed" onclick="selectPostKind('feed')">Feed Post / Reel</button>
@@ -237,7 +213,7 @@
         <input type="text" id="r2BaseInput" value="https://pub-eaf6b9a861824b82ad140f60615e8933.r2.dev" placeholder="Cloudflare R2 Base URL" />
       </div>
       <div style="margin-top:10px;">
-        <input type="text" id="postMediaUrl" placeholder="R2 फ़ाइल पाथ या .m3u8 लिंक (जैसे: video.mp4)" />
+        <input type="text" id="postMediaUrl" placeholder="R2 फ़ाइल पाथ या .m3u8 लिंक" />
       </div>
       <div style="margin-top:10px;">
         <textarea id="postCaption" rows="3" placeholder="टेक्स्ट लिखें..."></textarea>
@@ -301,19 +277,11 @@
     </div>
   </section>
 
-  <!-- TIKTOK STYLE REELS FULLSCREEN MODAL (रील टू रील मोड) -->
-  <div class="tiktok-modal" id="tiktokModal">
-    <button class="close-tiktok-btn" onclick="closeTiktokModal()">✕ बंद करें</button>
-    <button class="nav-reels-btn prev-reel" onclick="prevTiktokReel()">▲</button>
-    <button class="nav-reels-btn next-reel" onclick="nextTiktokReel()">▼</button>
-    
-    <div class="tiktok-container" id="tiktokContainer">
-      <video id="tiktokActiveVid" class="tiktok-video" autoplay playsinline controlsList="nodownload noplaybackrate" disablePictureInPicture></video>
-      <div class="tiktok-overlay">
-        <strong id="tiktokAuthor" style="font-size:16px; color:#2ecc71;">@user</strong>
-        <p id="tiktokCaption" style="font-size:14px; margin:6px 0 0; color:#fff;"></p>
-        <small style="color:#aaa; font-size:11px;">R2 Zero Cost · 480p · Max 1m · स्वाइप करके अगली रील देखें</small>
-      </div>
+  <!-- Fullscreen Clean Reels Modal -->
+  <div class="reels-modal" id="reelsModal">
+    <button class="close-reels-btn" onclick="closeReelsModal()">✕ बंद करें</button>
+    <div class="reels-container" id="reelsContainer">
+      <video id="reelsActiveVid" class="reels-video" autoplay playsinline loop controlsList="nodownload noplaybackrate" disablePictureInPicture></video>
     </div>
   </div>
 
@@ -333,7 +301,7 @@
     <div id="storyBox" style="text-align:center; padding:20px; background:#1c1c1c; border-radius:12px; border:1px solid #2a2a2a;">
       <div id="storyMediaSlot"></div>
       <p id="storyText" style="font-size:16px; line-height:1.5; margin-top:12px;"></p>
-      <small id="storySub" style="color:#2ecc71;">R2 Cache Hit &gt; 99% • डाउनलोड/कॉपी-पेस्ट लॉक सक्रिय</small>
+      <small id="storySub" style="color:#2ecc71;">R2 Cache Hit • डाउनलोड/कॉपी-पेस्ट लॉक सक्रिय</small>
     </div>
 
     <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
@@ -355,7 +323,6 @@
     document.addEventListener('paste', e => e.preventDefault());
 
     const R2_CACHE_BASE = 'https://pub-eaf6b9a861824b82ad140f60615e8933.r2.dev';
-    const MAX_VIDEO_SECONDS = 60;
 
     const AD_NETWORKS = [
       'Applooney Max (Main)',
@@ -390,23 +357,27 @@
         entries.forEach(entry => {
           const vid = entry.target;
           if (entry.isIntersecting) {
+            vid.muted = true;
             vid.play().catch(() => {});
           } else {
             vid.pause();
           }
         });
-      }, { threshold: 0.5 });
+      }, { threshold: 0.35 });
 
       document.querySelectorAll('video[data-autoplay-scroll]').forEach(v => {
         observer.observe(v);
       });
     }
 
-    function attachVideoSource(videoEl, url, isStory = false) {
+    function attachVideoSource(videoEl, url, isStory = false, isFullscreen = false) {
       if (!videoEl || !url) return;
-      videoEl.muted = false;
+      
+      videoEl.muted = !isFullscreen;
       videoEl.volume = 1.0;
-      videoEl.setAttribute('data-autoplay-scroll', 'true');
+      if (!isFullscreen && !isStory) {
+        videoEl.setAttribute('data-autoplay-scroll', 'true');
+      }
 
       if (url.endsWith('.m3u8') && window.Hls && Hls.isSupported()) {
         const hls = new Hls({ maxBufferLength: 15, maxMaxBufferLength: 30 });
@@ -416,122 +387,98 @@
         videoEl.src = url;
       }
 
+      videoEl.onloadeddata = () => {
+        videoEl.play().catch(() => {});
+      };
+
       videoEl.addEventListener('ended', () => {
         if (isStory) {
           nextStoryStep();
         } else {
-          // Auto-Loop (Never goes to 0/blank)
           videoEl.currentTime = 0.05;
           videoEl.play().catch(() => {});
         }
       });
     }
 
-    // TikTok Style Fullscreen Reels Player State
+    // Fullscreen Reels Player State
     let videoPlaylist = [];
     let currentVideoIdx = 0;
 
-    function openTiktokModal(index) {
-      videoPlaylist = posts.filter(p => p.videoUrl || p.id === 'official').map(p => ({
-        author: p.author,
-        caption: p.caption,
+    function openReelsModal(postIndex) {
+      const videoPosts = posts.filter(p => p.videoUrl || p.id === 'official');
+      videoPlaylist = videoPosts.map(p => ({
         videoUrl: p.videoUrl || 'https://pub-eaf6b9a861824b82ad140f60615e8933.r2.dev/sample.mp4'
       }));
 
       if (videoPlaylist.length === 0) return;
-      currentVideoIdx = (index >= 0 && index < videoPlaylist.length) ? index : 0;
+
+      const clickedPost = posts[postIndex];
+      const foundIdx = videoPosts.findIndex(p => p === clickedPost);
+      currentVideoIdx = foundIdx >= 0 ? foundIdx : 0;
       
-      const modal = document.getElementById('tiktokModal');
+      const modal = document.getElementById('reelsModal');
       modal.classList.add('open');
-      playCurrentTiktokReel();
+      playCurrentReel();
     }
 
-    function playCurrentTiktokReel() {
+    function playCurrentReel() {
       const item = videoPlaylist[currentVideoIdx];
       if (!item) return;
 
-      document.getElementById('tiktokAuthor').textContent = item.author;
-      document.getElementById('tiktokCaption').textContent = item.caption;
-
-      const vid = document.getElementById('tiktokActiveVid');
-      attachVideoSource(vid, item.videoUrl, false);
-      vid.play().catch(() => {});
+      const vid = document.getElementById('reelsActiveVid');
+      attachVideoSource(vid, item.videoUrl, false, true);
+      vid.play().catch(() => {
+        vid.muted = true;
+        vid.play().catch(() => {});
+      });
     }
 
-    function nextTiktokReel() {
+    function nextReel() {
       if (videoPlaylist.length === 0) return;
       currentVideoIdx = (currentVideoIdx + 1) % videoPlaylist.length;
-      playCurrentTiktokReel();
+      playCurrentReel();
     }
 
-    function prevTiktokReel() {
+    function prevReel() {
       if (videoPlaylist.length === 0) return;
       currentVideoIdx = (currentVideoIdx - 1 + videoPlaylist.length) % videoPlaylist.length;
-      playCurrentTiktokReel();
+      playCurrentReel();
     }
 
-    function closeTiktokModal() {
-      const vid = document.getElementById('tiktokActiveVid');
+    function closeReelsModal() {
+      const vid = document.getElementById('reelsActiveVid');
       if (vid) vid.pause();
-      const modal = document.getElementById('tiktokModal');
+      const modal = document.getElementById('reelsModal');
       modal.classList.remove('open');
     }
 
-    // Touch Swipe Gestures for TikTok Mode (ऊपर-नीचे स्वाइप करके रील बदलना)
+    // Touch Swipe Gestures for Reels Mode (ऊपर-नीचे स्वाइप)
     let touchStartY = 0;
     document.addEventListener('touchstart', e => {
       touchStartY = e.touches[0].clientY;
     });
 
     document.addEventListener('touchend', e => {
-      const modal = document.getElementById('tiktokModal');
+      const modal = document.getElementById('reelsModal');
       if (!modal.classList.contains('open')) return;
       const touchEndY = e.changedTouches[0].clientY;
       const diff = touchStartY - touchEndY;
       if (Math.abs(diff) > 50) {
         if (diff > 0) {
-          nextTiktokReel(); // Swipe Up -> Next Reel
+          nextReel();
         } else {
-          prevTiktokReel(); // Swipe Down -> Prev Reel
+          prevReel();
         }
       }
     });
-
-    function validateVideoDuration(file) {
-      return new Promise((resolve, reject) => {
-        const tempUrl = URL.createObjectURL(file);
-        const probe = document.createElement('video');
-        probe.preload = 'metadata';
-
-        probe.onloadedmetadata = () => {
-          const duration = probe.duration;
-          URL.revokeObjectURL(tempUrl);
-          if (!Number.isFinite(duration) || duration <= 0) {
-            reject(new Error('वीडियो की अवधि नहीं पढ़ी जा सकी।'));
-            return;
-          }
-          if (duration > MAX_VIDEO_SECONDS) {
-            reject(new Error(`1 मिनट से अधिक का वीडियो मान्य नहीं है (${Math.ceil(duration)} सेकंड)।`));
-            return;
-          }
-          resolve(duration);
-        };
-
-        probe.onerror = () => {
-          URL.revokeObjectURL(tempUrl);
-          reject(new Error('वीडियो फ़ाइल पढ़ी नहीं जा सकी।'));
-        };
-
-        probe.src = tempUrl;
-      });
-    }
 
     const posts = [
       {
         id: 'tips',
         author: '2friend Tips',
         tag: '14 Languages · Zero Cost',
-        caption: 'Cloudflare R2 और CDN के माध्यम से Cache Hit Rate > 99% है, यानी वीडियो देखने का कोई खर्च नहीं आता।',
+        caption: 'Cloudflare R2 और CDN के माध्यम से किसी भी क्वालिटी का वीडियो बिना किसी खर्च के आसानी से देखा जा सकता है।',
         imageUrl: '',
         videoUrl: '',
         likes: 0,
@@ -552,11 +499,11 @@
       {
         id: 'official',
         author: '2friend Official',
-        tag: 'Cloudflare R2 · 480p · Max 1m',
-        caption: 'TikTok Style Reel Preview (Max 1 min)',
+        tag: 'Cloudflare R2 · Fullscreen Reels',
+        caption: 'Reels Preview (स्क्रीन पर टच करके फुलस्क्रीन वीडियो चलाएँ)',
         imageUrl: '',
         videoUrl: 'https://pub-eaf6b9a861824b82ad140f60615e8933.r2.dev/sample.mp4',
-        likes: 5,
+        likes: 0,
         liked: false,
         comments: []
       }
@@ -583,8 +530,8 @@
             </div>
           ` : ''}
           ${post.videoUrl || post.id === 'official' ? `
-            <div class="preview" onclick="openTiktokModal(${index})">
-              <video id="feed-vid-${index}" muted playsinline preload="metadata"></video>
+            <div class="preview" onclick="openReelsModal(${index})">
+              <video id="feed-vid-${index}" muted autoplay loop playsinline preload="auto"></video>
             </div>
           ` : ''}
           <div class="actions">
@@ -606,7 +553,7 @@
 
         if (post.videoUrl) {
           const vidEl = document.getElementById(`feed-vid-${index}`);
-          attachVideoSource(vidEl, post.videoUrl, false);
+          attachVideoSource(vidEl, post.videoUrl, false, false);
         }
 
         if ((index + 1) % 4 === 0) {
@@ -653,8 +600,8 @@
     }
 
     const storyItems = [
-      { user: 'आपकी स्टोरी', text: 'आपकी 480p स्टोरी लाइव है (Max 1 Min)।', isAd: false, adNetwork: '', videoUrl: '' },
-      { user: '2friend Demo', text: '2friend पर तेज़ 480p वीडियो और 128k ऑडियो का अनुभव लें।', isAd: false, adNetwork: '', videoUrl: '' },
+      { user: 'आपकी स्टोरी', text: 'आपकी स्टोरी लाइव है।', isAd: false, adNetwork: '', videoUrl: '' },
+      { user: '2friend Demo', text: '2friend पर तेज़ वीडियो का आनंद लें।', isAd: false, adNetwork: '', videoUrl: '' },
       { user: 'दोस्त 1', text: 'दोस्त 1 की शॉर्ट स्टोरी चल रही है।', isAd: false, adNetwork: '', videoUrl: '' },
       { user: 'Applooney Max (Main Ad)', text: '⭐ Applooney Max मुख्य विज्ञापन ब्रेक — उच्च रेवेन्यू ऑफर', isAd: true, adNetwork: 'Applooney Max (Main)', videoUrl: '' },
       { user: 'दोस्त 2', text: 'दोस्त 2 की शॉर्ट स्टोरी चल रही है।', isAd: false, adNetwork: '', videoUrl: '' }
@@ -708,10 +655,10 @@
       fill.style.width = '0%';
 
       if (item.videoUrl) {
-        mediaSlot.innerHTML = `<video id="activeStoryVid" class="story-video" controls playsinline controlsList="nodownload noplaybackrate" disablePictureInPicture></video>`;
+        mediaSlot.innerHTML = `<video id="activeStoryVid" class="story-video" controls playsinline></video>`;
         const storyVid = document.getElementById('activeStoryVid');
-        attachVideoSource(storyVid, item.videoUrl, true);
-        document.getElementById('storySub').textContent = 'वीडियो स्टोरी चल रही है (Max 1m)';
+        attachVideoSource(storyVid, item.videoUrl, true, true);
+        document.getElementById('storySub').textContent = 'वीडियो स्टोरी चल रही है';
         storyVid.play().catch(() => {});
 
         storyTimer = setInterval(() => {
@@ -723,11 +670,11 @@
         return;
       }
 
-      mediaSlot.innerHTML = `<div style="padding:24px; border-radius:10px; background:#141414; border:1px solid #2a2a2a; color:#2ecc71; font-size:14px;">${item.isAd ? '⭐ Applooney Max Main Ad Slot Active' : '▶ 2friend 480p Story Active (R2 CDN Cache Hit > 99%)'}</div>`;
+      mediaSlot.innerHTML = `<div style="padding:24px; border-radius:10px; background:#141414; border:1px solid #2a2a2a; color:#2ecc71; font-size:14px;">${item.isAd ? '⭐ Applooney Max Main Ad Slot Active' : '▶ 2friend Story Active (Zero Cost)'}</div>`;
 
       document.getElementById('storySub').textContent = item.isAd
         ? `Ad Break (${item.adNetwork || 'Applooney Max'}) • 5 सेकंड में अगली स्टोरी`
-        : 'R2 Cache Hit > 99% • डाउनलोड/कॉपी-पेस्ट लॉक सक्रिय';
+        : 'R2 Cache • डाउनलोड/कॉपी-पेस्ट लॉक सक्रिय';
       document.getElementById('storyBox').style.borderColor = item.isAd ? '#f1c40f' : '#2a2a2a';
 
       storyTimer = setInterval(() => {
@@ -763,7 +710,7 @@
       }
     }
 
-    async function createPost() {
+    function createPost() {
       const kind = document.getElementById('postKind').value;
       const author = document.getElementById('postTitle').value.trim() || '@2friend_user';
       const r2Base = document.getElementById('r2BaseInput').value.trim() || R2_CACHE_BASE;
@@ -774,19 +721,8 @@
       const status = document.getElementById('createStatus');
 
       let localVideoUrl = '';
-      let durationSec = 0;
-
       if (selectedFile) {
-        try {
-          const duration = await validateVideoDuration(selectedFile);
-          durationSec = Math.round(duration);
-          localVideoUrl = URL.createObjectURL(selectedFile);
-          status.textContent = `वीडियो मान्य है (${durationSec} सेकंड / अधिकतम 60 सेकंड)।`;
-        } catch (err) {
-          status.textContent = err.message;
-          if (fileInput) fileInput.value = '';
-          return;
-        }
+        localVideoUrl = URL.createObjectURL(selectedFile);
       }
 
       const r2MediaUrl = buildCacheSafeR2Url(r2Base, rawMedia);
@@ -819,10 +755,8 @@
       posts.unshift({
         id: Date.now(),
         author,
-        tag: r2MediaUrl
-          ? (isVideo ? 'Cloudflare R2 · 480p · Max 1m' : 'Cloudflare R2 · Image')
-          : (isVideo ? 'Video · Max 1m · 480p' : 'Text Feed'),
-        caption: isVideo ? `${caption} (Max 1 min · 480p / 128kbps)` : caption,
+        tag: r2MediaUrl ? (isVideo ? 'Cloudflare R2 · Video' : 'Cloudflare R2 · Image') : (isVideo ? 'Video' : 'Text Feed'),
+        caption: caption,
         imageUrl: mediaUrl && !isVideo ? mediaUrl : '',
         videoUrl: mediaUrl && isVideo ? mediaUrl : '',
         likes: 0,
@@ -834,7 +768,7 @@
       document.getElementById('postTitle').value = '';
       document.getElementById('postMediaUrl').value = '';
       document.getElementById('postCaption').value = '';
-      status.textContent = 'पोस्ट Feed में जुड़ गई है (TikTok Reels Mode Active)।';
+      status.textContent = 'पोस्ट Feed में जुड़ गई है (Fullscreen Reels Mode Active)।';
 
       renderFeed();
       switchTab(document.querySelector('nav button'), 'feedView');
@@ -868,6 +802,35 @@
       { handle: '@friend_one', minutes: 11 },
       { handle: '@friend_two', minutes: 7 }
     ];
+
+    function renderWinners() {
+      const list = document.getElementById('winnerRankList');
+      if (!list) return;
+      const sorted = [...screenUsers].sort((a, b) => b.minutes - a.minutes);
+      list.innerHTML = sorted
+        .map((u, idx) => `<li><span>#${idx + 1} ${u.handle} — ${u.minutes} min</span></li>`)
+        .join('');
+      const currentUser = screenUsers.find(u => u.handle === '@2friend_user') || sorted[0];
+      const profileTime = document.getElementById('profileScreenTime');
+      if (profileTime && currentUser) profileTime.textContent = `${currentUser.minutes} min`;
+    }
+
+    function simulateScreenTime() {
+      screenUsers[0].minutes += 1;
+      renderWinners();
+    }
+
+    function processMidnightPayout() {
+      const status = document.getElementById('payoutStatus');
+      const rewardState = document.getElementById('profileRewardState');
+      const top = [...screenUsers].sort((a, b) => b.minutes - a.minutes)[0];
+      if (status && top) {
+        status.textContent = `रात 12:00 AM प्रोसेस पूरा: टॉप विनर ${top.handle} (${top.minutes} min)`;
+      }
+      if (rewardState && top) {
+        rewardState.textContent = `Winner: ${top.handle}`;
+      }
+    }
 
     renderFeed();
     renderStoriesHub();
