@@ -114,7 +114,7 @@
             outline: none;
         }
 
-        /* नेविगेशन बार (केवल आइकॉन) */
+        /* नेविगेशन बार */
         nav {
             height: 50px;
             background: #0f0f0f;
@@ -401,7 +401,7 @@
         }
         .primary-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* चैट स्क्रीन */
+        /* चैट स्क्रीन - फिक्स्ड इनपुट बार */
         .chat-container {
             display: flex;
             flex-direction: column;
@@ -426,7 +426,7 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            padding-bottom: 80px; 
+            padding-bottom: 70px; /* ताकि मैसेज इनपुट के नीचे न छिपें */
         }
         .msg-bubble {
             max-width: 78%;
@@ -438,17 +438,18 @@
         }
         .msg-received { background: #222; align-self: flex-start; }
         .msg-sent { background: #0084ff; align-self: flex-end; }
+        
         .chat-footer {
             position: absolute;
             bottom: 0;
             left: 0;
-            right: 0;
+            width: 100%;
             background: #111;
             border-top: 1px solid #262626;
             display: flex;
             gap: 8px;
             padding: 10px 14px;
-            z-index: 50;
+            z-index: 100;
         }
         .chat-footer input {
             flex: 1;
@@ -470,7 +471,7 @@
             cursor: pointer;
         }
 
-        /* प्रोफाइल स्क्रीन */
+        /* प्रोफाइल स्क्रीन - सांची ट्रस्ट नाम हटाया गया */
         .profile-wrapper {
             flex: 1;
             overflow-y: auto;
@@ -532,7 +533,7 @@
             <p style="color: #aaa; font-size: 13px; margin-bottom: 20px;">अपने क्रिएटर अकाउंट से लॉगिन करें</p>
             <input type="text" id="loginUsername" class="auth-input" placeholder="यूज़रनेम (जैसे @verender_rawat)">
             <input type="password" id="loginPassword" class="auth-input" placeholder="पासवर्ड दर्ज करें">
-            <button class="auth-btn" onclick="handleLogin()">लॉगिन करें (Google Login / OAuth)</button>
+            <button class="auth-btn" onclick="handleLogin()">लॉगिन करें (Google Login)</button>
         </div>
     </div>
 
@@ -579,7 +580,7 @@
     <!-- मुख्य बॉडी -->
     <div class="app-body">
 
-        <!-- 1. होम स्क्रीन (वीडियो ब्लैक स्क्रीन फिक्स के साथ) -->
+        <!-- 1. होम स्क्रीन (वीडियो ब्लैंक स्क्रीन फिक्स) -->
         <div id="view-home" class="screen-view active">
             <div class="stories-bar">
                 <div class="story-item" onclick="addMyStory()">
@@ -605,7 +606,7 @@
             <div class="reels-feed" id="reelsFeedContainer">
                 <div class="reel-slide">
                     <span class="quality-tag">480p • Cloud4R2 CDN + D1 DB</span>
-                    <!-- वीडियो ब्लैक स्क्रीन फिक्स हेतु playsinline, autoplay, muted और preload जोड़ा गया है -->
+                    <!-- वीडियो ब्लैंक फिक्स: playsinline, autoplay, muted और preload जोड़ा गया है -->
                     <video id="vid-1" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" loop autoplay muted playsinline preload="auto" controlsList="nodownload" disablePictureInPicture oncontextmenu="return false;"></video>
                     <div class="center-play-btn" id="btn-1" style="display:none;" onclick="toggleVideo('vid-1', 'btn-1')">▶</div>
                     <div class="reel-bottom-info">
@@ -654,7 +655,7 @@
             </div>
         </div>
 
-        <!-- 3. चैट स्क्रीन (मैसेज इनपुट बार फिक्स के साथ) -->
+        <!-- 3. चैट स्क्रीन (मैसेज इनपुट बार फिक्स) -->
         <div id="view-chat" class="screen-view">
             <div class="chat-container">
                 <div class="chat-header-info">
@@ -672,7 +673,7 @@
             </div>
         </div>
 
-        <!-- 4. प्रोफाइल स्क्रीन (सांची ट्रस्ट नाम हटाने और गूगल पॉलिसी जोड़ने के साथ) -->
+        <!-- 4. प्रोफाइल स्क्रीन (सांची ट्रस्ट नाम पूरी तरह हटाया गया) -->
         <div id="view-profile" class="screen-view">
             <div class="profile-wrapper">
                 <div class="profile-pic">V</div>
@@ -692,10 +693,10 @@
                     <div style="color:#4ade80; margin-top:2px;">● Cloudflare D1 Database: Synced</div>
                     <div style="color:#aaa; margin-top:2px;">● Auth: Secure User Session Active</div>
                 </div>
-                <!-- गूगल पॉलिसी और टर्म्स लिंक्स -->
+                <!-- गूगल पॉलिसी लिंक्स -->
                 <div class="policy-links">
-                    <a href="#" onclick="alert('Google Privacy Policy: This app securely manages Google Sign-In user data according to standard policies.')">Privacy Policy</a> | 
-                    <a href="#" onclick="alert('Google Terms of Service: 1-minute video limits and text-only chat guidelines apply.')">Terms of Service</a>
+                    <a href="#" onclick="alert('Google Privacy Policy: User data is protected.')">Privacy Policy</a> | 
+                    <a href="#" onclick="alert('Google Terms of Service: 1-minute limits & text chat apply.')">Terms of Service</a>
                 </div>
             </div>
         </div>
@@ -765,7 +766,6 @@
             if (tabId !== 'home') {
                 document.querySelectorAll('video').forEach(v => v.pause());
             } else {
-                // होम टैब पर आते ही पहला वीडियो ऑटोप्ले हो जाए
                 const firstVid = document.getElementById('vid-1');
                 if (firstVid) firstVid.play().catch(e => console.log("Auto-play prevented"));
             }
@@ -800,7 +800,6 @@
                 btn.classList.add('liked');
                 countEl.innerText = count + 1;
             }
-            console.log("Database Sync: Like count updated on Cloudflare D1.");
         }
 
         function validateSelectedVideo(input) {
