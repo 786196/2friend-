@@ -3,99 +3,60 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>2friend - TikTok Style Reels</title>
+  <title>2friend - Professional Social App</title>
   <!-- HLS.js for 480p Adaptive Streaming -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <style>
     * { box-sizing: border-box; user-select: none; -webkit-user-select: none; }
     body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: #000; color: #fff; padding-bottom: 80px; }
+    
     header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid #222; position: sticky; top: 0; background: #111; z-index: 20; gap: 8px; flex-wrap: wrap; }
     .brand-wrap { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .badge-green { background: #163826; color: #2ecc71; border: 1px solid #2ecc71; font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 600; }
     .badge-ad { background: #2c2210; color: #f1c40f; border: 1px solid #f1c40f; font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 600; }
     .lang-select { background: #1a1a1a; color: #2ecc71; border: 1px solid #333; border-radius: 8px; padding: 5px 8px; font-size: 12px; font-weight: 600; }
-    .stories { display: flex; gap: 14px; padding: 14px 16px; overflow-x: auto; border-bottom: 1px solid #222; background: #141414; scrollbar-width: none; }
+    
+    /* Instagram Style Stories Tray */
+    .stories { display: flex; gap: 14px; padding: 14px 16px; overflow-x: auto; border-bottom: 1px solid #222; background: #000; scrollbar-width: none; }
     .stories::-webkit-scrollbar { display: none; }
     .story { text-align: center; font-size: 12px; cursor: pointer; min-width: 72px; }
-    .ring { width: 58px; height: 58px; border-radius: 50%; border: 2px solid #2ecc71; margin: 0 auto 6px; background: #1c1c1c; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #2ecc71; font-weight: 600; }
+    .ring { width: 62px; height: 62px; border-radius: 50%; padding: 2px; background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); margin: 0 auto 6px; display: flex; align-items: center; justify-content: center; }
+    .ring-inner { width: 56px; height: 56px; border-radius: 50%; background: #111; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #fff; font-weight: 600; border: 2px solid #000; overflow: hidden; }
+    
     .view { display: none; }
     .view.active { display: block; }
+    
     .card { margin: 14px; background: #1a1a1a; border-radius: 12px; padding: 16px; border: 1px solid #2a2a2a; }
     .ad-card { margin: 14px; background: #191712; border-radius: 12px; padding: 16px; border: 1px dashed #f1c40f; }
     .card-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
     .tag { font-size: 11px; padding: 3px 8px; border-radius: 999px; background: #1d2b44; color: #7fb3ff; font-weight: 600; }
     
-    /* TikTok Style Vertical Reel Preview Card */
+    /* Feed Video Preview */
     .preview { width: 100%; aspect-ratio: 9/16; background: #000; border-radius: 12px; overflow: hidden; margin: 12px 0; border: 1px solid #2a2a2a; display: flex; align-items: center; justify-content: center; flex-direction: column; position: relative; cursor: pointer; }
-    video { width: 100%; height: 100%; object-fit: cover; display: block; -webkit-user-drag: none; background: #000; pointer-events: none; }
-    img.post-img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; -webkit-user-drag: none; }
+    video { width: 100%; height: 100%; object-fit: cover; display: block; background: #000; pointer-events: none; }
+    img.post-img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
     
-    /* TikTok Fullscreen Reels Viewer (रील टू रील Swipe Mode) */
-    .tiktok-modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: #000;
-      z-index: 99999;
-      flex-direction: column;
-      justify-content: space-between;
-      align-items: center;
-      touch-action: pan-y;
-    }
+    /* TikTok Style Fullscreen Reels Viewer */
+    .tiktok-modal { display: none; position: fixed; inset: 0; background: #000; z-index: 99999; flex-direction: column; justify-content: space-between; align-items: center; touch-action: pan-y; }
     .tiktok-modal.open { display: flex; }
-    .tiktok-container {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .tiktok-video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      background: #000;
-      pointer-events: auto;
-    }
-    .tiktok-overlay {
-      position: absolute;
-      bottom: 30px;
-      left: 16px;
-      right: 16px;
-      z-index: 10;
-      background: linear-gradient(transparent, rgba(0,0,0,0.85));
-      padding: 16px;
-      border-radius: 12px;
-    }
-    .close-tiktok-btn {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: rgba(0,0,0,0.7);
-      color: #fff;
-      border: 1px solid #444;
-      padding: 8px 16px;
-      border-radius: 999px;
-      font-size: 14px;
-      cursor: pointer;
-      z-index: 100;
-    }
-    .nav-reels-btn {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background: rgba(0,0,0,0.6);
-      color: #fff;
-      border: none;
-      padding: 14px 18px;
-      font-size: 18px;
-      cursor: pointer;
-      border-radius: 50%;
-      z-index: 100;
-    }
+    .tiktok-container { width: 100%; height: 100%; position: relative; display: flex; align-items: center; justify-content: center; }
+    .tiktok-video { width: 100%; height: 100%; object-fit: cover; background: #000; pointer-events: auto; }
+    .tiktok-overlay { position: absolute; bottom: 30px; left: 16px; right: 16px; z-index: 10; background: linear-gradient(transparent, rgba(0,0,0,0.85)); padding: 16px; border-radius: 12px; }
+    .close-tiktok-btn { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.7); color: #fff; border: 1px solid #444; padding: 8px 16px; border-radius: 999px; font-size: 14px; cursor: pointer; z-index: 100; }
+    .nav-reels-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.6); color: #fff; border: none; padding: 14px 18px; font-size: 18px; cursor: pointer; border-radius: 50%; z-index: 100; }
     .prev-reel { left: 10px; }
     .next-reel { right: 10px; }
+
+    /* Instagram Style Fullscreen Stories Viewer */
+    .insta-story-modal { display: none; position: fixed; inset: 0; background: #000; z-index: 999999; flex-direction: column; justify-content: space-between; padding: 16px; }
+    .insta-story-modal.open { display: flex; }
+    .insta-progress-wrap { display: flex; gap: 4px; width: 100%; margin-bottom: 10px; }
+    .insta-progress-bar { flex: 1; height: 3px; background: rgba(255,255,255,0.3); border-radius: 99px; overflow: hidden; }
+    .insta-progress-fill { height: 100%; width: 0%; background: #fff; transition: width 0.1s linear; }
+    .insta-story-header { display: flex; justify-content: space-between; align-items: center; z-index: 10; }
+    .insta-story-content { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #000; z-index: 1; }
+    .insta-story-content video, .insta-story-content img { width: 100%; height: 100%; object-fit: cover; }
+    .insta-story-footer { position: absolute; bottom: 30px; left: 16px; right: 16px; z-index: 10; text-align: center; background: rgba(0,0,0,0.5); padding: 12px; border-radius: 12px; }
 
     .actions { display: flex; gap: 20px; font-size: 14px; margin-top: 12px; align-items: center; }
     .actions button { background: none; border: none; color: #fff; font-size: 14px; cursor: pointer; padding: 0; display: flex; align-items: center; gap: 4px; }
@@ -108,24 +69,11 @@
     .comment-list { list-style: none; padding: 0; margin: 6px 0 0; font-size: 13px; color: #ddd; }
     .comment-list li { padding: 8px 0; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
     
-    .story-modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.98);
-      z-index: 9999;
-      padding: 18px;
-      flex-direction: column;
-      justify-content: space-between;
-      touch-action: manipulation;
-    }
-    .story-modal.open { display: flex; }
-    .progress-bar { width: 100%; height: 4px; background: #333; border-radius: 99px; overflow: hidden; margin-bottom: 12px; }
-    .progress-fill { height: 100%; width: 0%; background: #2ecc71; transition: width 0.2s linear; }
     .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; text-align: center; }
     .stat-box { background: #121212; border: 1px solid #262626; border-radius: 10px; padding: 10px; }
     .stat-box small { display: block; color: #999; font-size: 11px; }
     .stat-box strong { display: block; margin-top: 4px; font-size: 15px; color: #2ecc71; }
+    
     nav { position: fixed; bottom: 0; left: 0; right: 0; display: flex; background: #141414; border-top: 1px solid #222; z-index: 20; }
     nav button { flex: 1; padding: 14px 0; background: none; border: none; color: #aaa; font-size: 14px; cursor: pointer; }
     nav button.active { color: #2ecc71; font-weight: 600; }
@@ -135,11 +83,10 @@
   <header>
     <div class="brand-wrap">
       <strong>2friend</strong>
-      <span class="badge-green">TikTok Style Reels</span>
-      <span class="tag">R2 Cache &gt; 99% · Zero Cost</span>
+      <span class="badge-green">Pro Social App</span>
+      <span class="tag">R2 Cache &gt; 99%</span>
     </div>
     <div style="display:flex; align-items:center; gap:8px;">
-      <!-- 14 Languages Selector -->
       <select id="langSelect" class="lang-select" onchange="changeLanguage(this.value)">
         <option value="hi">हिन्दी</option>
         <option value="en">English</option>
@@ -162,11 +109,24 @@
 
   <!-- 1. FEED VIEW -->
   <section id="feedView" class="view active">
+    <!-- Instagram Style Stories Tray -->
     <div class="stories" id="topStoriesBar">
-      <div class="story" onclick="openDirectStory(0)"><div class="ring">+</div>आपकी स्टोरी</div>
-      <div class="story" onclick="openDirectStory(1)"><div class="ring">Demo</div>2friend Demo</div>
-      <div class="story" onclick="openDirectStory(2)"><div class="ring">D1</div>दोस्त 1</div>
-      <div class="story" onclick="openDirectStory(3)"><div class="ring">D2</div>दोस्त 2</div>
+      <div class="story" onclick="openInstaStory(0)">
+        <div class="ring"><div class="ring-inner">+</div></div>
+        आपकी स्टोरी
+      </div>
+      <div class="story" onclick="openInstaStory(1)">
+        <div class="ring"><div class="ring-inner">Demo</div></div>
+        2friend Demo
+      </div>
+      <div class="story" onclick="openInstaStory(2)">
+        <div class="ring"><div class="ring-inner">D1</div></div>
+        दोस्त 1
+      </div>
+      <div class="story" onclick="openInstaStory(3)">
+        <div class="ring"><div class="ring-inner">Ad</div></div>
+        Sponsored
+      </div>
     </div>
 
     <!-- DAILY WINNERS WIDGET -->
@@ -193,23 +153,15 @@
   <section id="storiesView" class="view">
     <div class="card">
       <div class="card-head">
-        <strong>Stories Auto-Loop (Applooney Max Main Ad)</strong>
-        <span class="badge-green">480p · 128k · Max 1m</span>
+        <strong>Stories Auto-Loop Hub</strong>
+        <span class="badge-green">480p · Max 1m</span>
       </div>
-      <p style="color:#aaa; font-size:13px; margin:8px 0;">
-        Applooney Max मुख्य विज्ञापन नेटवर्क है, साथ ही Google, Unity, Meta और AppLovin बैकअप मेडिएशन के रूप में जुड़े हैं।
-      </p>
       <div class="row">
-        <button class="btn" onclick="openDirectStory(0)">पूरा स्टोरी लूप चलाएँ</button>
-        <button class="btn-outline" onclick="openDirectStory(1)">2friend Demo खोलें</button>
+        <button class="btn" onclick="openInstaStory(0)">फुल-स्क्रीन स्टोरी लूप चलाएँ</button>
       </div>
     </div>
-
     <div class="card">
-      <div class="card-head">
-        <strong>उपलब्ध स्टोरीज</strong>
-        <span class="tag">Cloudflare R2 · Zero Cost</span>
-      </div>
+      <div class="card-head"><strong>उपलब्ध स्टोरीज</strong></div>
       <ul class="comment-list" id="storiesHubList"></ul>
     </div>
   </section>
@@ -219,28 +171,22 @@
     <div class="card">
       <div class="card-head">
         <strong>नई पोस्ट / स्टोरी बनाएं</strong>
-        <span class="badge-green">Max 1 Min (60s) · R2 Zero Cost</span>
+        <span class="badge-green">Max 1 Min (60s)</span>
       </div>
-      <p style="color:#aaa; font-size:12px; margin:8px 0;">
-        अधिकतम वीडियो सीमा <strong>1 मिनट (60 सेकंड)</strong> है। R2 CDN के कारण वीडियो देखने का कोई खर्च नहीं है।
-      </p>
       <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
         <button type="button" class="btn" id="btnKindFeed" onclick="selectPostKind('feed')">Feed Post / Reel</button>
-        <button type="button" class="btn-outline" id="btnKindStory" onclick="selectPostKind('story')">Story Loop Item</button>
+        <button type="button" class="btn-outline" id="btnKindStory" onclick="selectPostKind('story')">Story Item</button>
       </div>
       <input type="hidden" id="postKind" value="feed" />
       <div style="margin-top:10px;">
         <input type="text" id="postTitle" placeholder="नाम (जैसे: 2friend Official)" />
       </div>
       <div style="margin-top:10px;">
-        <label style="font-size:12px; color:#aaa; display:block; margin-bottom:4px;">फोन की गैलरी से वीडियो चुनें (या नीचे लिंक डालें):</label>
+        <label style="font-size:12px; color:#aaa; display:block; margin-bottom:4px;">गैलरी से वीडियो चुनें:</label>
         <input type="file" id="postVideoFile" accept="video/mp4,video/webm,video/*" />
       </div>
       <div style="margin-top:10px;">
-        <input type="text" id="r2BaseInput" value="https://pub-eaf6b9a861824b82ad140f60615e8933.r2.dev" placeholder="Cloudflare R2 Base URL" />
-      </div>
-      <div style="margin-top:10px;">
-        <input type="text" id="postMediaUrl" placeholder="या R2 फ़ाइल पाथ / .m3u8 लिंक दर्ज करें" />
+        <input type="text" id="postMediaUrl" placeholder="या वीडियो लिंक (.mp4 URL)" />
       </div>
       <div style="margin-top:10px;">
         <textarea id="postCaption" rows="3" placeholder="कैप्शन और हैशटैग लिखें (#2friend #delhi)..."></textarea>
@@ -257,54 +203,32 @@
     <div class="card">
       <div class="card-head">
         <strong>@2friend_user</strong>
-        <span class="badge-green">Verified · Zero Cost Setup</span>
+        <span class="badge-green">Verified</span>
       </div>
       <p style="color:#aaa; font-size:13px; margin:8px 0;">
-        केवल टेक्स्ट चैट सक्रिय है। कॉलिंग, लाइव स्ट्रीमिंग, ग्रुप चैट और डाउनलोड पूरी तरह बंद हैं।
+        केवल टेक्स्ट चैट सक्रिय है। कॉलिंग, लाइव स्ट्रीमिंग और डाउनलोड बंद हैं।
       </p>
       <div class="stats-grid">
-        <div class="stat-box">
-          <small>Posts</small>
-          <strong>3</strong>
-        </div>
-        <div class="stat-box">
-          <small>Followers</small>
-          <strong>5,000</strong>
-        </div>
-        <div class="stat-box">
-          <small>Languages</small>
-          <strong>14</strong>
-        </div>
+        <div class="stat-box"><small>Posts</small><strong>3</strong></div>
+        <div class="stat-box"><small>Followers</small><strong>5,000</strong></div>
+        <div class="stat-box"><small>Languages</small><strong>14</strong></div>
       </div>
       <div style="margin-top:12px; padding:10px; background:#121212; border-radius:8px; border:1px solid #222;">
-        <small style="color:#999; display:block;">आज का स्क्रीन-टाइम / रिवॉर्ड स्टेटस</small>
+        <small style="color:#999; display:block;">स्क्रीन-टाइम / रिवॉर्ड स्टेटस</small>
         <strong id="profileScreenTime" style="color:#2ecc71; font-size:14px;">14 min · 12:00 AM Ready</strong>
       </div>
     </div>
-
-    <!-- MAIN AD SLOT BELOW PROFILE -->
     <aside class="ad-card">
       <div class="card-head">
         <strong>Applooney Max (Main Ad Network)</strong>
         <span class="badge-ad">Primary Monetization</span>
       </div>
-      <p style="margin:8px 0 0; font-size:13px; color:#ddd;">
-        Applooney Max मुख्य विज्ञापन स्लॉट — उच्च ईसीपीएम और बेहतरीन रेवेन्यू के साथ।
-      </p>
     </aside>
-
-    <!-- 1-TO-1 TEXT-ONLY CHAT BOX -->
     <div class="card">
-      <div class="card-head">
-        <strong>1-to-1 टेक्स्ट चैट (केवल टेक्स्ट)</strong>
-        <span class="tag">No Photo/File · No Group</span>
-      </div>
+      <div class="card-head"><strong>1-to-1 टेक्स्ट चैट</strong></div>
       <ul class="comment-list" id="chatList">
         <li><span>2friend: स्वागत है! यहाँ केवल टेक्स्ट मैसेज सक्रिय है।</span></li>
       </ul>
-      <div style="margin:10px 0; padding:8px 10px; border-radius:8px; background:#191712; border:1px dashed #f1c40f; font-size:12px; color:#f1c40f;">
-        ⚡ Sponsored Ad (Google / Unity / Meta / AppLovin Mediation): Top Partner Offer — Install Now
-      </div>
       <div class="row">
         <input type="text" id="chatInput" placeholder="टेक्स्ट मैसेज लिखें..." />
         <button class="btn" onclick="sendChat()">भेजें</button>
@@ -312,44 +236,34 @@
     </div>
   </section>
 
-  <!-- TIKTOK STYLE REELS FULLSCREEN MODAL (रील टू रील मोड) -->
+  <!-- TIKTOK STYLE FULLSCREEN REELS MODAL -->
   <div class="tiktok-modal" id="tiktokModal">
     <button class="close-tiktok-btn" onclick="closeTiktokModal()">✕ बंद करें</button>
     <button class="nav-reels-btn prev-reel" onclick="prevTiktokReel()">▲</button>
     <button class="nav-reels-btn next-reel" onclick="nextTiktokReel()">▼</button>
-    
     <div class="tiktok-container" id="tiktokContainer">
-      <video id="tiktokActiveVid" class="tiktok-video" autoplay playsinline controlsList="nodownload noplaybackrate" disablePictureInPicture></video>
+      <video id="tiktokActiveVid" class="tiktok-video" autoplay playsinline controlsList="nodownload"></video>
       <div class="tiktok-overlay">
         <strong id="tiktokAuthor" style="font-size:16px; color:#2ecc71;">@user</strong>
         <p id="tiktokCaption" style="font-size:14px; margin:6px 0 0; color:#fff;"></p>
-        <small style="color:#aaa; font-size:11px;">R2 Zero Cost · 480p · Max 1m · स्वाइप करके अगली रील देखें</small>
       </div>
     </div>
   </div>
 
-  <!-- STORY LOOP & AD BREAK MODAL -->
-  <div class="story-modal" id="storyModal">
-    <div>
-      <div class="progress-bar"><div class="progress-fill" id="storyProgress"></div></div>
-      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
-        <div>
-          <strong id="storyUser">स्टोरी</strong>
-          <span id="storyAdBadge" class="badge-ad" style="display:none; margin-left:6px;">Applooney Max (Main)</span>
-        </div>
-        <button class="btn" id="btnCloseStory" onclick="closeStory()">बंद करें</button>
+  <!-- INSTAGRAM STYLE FULLSCREEN STORIES MODAL -->
+  <div class="insta-story-modal" id="instaStoryModal">
+    <div class="insta-progress-wrap" id="instaProgressWrap"></div>
+    <div class="insta-story-header">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <div id="instaStoryAvatar" style="width:32px; height:32px; border-radius:50%; background:#2ecc71; color:#000; display:flex; align-items:center; justify-content:center; font-weight:bold;">2F</div>
+        <strong id="instaStoryUser" style="font-size:14px; color:#fff;">स्टोरी</strong>
       </div>
+      <button onclick="closeInstaStory()" style="background:none; border:none; color:#fff; font-size:22px; cursor:pointer;">✕</button>
     </div>
-
-    <div id="storyBox" style="text-align:center; padding:20px; background:#1c1c1c; border-radius:12px; border:1px solid #2a2a2a;">
-      <div id="storyMediaSlot"></div>
-      <p id="storyText" style="font-size:16px; line-height:1.5; margin-top:12px;"></p>
-      <small id="storySub" style="color:#2ecc71;">R2 Cache Hit &gt; 99% • डाउनलोड/कॉपी-पेस्ट लॉक सक्रिय</small>
-    </div>
-
-    <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
-      <span style="color:#888; font-size:12px;">2friend Auto-Loop (Zero Cost)</span>
-      <button class="btn-outline" id="btnNextStory" onclick="nextStoryStep()">अगला →</button>
+    <div class="insta-story-content" id="instaStoryContentSlot"></div>
+    <div class="insta-story-footer">
+      <p id="instaStoryText" style="margin:0; font-size:14px; color:#fff;"></p>
+      <span id="instaStoryBadge" class="badge-ad" style="display:none; margin-top:4px;">Applooney Max Ad</span>
     </div>
   </div>
 
@@ -365,211 +279,26 @@
     document.addEventListener('cut', e => e.preventDefault());
     document.addEventListener('paste', e => e.preventDefault());
 
-    const R2_CACHE_BASE = 'https://pub-eaf6b9a861824b82ad140f60615e8933.r2.dev';
-    const MAX_VIDEO_SECONDS = 60;
+    function changeLanguage(lang) { document.documentElement.lang = lang; }
 
-    const AD_NETWORKS = [
-      'Applooney Max (Main)',
-      'Google AdMob',
-      'Unity Ads',
-      'Meta Audience Network',
-      'AppLovin MAX'
-    ];
-
-    let adBreakCounter = 0;
+    const AD_NETWORKS = ['Applooney Max (Main)', 'Google AdMob', 'Unity Ads', 'Meta Audience Network', 'AppLovin MAX'];
+    let adCounter = 0;
     function getNextAdNetwork() {
-      const network = AD_NETWORKS[adBreakCounter % AD_NETWORKS.length];
-      adBreakCounter += 1;
-      return network;
-    }
-
-    function changeLanguage(lang) {
-      document.documentElement.lang = lang;
-    }
-
-    function buildCacheSafeR2Url(base, rawPath) {
-      if (!rawPath) return '';
-      const cleanUrl = rawPath.split('?')[0].trim();
-      if (/^https?:\/\//i.test(cleanUrl)) return cleanUrl;
-      const cleanBase = (base || R2_CACHE_BASE).replace(/\/+$/, '');
-      const cleanPath = cleanUrl.replace(/^\/+/, '');
-      return cleanBase ? `${cleanBase}/${cleanPath}` : cleanPath;
-    }
-
-    // Smart Scroll Auto-Play / Auto-Pause Observer
-    function setupScrollAutoPlayObserver() {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          const vid = entry.target;
-          if (entry.isIntersecting) {
-            vid.play().catch(() => {});
-          } else {
-            vid.pause();
-          }
-        });
-      }, { threshold: 0.5 });
-
-      document.querySelectorAll('video[data-autoplay-scroll]').forEach(v => {
-        observer.observe(v);
-      });
-    }
-
-    function attachVideoSource(videoEl, url, isStory = false) {
-      if (!videoEl || !url) return;
-      videoEl.muted = false;
-      videoEl.volume = 1.0;
-      videoEl.setAttribute('data-autoplay-scroll', 'true');
-
-      if (url.endsWith('.m3u8') && window.Hls && Hls.isSupported()) {
-        const hls = new Hls({ maxBufferLength: 15, maxMaxBufferLength: 30 });
-        hls.loadSource(url);
-        hls.attachMedia(videoEl);
-      } else {
-        videoEl.src = url;
-      }
-
-      videoEl.addEventListener('ended', () => {
-        if (isStory) {
-          nextStoryStep();
-        } else {
-          videoEl.currentTime = 0.05;
-          videoEl.play().catch(() => {});
-        }
-      });
-    }
-
-    // TikTok Style Fullscreen Reels Player State
-    let videoPlaylist = [];
-    let currentVideoIdx = 0;
-
-    function openTiktokModal(index) {
-      videoPlaylist = posts.filter(p => p.videoUrl || p.id === 'official').map(p => ({
-        author: p.author,
-        caption: p.caption,
-        videoUrl: p.videoUrl || 'https://pub-eaf6b9a861824b82ad140f60615e8933.r2.dev/sample.mp4'
-      }));
-
-      if (videoPlaylist.length === 0) return;
-      currentVideoIdx = (index >= 0 && index < videoPlaylist.length) ? index : 0;
-      
-      const modal = document.getElementById('tiktokModal');
-      modal.classList.add('open');
-      playCurrentTiktokReel();
-    }
-
-    function playCurrentTiktokReel() {
-      const item = videoPlaylist[currentVideoIdx];
-      if (!item) return;
-
-      document.getElementById('tiktokAuthor').textContent = item.author;
-      document.getElementById('tiktokCaption').textContent = item.caption;
-
-      const vid = document.getElementById('tiktokActiveVid');
-      attachVideoSource(vid, item.videoUrl, false);
-      vid.play().catch(() => {});
-    }
-
-    function nextTiktokReel() {
-      if (videoPlaylist.length === 0) return;
-      currentVideoIdx = (currentVideoIdx + 1) % videoPlaylist.length;
-      playCurrentTiktokReel();
-    }
-
-    function prevTiktokReel() {
-      if (videoPlaylist.length === 0) return;
-      currentVideoIdx = (currentVideoIdx - 1 + videoPlaylist.length) % videoPlaylist.length;
-      playCurrentTiktokReel();
-    }
-
-    function closeTiktokModal() {
-      const vid = document.getElementById('tiktokActiveVid');
-      if (vid) vid.pause();
-      const modal = document.getElementById('tiktokModal');
-      modal.classList.remove('open');
-    }
-
-    // Touch Swipe Gestures for TikTok Mode
-    let touchStartY = 0;
-    document.addEventListener('touchstart', e => {
-      touchStartY = e.touches[0].clientY;
-    });
-
-    document.addEventListener('touchend', e => {
-      const modal = document.getElementById('tiktokModal');
-      if (!modal.classList.contains('open')) return;
-      const touchEndY = e.changedTouches[0].clientY;
-      const diff = touchStartY - touchEndY;
-      if (Math.abs(diff) > 50) {
-        if (diff > 0) {
-          nextTiktokReel();
-        } else {
-          prevTiktokReel();
-        }
-      }
-    });
-
-    function validateVideoDuration(file) {
-      return new Promise((resolve, reject) => {
-        const tempUrl = URL.createObjectURL(file);
-        const probe = document.createElement('video');
-        probe.preload = 'metadata';
-
-        probe.onloadedmetadata = () => {
-          const duration = probe.duration;
-          URL.revokeObjectURL(tempUrl);
-          if (!Number.isFinite(duration) || duration <= 0) {
-            reject(new Error('वीडियो की अवधि नहीं पढ़ी जा सकी।'));
-            return;
-          }
-          if (duration > MAX_VIDEO_SECONDS) {
-            reject(new Error(`1 मिनट से अधिक का वीडियो मान्य नहीं है (${Math.ceil(duration)} सेकंड)।`));
-            return;
-          }
-          resolve(duration);
-        };
-
-        probe.onerror = () => {
-          URL.revokeObjectURL(tempUrl);
-          reject(new Error('वीडियो फ़ाइल पढ़ी नहीं जा सकी।'));
-        };
-
-        probe.src = tempUrl;
-      });
+      const net = AD_NETWORKS[adCounter % AD_NETWORKS.length];
+      adCounter++;
+      return net;
     }
 
     const posts = [
       {
-        id: 'tips',
-        author: '2friend Tips',
-        tag: '14 Languages · Zero Cost',
-        caption: 'Cloudflare R2 और CDN के माध्यम से Cache Hit Rate > 99% है, यानी वीडियो देखने का कोई खर्च नहीं आता।',
-        imageUrl: '',
-        videoUrl: '',
-        likes: 12,
-        liked: false,
-        comments: ['बहुत बढ़िया सिस्टम है!']
-      },
-      {
-        id: 'photo',
-        author: '2friend Photo',
-        tag: 'Cloudflare R2 · Image',
-        caption: '2friend Feed Photo Preview — डाउनलोड और कॉपी-पेस्ट लॉक सक्रिय।',
-        imageUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=60',
-        videoUrl: '',
-        likes: 25,
-        liked: false,
-        comments: ['शानदार तस्वीर!']
-      },
-      {
         id: 'official',
         author: '2friend Official',
-        tag: 'Cloudflare R2 · 480p · Max 1m',
-        caption: 'TikTok Style Reel Preview (Max 1 min · Tap video to start Reel-to-Reel mode)',
-        imageUrl: '',
+        tag: '480p · Zero Cost',
+        caption: '2friend शॉर्ट वीडियो प्रिव्यू — बिना किसी खर्च के तेज़ 480p वीडियो! #2friend #virel #delhi',
         videoUrl: 'https://pub-eaf6b9a861824b82ad140f60615e8933.r2.dev/sample.mp4',
-        likes: 48,
+        likes: 230,
         liked: false,
-        comments: ['शानदार वीडियो क्वालिटी!']
+        comments: ['बहुत बढ़िया ऐप है!', 'शानदार वीडियो!']
       }
     ];
 
@@ -577,7 +306,7 @@
       const list = document.getElementById('feedList');
       if (!list) return;
       list.innerHTML = '';
-      adBreakCounter = 0;
+      adCounter = 0;
 
       posts.forEach((post, index) => {
         const card = document.createElement('article');
@@ -587,61 +316,38 @@
             <strong>${post.author}</strong>
             <span class="tag">${post.tag}</span>
           </div>
-          ${post.caption ? `<p style="margin:10px 0 4px; font-size:14px; color:#ddd; line-height:1.45;">${post.caption}</p>` : ''}
-          ${post.imageUrl ? `
-            <div class="preview" style="aspect-ratio:16/10;">
-              <img class="post-img" src="${post.imageUrl}" alt="${post.author}" loading="lazy" />
+          <p style="margin:8px 0; font-size:14px; color:#ddd;">${post.caption}</p>
+          <div class="preview" onclick="openTiktokModal(${index})">
+            <video id="feed-vid-${index}" muted autoplay loop playsinline preload="metadata" src="${post.videoUrl}"></video>
+            <div style="position:absolute; inset:0; background:rgba(0,0,0,0.2); display:flex; align-items:center; justify-content:center;">
+              <span style="background:rgba(0,0,0,0.7); padding:8px 16px; border-radius:99px; font-size:13px; color:#2ecc71; border:1px solid #2ecc71;">▶ TikTok Reels मोड में देखें</span>
             </div>
-          ` : ''}
-          ${post.videoUrl || post.id === 'official' ? `
-            <div class="preview" onclick="openTiktokModal(${index})">
-              <video id="feed-vid-${index}" muted playsinline preload="metadata"></video>
-              <div style="position:absolute; inset:0; background:rgba(0,0,0,0.2); display:flex; align-items:center; justify-content:center;">
-                <span style="background:rgba(0,0,0,0.7); padding:8px 16px; border-radius:99px; font-size:13px; color:#2ecc71; border:1px solid #2ecc71;">▶ TikTok Reels मोड में देखें</span>
-              </div>
-            </div>
-          ` : ''}
+          </div>
           <div class="actions">
             <button class="${post.liked ? 'liked' : ''}" onclick="toggleLike(${index})"><span>${post.liked ? '❤️' : '🤍'}</span> Like (${post.likes})</button>
             <button onclick="toggleComments(${index})"><span>💬</span> Comment (${post.comments.length})</button>
-            <button onclick="sharePost()"><span>✈️</span> Share</button>
+            <button onclick="alert('लिंक कॉपी हो गया!')"><span>✈️</span> Share</button>
           </div>
           <div class="comments" id="comments-${index}">
             <ul class="comment-list">
               ${post.comments.map(c => `<li><span>${c}</span></li>`).join('')}
             </ul>
             <div class="row">
-              <input type="text" id="input-${index}" placeholder="टेक्स्ट कमेंट लिखें..." />
+              <input type="text" id="input-${index}" placeholder="कमेंट लिखें..." />
               <button class="btn" onclick="addComment(${index})">भेजें</button>
             </div>
           </div>
         `;
         list.appendChild(card);
 
-        if (post.videoUrl) {
-          const vidEl = document.getElementById(`feed-vid-${index}`);
-          attachVideoSource(vidEl, post.videoUrl, false);
-        }
-
         if ((index + 1) % 4 === 0) {
-          const adNetwork = getNextAdNetwork();
-          const isMain = adNetwork.includes('Main');
+          const adNet = getNextAdNetwork();
           const adCard = document.createElement('aside');
           adCard.className = 'ad-card';
-          adCard.innerHTML = `
-            <div class="card-head">
-              <strong>${isMain ? '⭐ Applooney Max (Main Ad)' : `Sponsored Ad · ${adNetwork}`}</strong>
-              <span class="badge-ad">${adNetwork}</span>
-            </div>
-            <p style="margin:8px 0 0; font-size:13px; color:#ddd;">
-              ${isMain ? 'Applooney Max मुख्य विज्ञापन स्लॉट सक्रिय — उच्चतम रेवेन्यू।' : `${adNetwork} बैकअप विज्ञापन स्लॉट सक्रिय।`}
-            </p>
-          `;
+          adCard.innerHTML = `<div class="card-head"><strong>⭐ ${adNet}</strong><span class="badge-ad">Active</span></div>`;
           list.appendChild(adCard);
         }
       });
-
-      setupScrollAutoPlayObserver();
     }
 
     function toggleLike(i) {
@@ -662,194 +368,167 @@
       if (!val) return;
       posts[i].comments.push(val);
       renderFeed();
-      const el = document.getElementById(`comments-${i}`);
-      if (el) el.style.display = 'block';
+      document.getElementById(`comments-${i}`).style.display = 'block';
     }
 
+    // TikTok Fullscreen Reels Logic
+    let videoPlaylist = [];
+    let currentVideoIdx = 0;
+
+    function openTiktokModal(index) {
+      videoPlaylist = posts.map(p => ({ author: p.author, caption: p.caption, videoUrl: p.videoUrl }));
+      currentVideoIdx = index;
+      document.getElementById('tiktokModal').classList.add('open');
+      playCurrentTiktokReel();
+    }
+
+    function playCurrentTiktokReel() {
+      const item = videoPlaylist[currentVideoIdx];
+      if (!item) return;
+      document.getElementById('tiktokAuthor').textContent = item.author;
+      document.getElementById('tiktokCaption').textContent = item.caption;
+      const vid = document.getElementById('tiktokActiveVid');
+      vid.src = item.videoUrl;
+      vid.play().catch(() => {});
+    }
+
+    function nextTiktokReel() {
+      currentVideoIdx = (currentVideoIdx + 1) % videoPlaylist.length;
+      playCurrentTiktokReel();
+    }
+
+    function prevTiktokReel() {
+      currentVideoIdx = (currentVideoIdx - 1 + videoPlaylist.length) % videoPlaylist.length;
+      playCurrentTiktokReel();
+    }
+
+    function closeTiktokModal() {
+      document.getElementById('tiktokActiveVid').pause();
+      document.getElementById('tiktokModal').classList.remove('open');
+    }
+
+    // Instagram Fullscreen Stories Logic
     const storyItems = [
-      { user: 'आपकी स्टोरी', text: 'आपकी 480p स्टोरी लाइव है (Max 1 Min)।', isAd: false, adNetwork: '', videoUrl: '' },
-      { user: '2friend Demo', text: '2friend पर तेज़ 480p वीडियो और 128k ऑडियो का अनुभव लें।', isAd: false, adNetwork: '', videoUrl: '' },
-      { user: 'दोस्त 1', text: 'दोस्त 1 की शॉर्ट स्टोरी चल रही है।', isAd: false, adNetwork: '', videoUrl: '' },
-      { user: 'Applooney Max (Main Ad)', text: '⭐ Applooney Max मुख्य विज्ञापन ब्रेक — उच्च रेवेन्यू ऑफर', isAd: true, adNetwork: 'Applooney Max (Main)', videoUrl: '' },
-      { user: 'दोस्त 2', text: 'दोस्त 2 की शॉर्ट स्टोरी चल रही है।', isAd: false, adNetwork: '', videoUrl: '' }
+      { user: 'आपकी स्टोरी', text: 'आपकी 480p स्टोरी लाइव है (Max 1 Min)।', isAd: false, videoUrl: '' },
+      { user: '2friend Demo', text: '2friend पर तेज़ 480p वीडियो का आनंद लें।', isAd: false, videoUrl: 'https://pub-eaf6b9a861824b82ad140f60615e8933.r2.dev/sample.mp4' },
+      { user: 'दोस्त 1', text: 'दोस्त 1 की शॉर्ट स्टोरी चल रही है।', isAd: false, videoUrl: '' },
+      { user: 'Applooney Max', text: '⭐ Applooney Max मुख्य विज्ञापन ब्रेक', isAd: true, videoUrl: '' }
     ];
+
+    let currentInstaStoryIdx = 0;
+    let storyTimer = null;
 
     function renderStoriesHub() {
       const hub = document.getElementById('storiesHubList');
       if (!hub) return;
-      hub.innerHTML = storyItems
-        .map((s, idx) => `
-          <li>
-            <span>${s.isAd ? '⭐ ' : '● '}<strong>${s.user}</strong> — ${s.text}</span>
-            <button class="btn-outline" style="padding:5px 10px; font-size:12px;" onclick="openDirectStory(${idx})">खोलें</button>
-          </li>
-        `)
-        .join('');
+      hub.innerHTML = storyItems.map((s, idx) => `
+        <li>
+          <span><strong>${s.user}</strong> — ${s.text}</span>
+          <button class="btn-outline" style="padding:5px 10px; font-size:12px;" onclick="openInstaStory(${idx})">खोलें</button>
+        </li>
+      `).join('');
     }
 
-    let currentStoryIdx = 0;
-    let storyTimer = null;
-    let progressVal = 0;
-
-    function openDirectStory(idx) {
-      currentStoryIdx = Number(idx) || 0;
-      const modal = document.getElementById('storyModal');
-      if (!modal) return;
-      modal.classList.add('open');
-      showCurrentStory();
+    function openInstaStory(idx) {
+      currentInstaStoryIdx = idx;
+      document.getElementById('instaStoryModal').classList.add('open');
+      buildStoryProgressBars();
+      playInstaStoryStep();
     }
 
-    function showCurrentStory() {
+    function buildStoryProgressBars() {
+      const wrap = document.getElementById('instaProgressWrap');
+      wrap.innerHTML = storyItems.map((_, i) => `
+        <div class="insta-progress-bar">
+          <div class="insta-progress-fill" id="story-progress-${i}"></div>
+        </div>
+      `).join('');
+    }
+
+    function playInstaStoryStep() {
       clearInterval(storyTimer);
-      progressVal = 0;
-      const item = storyItems[currentStoryIdx] || storyItems[0];
+      const item = storyItems[currentInstaStoryIdx];
+      if (!item) { closeInstaStory(); return; }
 
-      document.getElementById('storyUser').textContent = item.isAd
-        ? `${item.adNetwork || 'Applooney Max (Main)'}`
-        : item.user;
-      document.getElementById('storyText').textContent = item.text;
+      document.getElementById('instaStoryUser').textContent = item.user;
+      document.getElementById('instaStoryText').textContent = item.text;
+      document.getElementById('instaStoryBadge').style.display = item.isAd ? 'inline-block' : 'none';
 
-      const badge = document.getElementById('storyAdBadge');
-      if (item.isAd) {
-        badge.style.display = 'inline-block';
-        badge.textContent = `${item.adNetwork || 'Applooney Max (Main)'}`;
-      } else {
-        badge.style.display = 'none';
-      }
+      // Reset previous progress bars
+      storyItems.forEach((_, i) => {
+        const fill = document.getElementById(`story-progress-${i}`);
+        if (fill) fill.style.width = i < currentInstaStoryIdx ? '100%' : '0%';
+      });
 
-      const mediaSlot = document.getElementById('storyMediaSlot');
-      const fill = document.getElementById('storyProgress');
-      fill.style.width = '0%';
-
+      const contentSlot = document.getElementById('instaStoryContentSlot');
       if (item.videoUrl) {
-        mediaSlot.innerHTML = `<video id="activeStoryVid" class="story-video" controls playsinline controlsList="nodownload noplaybackrate" disablePictureInPicture></video>`;
-        const storyVid = document.getElementById('activeStoryVid');
-        attachVideoSource(storyVid, item.videoUrl, true);
-        document.getElementById('storySub').textContent = 'वीडियो स्टोरी चल रही है (Max 1m)';
-        storyVid.play().catch(() => {});
-
+        contentSlot.innerHTML = `<video id="instaActiveVid" autoplay playsinline src="${item.videoUrl}"></video>`;
+        const vid = document.getElementById('instaActiveVid');
+        vid.onended = () => nextInstaStoryStep();
+      } else {
+        contentSlot.innerHTML = `<div style="background:#111; width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#2ecc71; font-size:18px;">${item.text}</div>`;
+        
+        let p = 0;
+        const currentFill = document.getElementById(`story-progress-${currentInstaStoryIdx}`);
         storyTimer = setInterval(() => {
-          if (storyVid && storyVid.duration && Number.isFinite(storyVid.duration)) {
-            progressVal = Math.min(100, (storyVid.currentTime / storyVid.duration) * 100);
-            fill.style.width = progressVal + '%';
+          p += 2;
+          if (currentFill) currentFill.style.width = p + '%';
+          if (p >= 100) {
+            clearInterval(storyTimer);
+            nextInstaStoryStep();
           }
-        }, 200);
-        return;
+        }, 100);
       }
-
-      mediaSlot.innerHTML = `<div style="padding:24px; border-radius:10px; background:#141414; border:1px solid #2a2a2a; color:#2ecc71; font-size:14px;">${item.isAd ? '⭐ Applooney Max Main Ad Slot Active' : '▶ 2friend 480p Story Active (R2 CDN Cache Hit > 99%)'}</div>`;
-
-      document.getElementById('storySub').textContent = item.isAd
-        ? `Ad Break (${item.adNetwork || 'Applooney Max'}) • 5 सेकंड में अगली स्टोरी`
-        : 'R2 Cache Hit > 99% • डाउनलोड/कॉपी-पेस्ट लॉक सक्रिय';
-      document.getElementById('storyBox').style.borderColor = item.isAd ? '#f1c40f' : '#2a2a2a';
-
-      storyTimer = setInterval(() => {
-        progressVal += 4;
-        fill.style.width = progressVal + '%';
-        if (progressVal >= 100) {
-          nextStoryStep();
-        }
-      }, 200);
     }
 
-    function nextStoryStep() {
-      currentStoryIdx = (currentStoryIdx + 1) % storyItems.length;
-      showCurrentStory();
+    function nextInstaStoryStep() {
+      currentInstaStoryIdx++;
+      if (currentInstaStoryIdx >= storyItems.length) {
+        closeInstaStory();
+      } else {
+        playInstaStoryStep();
+      }
     }
 
-    function closeStory() {
+    function closeInstaStory() {
       clearInterval(storyTimer);
-      const activeVid = document.getElementById('activeStoryVid');
-      if (activeVid) activeVid.pause();
-      const modal = document.getElementById('storyModal');
-      if (modal) modal.classList.remove('open');
+      const vid = document.getElementById('instaActiveVid');
+      if (vid) vid.pause();
+      document.getElementById('instaStoryModal').classList.remove('open');
     }
 
     function selectPostKind(kind) {
-      const hiddenInput = document.getElementById('postKind');
-      const feedBtn = document.getElementById('btnKindFeed');
-      const storyBtn = document.getElementById('btnKindStory');
-      if (hiddenInput) hiddenInput.value = kind;
-      if (feedBtn && storyBtn) {
-        feedBtn.className = kind === 'feed' ? 'btn' : 'btn-outline';
-        storyBtn.className = kind === 'story' ? 'btn' : 'btn-outline';
-      }
+      document.getElementById('postKind').value = kind;
+      document.getElementById('btnKindFeed').className = kind === 'feed' ? 'btn' : 'btn-outline';
+      document.getElementById('btnKindStory').className = kind === 'story' ? 'btn' : 'btn-outline';
     }
 
     async function createPost() {
       const kind = document.getElementById('postKind').value;
       const author = document.getElementById('postTitle').value.trim() || '@2friend_user';
-      const r2Base = document.getElementById('r2BaseInput').value.trim() || R2_CACHE_BASE;
-      const rawMedia = document.getElementById('postMediaUrl').value.trim();
-      const fileInput = document.getElementById('postVideoFile');
-      const selectedFile = fileInput && fileInput.files ? fileInput.files[0] : null;
+      const mediaUrl = document.getElementById('postMediaUrl').value.trim() || 'https://pub-eaf6b9a861824b82ad140f60615e8933.r2.dev/sample.mp4';
       const caption = document.getElementById('postCaption').value.trim() || '2friend पोस्ट';
       const status = document.getElementById('createStatus');
 
-      let localVideoUrl = '';
-      let durationSec = 0;
-
-      if (selectedFile) {
-        try {
-          const duration = await validateVideoDuration(selectedFile);
-          durationSec = Math.round(duration);
-          localVideoUrl = URL.createObjectURL(selectedFile);
-          status.textContent = `वीडियो मान्य है (${durationSec} सेकंड / अधिकतम 60 सेकंड)।`;
-        } catch (err) {
-          status.textContent = err.message;
-          if (fileInput) fileInput.value = '';
-          return;
-        }
-      }
-
-      const r2MediaUrl = buildCacheSafeR2Url(r2Base, rawMedia);
-      const mediaUrl = localVideoUrl || r2MediaUrl;
-
       if (kind === 'story') {
-        storyItems.splice(1, 0, {
-          user: author,
-          text: caption,
-          isAd: false,
-          adNetwork: '',
-          videoUrl: mediaUrl
-        });
-
+        storyItems.push({ user: author, text: caption, isAd: false, videoUrl: mediaUrl });
         renderStoriesHub();
-        if (fileInput) fileInput.value = '';
-        document.getElementById('postTitle').value = '';
-        document.getElementById('postMediaUrl').value = '';
-        document.getElementById('postCaption').value = '';
-        status.textContent = 'नई स्टोरी जुड़ गई है — Auto-Loop में चल रही है...';
-
-        const storiesBtn = document.querySelectorAll('nav button')[1];
-        if (storiesBtn) switchTab(storiesBtn, 'storiesView');
-        openDirectStory(1);
+        status.textContent = 'नई स्टोरी जुड़ गई है!';
         return;
       }
-
-      const isVideo = Boolean(localVideoUrl) || /\.(mp4|m3u8|webm)$/i.test(mediaUrl);
 
       posts.unshift({
         id: Date.now(),
         author,
-        tag: r2MediaUrl
-          ? (isVideo ? 'Cloudflare R2 · 480p · Max 1m' : 'Cloudflare R2 · Image')
-          : (isVideo ? 'Video · Max 1m · 480p' : 'Text Feed'),
-        caption: isVideo ? `${caption} (Max 1 min · 480p / 128kbps)` : caption,
-        imageUrl: mediaUrl && !isVideo ? mediaUrl : '',
-        videoUrl: mediaUrl && isVideo ? mediaUrl : '',
+        tag: '480p',
+        caption: caption,
+        videoUrl: mediaUrl,
         likes: 1,
         liked: false,
         comments: []
       });
 
-      if (fileInput) fileInput.value = '';
-      document.getElementById('postTitle').value = '';
-      document.getElementById('postMediaUrl').value = '';
-      document.getElementById('postCaption').value = '';
-      status.textContent = 'पोस्ट Feed में जुड़ गई है!';
-
+      status.textContent = 'पोस्ट Feed में लाइव हो गई है!';
       renderFeed();
       switchTab(document.querySelector('nav button'), 'feedView');
     }
@@ -858,21 +537,15 @@
       const input = document.getElementById('chatInput');
       const msg = input.value.trim();
       if (!msg) return;
-
       const li = document.createElement('li');
       li.innerHTML = `<span>आप: ${msg}</span>`;
       document.getElementById('chatList').appendChild(li);
       input.value = '';
     }
 
-    function sharePost() {
-      alert('2friend लिंक तैयार है।');
-    }
-
     function switchTab(btn, viewId) {
       document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-      const target = document.getElementById(viewId);
-      if (target) target.classList.add('active');
+      document.getElementById(viewId).classList.add('active');
       document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
       if (btn) btn.classList.add('active');
     }
@@ -886,26 +559,16 @@
     function renderWinners() {
       const list = document.getElementById('winnerRankList');
       if (!list) return;
-      const sorted = [...screenUsers].sort((a, b) => b.minutes - a.minutes);
-      list.innerHTML = sorted
-        .map((u, idx) => `<li><span>#${idx + 1} ${u.handle} — ${u.minutes} min</span></li>`)
-        .join('');
-      const currentUser = screenUsers.find(u => u.handle === '@2friend_user') || sorted[0];
-      const profileTime = document.getElementById('profileScreenTime');
-      if (profileTime && currentUser) profileTime.textContent = `${currentUser.minutes} min · 12:00 AM Ready`;
+      list.innerHTML = screenUsers.map((u, idx) => `<li><span>#${idx + 1} ${u.handle} — ${u.minutes} min</span></li>`).join('');
     }
 
     function simulateScreenTime() {
-      screenUsers[0].minutes += 1;
+      screenUsers[0].minutes++;
       renderWinners();
     }
 
     function processMidnightPayout() {
-      const status = document.getElementById('payoutStatus');
-      const top = [...screenUsers].sort((a, b) => b.minutes - a.minutes)[0];
-      if (status && top) {
-        status.textContent = `रात 12:00 AM प्रोसेस पूरा: टॉप विनर ${top.handle} (${top.minutes} min)`;
-      }
+      document.getElementById('payoutStatus').textContent = `रात 12:00 AM प्रोसेस पूरा: विनर ${screenUsers[0].handle}`;
     }
 
     renderFeed();
