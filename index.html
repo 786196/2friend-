@@ -1,608 +1,341 @@
   <script>
-    document.addEventListener('copy', function(e) { e.preventDefault(); });
-    document.addEventListener('cut', function(e) { e.preventDefault(); });
-    document.addEventListener('paste', function(e) { e.preventDefault(); });
+    (function () {
+      document.addEventListener('copy', function (e) { e.preventDefault(); });
+      document.addEventListener('cut', function (e) { e.preventDefault(); });
+      document.addEventListener('paste', function (e) { e.preventDefault(); });
 
-    var STORAGE_KEYS = {
-      posts: '2friend_videos_v6',
-      stories: '2friend_stories_v6',
-      messages: '2friend_messages_v6',
-      screenUsers: '2friend_screen_users_v6',
-      deletedIds: '2friend_deleted_ids_v6',
-      uiLang: '2friend_ui_lang_v6',
-      userHandle: '2friend_user_handle_v6'
-    };
+      var R2_BASE = 'https://pub-eaf6b9a861824b82ad140f60615e8933.r2.dev';
+      var MAX_SEC = 60;
 
-    var R2_CACHE_BASE = 'https://pub-eaf6b9a861824b82ad140f60615e8933.r2.dev';
-    var MAX_VIDEO_SECONDS = 60;
-    var REWARDED_VIDEO_ADS_ENABLED = false;
-    var PRIMARY_AD_NETWORK = 'Applooney Max';
+      var LANGS = [
+        { code: 'hi', label: 'हिन्दी', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'पब्लिश करें', send: 'भेजें' },
+        { code: 'en', label: 'English', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'Publish', send: 'Send' },
+        { code: 'bn', label: 'বাংলা', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'পাবলিশ করুন', send: 'পাঠান' },
+        { code: 'mr', label: 'मराठी', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'प्रकाशित करा', send: 'पाठवा' },
+        { code: 'te', label: 'తెలుగు', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'ప్రచురించండి', send: 'పంపండి' },
+        { code: 'ta', label: 'தமிழ்', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'வெளியிடு', send: 'அனுப்பு' },
+        { code: 'gu', label: 'ગુજરાતી', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'પ્રકાશિત કરો', send: 'મોકલો' },
+        { code: 'kn', label: 'ಕನ್ನಡ', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'ಪ್ರಕಟಿಸಿ', send: 'ಕಳುಹಿಸಿ' },
+        { code: 'ml', label: 'മലയാളം', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'പ്രസിദ്ധീകരിക്കുക', send: 'അയയ്ക്കുക' },
+        { code: 'pa', label: 'ਪੰਜਾਬੀ', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'ਪ੍ਰਕਾਸ਼ਿਤ ਕਰੋ', send: 'ਭੇਜੋ' },
+        { code: 'or', label: 'ଓଡ଼ିଆ', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'ପ୍ରକାଶ କରନ୍ତୁ', send: 'ପଠାନ୍ତୁ' },
+        { code: 'as', label: 'অসমীয়া', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'প্ৰকাশ কৰক', send: 'পঠিয়াওক' },
+        { code: 'ur', label: 'اردو', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'شائع کریں', send: 'بھیجیں' },
+        { code: 'sd', label: 'سنڌي', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'شايع ڪريو', send: 'موڪليو' }
+      ];
 
-    var GAMING_AD_SLOTS = [
-      { network: 'Applooney Max', title: 'Gaming Ad · Applooney Max', desc: 'कम डेटा खपत वाला गेमिंग विज्ञापन स्लॉट सक्रिय (Rewarded Video Off).' },
-      { network: 'Google', title: 'Gaming Ad · Google', desc: 'Google गेमिंग विज्ञापन स्लॉट सक्रिय।' },
-      { network: 'Unity', title: 'Gaming Ad · Unity', desc: 'Unity गेमिंग विज्ञापन स्लॉट सक्रिय।' },
-      { network: 'Meta', title: 'Gaming Ad · Meta', desc: 'Meta गेमिंग विज्ञापन स्लॉट सक्रिय।' },
-      { network: 'AppLovin', title: 'Gaming Ad · AppLovin', desc: 'AppLovin गेमिंग विज्ञापन स्लॉट सक्रिय।' },
-      { network: 'ironSource', title: 'Gaming Ad · ironSource', desc: 'ironSource गेमिंग विज्ञापन स्लॉट सक्रिय।' },
-      { network: 'Chartboost', title: 'Gaming Ad · Chartboost', desc: 'Chartboost गेमिंग विज्ञापन स्लॉट सक्रिय।' }
-    ];
-
-    var UI_LANGUAGES = [
-      { code: 'hi', label: 'हिन्दी', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'पब्लिश करें', send: 'भेजें', chatTitle: 'टेक्स्ट मैसेज (केवल टेक्स्ट)', winnersTitle: 'Daily Winners Widget' },
-      { code: 'en', label: 'English', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'Publish', send: 'Send', chatTitle: 'Text Messages (Text Only)', winnersTitle: 'Daily Winners Widget' },
-      { code: 'bn', label: 'বাংলা', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'পাবলিশ করুন', send: 'পাঠান', chatTitle: 'টেক্সট মেসেজ (শুধু টেক্সট)', winnersTitle: 'Daily Winners Widget' },
-      { code: 'mr', label: 'मराठी', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'प्रकाशित करा', send: 'पाठवा', chatTitle: 'मजकूर संदेश (फक्त मजकूर)', winnersTitle: 'Daily Winners Widget' },
-      { code: 'te', label: 'తెలుగు', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'ప్రచురించండి', send: 'పంపండి', chatTitle: 'టెక్స్ట్ మెసేజ్ (టెక్స్ట్ మాత్రమే)', winnersTitle: 'Daily Winners Widget' },
-      { code: 'ta', label: 'தமிழ்', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'வெளியிடு', send: 'அனுப்பு', chatTitle: 'உரைச் செய்தி (உரை மட்டும்)', winnersTitle: 'Daily Winners Widget' },
-      { code: 'gu', label: 'ગુજરાતી', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'પ્રકાશિત કરો', send: 'મોકલો', chatTitle: 'ટેક્સ્ટ મેસેજ (માત્ર ટેક્સ્ટ)', winnersTitle: 'Daily Winners Widget' },
-      { code: 'kn', label: 'ಕನ್ನಡ', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'ಪ್ರಕಟಿಸಿ', send: 'ಕಳುಹಿಸಿ', chatTitle: 'ಪಠ್ಯ ಸಂದೇಶ (ಪಠ್ಯ ಮಾತ್ರ)', winnersTitle: 'Daily Winners Widget' },
-      { code: 'ml', label: 'മലയാളം', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'പ്രസിദ്ധീകരിക്കുക', send: 'അയയ്ക്കുക', chatTitle: 'ടെക്സ്റ്റ് മെസ്സേജ് (ടെക്സ്റ്റ് മാത്രം)', winnersTitle: 'Daily Winners Widget' },
-      { code: 'pa', label: 'ਪੰਜਾਬੀ', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'ਪ੍ਰਕਾਸ਼ਿਤ ਕਰੋ', send: 'ਭੇਜੋ', chatTitle: 'ਟੈਕਸਟ ਸੁਨੇਹਾ (ਸਿਰਫ਼ ਟੈਕਸਟ)', winnersTitle: 'Daily Winners Widget' },
-      { code: 'or', label: 'ଓଡ଼ିଆ', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'ପ୍ରକାଶ କରନ୍ତୁ', send: 'ପଠାନ୍ତୁ', chatTitle: 'ଟେକ୍ସଟ୍ ମେସେଜ୍ (କେବଳ ଟେକ୍ସଟ୍)', winnersTitle: 'Daily Winners Widget' },
-      { code: 'as', label: 'অসমীয়া', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'প্ৰকাশ কৰক', send: 'পঠিয়াওক', chatTitle: 'টেক্সট বাৰ্তা (কেৱল টেক্সট)', winnersTitle: 'Daily Winners Widget' },
-      { code: 'ur', label: 'اردو', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'شائع کریں', send: 'بھیجیں', chatTitle: 'ٹیکسٹ میسج (صرف ٹیکسٹ)', winnersTitle: 'Daily Winners Widget' },
-      { code: 'sd', label: 'سنڌي', feed: 'Feed', stories: 'Stories', create: 'Create', profile: 'Profile', publish: 'شايع ڪريو', send: 'موڪليو', chatTitle: 'ٽيڪسٽ پيغام (صرف ٽيڪسٽ)', winnersTitle: 'Daily Winners Widget' }
-    ];
-
-    var adBreakCounter = 0;
-    function getNextGamingAd() {
-      var slot = GAMING_AD_SLOTS[adBreakCounter % GAMING_AD_SLOTS.length];
-      adBreakCounter += 1;
-      return slot;
-    }
-
-    function buildCacheSafeR2Url(base, rawPath) {
-      if (!rawPath) return '';
-      var cleanUrl = rawPath.split('?')[0].trim();
-      if (/^https?:\/\//i.test(cleanUrl)) return cleanUrl;
-      var cleanBase = (base || R2_CACHE_BASE).replace(/\/+$/, '');
-      var cleanPath = cleanUrl.replace(/^\/+/, '');
-      return cleanBase ? cleanBase + '/' + cleanPath : cleanPath;
-    }
-
-    function loadStorage(key, fallback) {
-      try {
-        var raw = localStorage.getItem(key);
-        return raw ? JSON.parse(raw) : fallback;
-      } catch (_) {
-        return fallback;
-      }
-    }
-
-    function saveStorage(key, value) {
-      try {
-        localStorage.setItem(key, JSON.stringify(value));
-      } catch (_) {}
-    }
-
-    function normalizeHandle(raw) {
-      var clean = String(raw || '').trim().replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_@]/g, '');
-      if (!clean) return '@2friend_user';
-      return clean.charAt(0) === '@' ? clean : '@' + clean;
-    }
-
-    var currentUserHandle = normalizeHandle(loadStorage(STORAGE_KEYS.userHandle, '@2friend_user'));
-
-    function mountHandleEditor() {
-      var profileCard = document.querySelector('#profileView .card');
-      if (!profileCard || document.getElementById('handleEditorRow')) return;
-
-      var wrap = document.createElement('div');
-      wrap.id = 'handleEditorRow';
-      wrap.className = 'row';
-      wrap.style.marginTop = '10px';
-      wrap.innerHTML =
-        '<input type="text" id="userHandleInput" placeholder="अपना हैंडल लिखें (जैसे: @birju_delhi)" />' +
-        '<button type="button" class="btn" onclick="saveUserHandle()">हैंडल सेव करें</button>';
-      profileCard.appendChild(wrap);
-      syncHandleUI();
-    }
-
-    function syncHandleUI() {
-      var headerSpan = document.querySelector('header > span');
-      if (headerSpan) headerSpan.textContent = currentUserHandle;
-
-      var profileStrong = document.querySelector('#profileView .card .card-head strong');
-      if (profileStrong) profileStrong.textContent = currentUserHandle;
-
-      var postTitleInput = document.getElementById('postTitle');
-      if (postTitleInput && !postTitleInput.value) {
-        postTitleInput.placeholder = 'नाम / हैंडल (डिफ़ॉल्ट: ' + currentUserHandle + ')';
+      function getStore(k, defVal) {
+        try {
+          var v = localStorage.getItem(k);
+          return v ? JSON.parse(v) : defVal;
+        } catch (e) {
+          return defVal;
+        }
       }
 
-      var handleInput = document.getElementById('userHandleInput');
-      if (handleInput) handleInput.value = currentUserHandle;
-    }
+      function setStore(k, val) {
+        try {
+          localStorage.setItem(k, JSON.stringify(val));
+        } catch (e) {}
+      }
 
-    function saveUserHandle() {
-      var input = document.getElementById('userHandleInput');
-      if (!input) return;
-      currentUserHandle = normalizeHandle(input.value);
-      saveStorage(STORAGE_KEYS.userHandle, currentUserHandle);
-      syncHandleUI();
-      renderWinners();
-    }
+      function cleanHandle(str) {
+        var s = String(str || '').trim().replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_@]/g, '');
+        if (!s) return '@2friend_user';
+        return s.charAt(0) === '@' ? s : '@' + s;
+      }
 
-    function mountLanguageSwitcher() {
-      var brandWrap = document.querySelector('header .brand-wrap');
-      if (!brandWrap || document.getElementById('uiLangSelect')) return;
+      var handle = cleanHandle(getStore('2f_handle', '@2friend_user'));
+      var langCode = getStore('2f_lang', 'hi');
+      var posts = getStore('2f_posts', [
+        { id: 'p1', author: '2friend Tips', tag: 'Max 1m Video', caption: '2friend सिर्फ़ 1-मिनट शॉर्ट-वीडियो ऐप है — बिना कॉपीराइट संगीत, टेक्स्ट-ओनली चैट/कमेंट, और नो-डाउनलोड लॉक सक्रिय है।', videoUrl: '', likes: 0, liked: false, comments: [] }
+      ]);
+      var stories = getStore('2f_stories', [
+        { user: 'आपकी स्टोरी', text: '1-मिनट वीडियो स्टोरी (Copyright-Free Music)', videoUrl: '' },
+        { user: '2friend Demo', text: '2friend शॉर्ट वीडियो डेमो', videoUrl: '' },
+        { user: 'Gaming Ad · Applooney Max', text: 'गेमिंग विज्ञापन स्लॉट सक्रिय (Rewarded Video Off)', videoUrl: '' }
+      ]);
+      var msgs = getStore('2f_msgs', ['2friend: स्वागत है! यहाँ केवल टेक्स्ट मैसेज सक्रिय है।']);
+      var users = getStore('2f_users', [
+        { handle: handle, minutes: 14 },
+        { handle: '@friend_one', minutes: 11 },
+        { handle: '@friend_two', minutes: 7 }
+      ]);
 
-      var savedLang = loadStorage(STORAGE_KEYS.uiLang, 'hi');
-      var select = document.createElement('select');
-      select.id = 'uiLangSelect';
-      select.style.cssText = 'width:auto; padding:4px 8px; font-size:12px; border-radius:999px; background:#1a1a1a; color:#2ecc71; border:1px solid #2ecc71;';
-      select.innerHTML = UI_LANGUAGES.map(function(l) {
-        return '<option value="' + l.code + '"' + (l.code === savedLang ? ' selected' : '') + '>' + l.label + '</option>';
-      }).join('');
-      select.onchange = function() {
-        saveStorage(STORAGE_KEYS.uiLang, select.value);
-        applyLanguageUI(select.value);
+      function applyLang() {
+        var item = LANGS[0];
+        for (var i = 0; i < LANGS.length; i++) {
+          if (LANGS[i].code === langCode) { item = LANGS[i]; break; }
+        }
+        var badge = document.getElementById('apiSyncBadge');
+        if (badge) badge.textContent = '14 Lang · ' + item.label + ' · Max 1m';
+        var btns = document.querySelectorAll('nav button');
+        if (btns[0]) btns[0].textContent = item.feed;
+        if (btns[1]) btns[1].textContent = item.stories;
+        if (btns[2]) btns[2].textContent = item.create;
+        if (btns[3]) btns[3].textContent = item.profile;
+        var pubBtn = document.querySelector('#createView .row .btn');
+        if (pubBtn) pubBtn.textContent = item.publish;
+        var sndBtn = document.querySelector('#profileView .row .btn');
+        if (sndBtn) sndBtn.textContent = item.send;
+      }
+
+      function initLangSelect() {
+        var wrap = document.querySelector('header .brand-wrap');
+        if (!wrap || document.getElementById('langSel')) return;
+        var sel = document.createElement('select');
+        sel.id = 'langSel';
+        sel.style.cssText = 'width:auto;padding:4px 8px;font-size:12px;border-radius:999px;background:#1a1a1a;color:#2ecc71;border:1px solid #2ecc71;';
+        for (var i = 0; i < LANGS.length; i++) {
+          var opt = document.createElement('option');
+          opt.value = LANGS[i].code;
+          opt.textContent = LANGS[i].label;
+          if (LANGS[i].code === langCode) opt.selected = true;
+          sel.appendChild(opt);
+        }
+        sel.onchange = function () {
+          langCode = sel.value;
+          setStore('2f_lang', langCode);
+          applyLang();
+        };
+        wrap.appendChild(sel);
+      }
+
+      function initHandleBox() {
+        var pCard = document.querySelector('#profileView .card');
+        if (!pCard || document.getElementById('handleBox')) return;
+        var row = document.createElement('div');
+        row.id = 'handleBox';
+        row.className = 'row';
+        row.innerHTML = '<input id="hInput" type="text" placeholder="@username" /><button class="btn" id="hSave" type="button">हैंडल सेव</button>';
+        pCard.appendChild(row);
+        document.getElementById('hInput').value = handle;
+        document.getElementById('hSave').onclick = function () {
+          handle = cleanHandle(document.getElementById('hInput').value);
+          setStore('2f_handle', handle);
+          syncHandle();
+        };
+        syncHandle();
+      }
+
+      function syncHandle() {
+        var h1 = document.querySelector('header > span');
+        var h2 = document.querySelector('#profileView .card .card-head strong');
+        if (h1) h1.textContent = handle;
+        if (h2) h2.textContent = handle;
+        if (users[0]) users[0].handle = handle;
+        renderUsers();
+      }
+
+      window.switchTab = function (btn, viewId) {
+        var views = document.querySelectorAll('.view');
+        for (var i = 0; i < views.length; i++) views[i].classList.remove('active');
+        var v = document.getElementById(viewId);
+        if (v) v.classList.add('active');
+        var navs = document.querySelectorAll('nav button');
+        for (var j = 0; j < navs.length; j++) navs[j].classList.remove('active');
+        if (btn) btn.classList.add('active');
       };
-      brandWrap.appendChild(select);
-    }
 
-    function applyLanguageUI(langCode) {
-      var lang = UI_LANGUAGES.find(function(l) { return l.code === langCode; }) || UI_LANGUAGES[0];
-      var badge = document.getElementById('apiSyncBadge');
-      if (badge) {
-        badge.textContent = '14 Lang · ' + lang.label + ' · Max 1m';
-        badge.style.background = '#163826';
-        badge.style.color = '#2ecc71';
-      }
+      window.adminRemovePost = function (idx) {
+        posts.splice(idx, 1);
+        setStore('2f_posts', posts);
+        renderFeed();
+      };
 
-      var postLangSelect = document.getElementById('postLanguage');
-      if (postLangSelect) postLangSelect.value = lang.code;
+      window.toggleLike = function (idx) {
+        posts[idx].liked = !posts[idx].liked;
+        posts[idx].likes += posts[idx].liked ? 1 : -1;
+        setStore('2f_posts', posts);
+        renderFeed();
+      };
 
-      var navBtns = document.querySelectorAll('nav button');
-      if (navBtns[0]) navBtns[0].textContent = lang.feed;
-      if (navBtns[1]) navBtns[1].textContent = lang.stories;
-      if (navBtns[2]) navBtns[2].textContent = lang.create;
-      if (navBtns[3]) navBtns[3].textContent = lang.profile;
+      window.toggleComments = function (idx) {
+        var el = document.getElementById('cbox-' + idx);
+        if (el) el.style.display = el.style.display === 'block' ? 'none' : 'block';
+      };
 
-      var publishBtn = document.querySelector('#createView .row .btn');
-      if (publishBtn) publishBtn.textContent = lang.publish;
+      window.addComment = function (idx) {
+        var inp = document.getElementById('cinp-' + idx);
+        if (!inp || !inp.value.trim()) return;
+        posts[idx].comments.push(handle + ': ' + inp.value.trim());
+        setStore('2f_posts', posts);
+        renderFeed();
+        var el = document.getElementById('cbox-' + idx);
+        if (el) el.style.display = 'block';
+      };
 
-      var sendBtn = document.querySelector('#profileView .row .btn');
-      if (sendBtn) sendBtn.textContent = lang.send;
+      window.sharePost = function () {
+        alert('2friend लिंक तैयार है।');
+      };
 
-      var winnersHeading = document.querySelector('#dailyWinnersWidget .card-head strong');
-      if (winnersHeading) winnersHeading.textContent = lang.winnersTitle;
-
-      var chatHeading = document.querySelector('#profileView .card:last-of-type .card-head strong');
-      if (chatHeading) chatHeading.textContent = lang.chatTitle;
-    }
-
-    // केवल 1 मिनट (60 सेकंड) की जाँच — किसी भी क्वालिटी/रिज़ॉल्यूशन का वीडियो मान्य
-    function validateVideoFile(file) {
-      return new Promise(function(resolve, reject) {
-        var tempUrl = URL.createObjectURL(file);
-        var probe = document.createElement('video');
-        probe.preload = 'metadata';
-
-        probe.onloadedmetadata = function() {
-          var duration = probe.duration;
-          URL.revokeObjectURL(tempUrl);
-
-          if (!isFinite(duration) || duration <= 0) {
-            reject(new Error('वीडियो की अवधि नहीं पढ़ी जा सकी।'));
-            return;
+      function renderFeed() {
+        var box = document.getElementById('feedList');
+        if (!box) return;
+        box.innerHTML = '';
+        for (var i = 0; i < posts.length; i++) {
+          var p = posts[i];
+          var art = document.createElement('article');
+          art.className = 'card';
+          var vidHtml = p.videoUrl
+            ? '<div class="preview"><video src="' + p.videoUrl + '" controls playsinline preload="metadata" controlsList="nodownload noplaybackrate" disablePictureInPicture></video></div>'
+            : '<div class="preview" style="color:#aaa;font-size:14px;">1-Min Video Preview (Any Quality · Copyright-Free Music)</div>';
+          var cList = '';
+          for (var c = 0; c < p.comments.length; c++) {
+            cList += '<li><span>' + p.comments[c] + '</span></li>';
           }
-          if (duration > MAX_VIDEO_SECONDS) {
-            reject(new Error('केवल 1 मिनट (60 सेकंड) या उससे छोटा वीडियो मान्य है (' + Math.ceil(duration) + ' सेकंड का वीडियो नहीं चलेगा)।'));
-            return;
-          }
-          resolve({ duration: duration });
-        };
-
-        probe.onerror = function() {
-          URL.revokeObjectURL(tempUrl);
-          reject(new Error('वीडियो फ़ाइल पढ़ी नहीं जा सकी।'));
-        };
-
-        probe.src = tempUrl;
-      });
-    }
-
-    var defaultPosts = [
-      {
-        id: 'tips',
-        author: '2friend Tips',
-        tag: '1 Min Video · Any Quality',
-        caption: '2friend पर किसी भी क्वालिटी का 1-मिनट वीडियो चल सकता है — बिना कॉपीराइट संगीत, केवल टेक्स्ट कमेंट/मैसेज, और डाउनलोड/कॉपी-पेस्ट लॉक सक्रिय है।',
-        videoUrl: '',
-        likes: 0,
-        liked: false,
-        comments: []
-      },
-      {
-        id: 'official',
-        author: '2friend Official',
-        tag: 'Cloudflare R2 · Max 1m',
-        caption: 'Short Video Preview (Max 1 min · Any Quality)',
-        videoUrl: '',
-        likes: 0,
-        liked: false,
-        comments: []
-      }
-    ];
-
-    var deletedIds = loadStorage(STORAGE_KEYS.deletedIds, []);
-    var posts = loadStorage(STORAGE_KEYS.posts, defaultPosts).filter(function(p) {
-      return deletedIds.indexOf(String(p.id)) === -1;
-    });
-
-    function renderFeed() {
-      var list = document.getElementById('feedList');
-      if (!list) return;
-      list.innerHTML = '';
-      adBreakCounter = 0;
-
-      posts.forEach(function(post, index) {
-        var card = document.createElement('article');
-        card.className = 'card';
-        card.innerHTML =
-          '<div class="card-head">' +
-            '<strong>' + post.author + '</strong>' +
-            '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">' +
-              '<span class="tag">' + post.tag + '</span>' +
-              '<button type="button" class="btn-outline" style="padding:4px 8px; font-size:11px; border-color:#7f1d1d; color:#fca5a5;" onclick="adminRemovePost(' + index + ')">Admin हटाएँ</button>' +
-            '</div>' +
-          '</div>' +
-          (post.caption ? '<p style="margin:10px 0 4px; font-size:14px; color:#ddd; line-height:1.45;">' + post.caption + '</p>' : '') +
-          (post.videoUrl
-            ? '<div class="preview"><video src="' + post.videoUrl + '" controls playsinline preload="metadata" controlsList="nodownload noplaybackrate" disablePictureInPicture></video></div>'
-            : '<div class="preview" style="color:#aaa; font-size:14px;">Short Video Preview (Max 1 min · Any Quality)</div>') +
-          '<div class="actions">' +
-            '<button class="' + (post.liked ? 'liked' : '') + '" onclick="toggleLike(' + index + ')">Like (' + post.likes + ')</button>' +
-            '<button onclick="toggleComments(' + index + ')">Comment (' + post.comments.length + ')</button>' +
-            '<button onclick="sharePost()">Share</button>' +
-          '</div>' +
-          '<div class="comments" id="comments-' + index + '">' +
-            '<ul class="comment-list">' +
-              post.comments.map(function(c) { return '<li><span>' + c + '</span></li>'; }).join('') +
-            '</ul>' +
-            '<div class="row">' +
-              '<input type="text" id="input-' + index + '" placeholder="टेक्स्ट कमेंट लिखें..." />' +
-              '<button class="btn" onclick="addComment(' + index + ')">भेजें</button>' +
-            '</div>' +
-          '</div>';
-        list.appendChild(card);
-
-        if ((index + 1) % 2 === 0 && !REWARDED_VIDEO_ADS_ENABLED) {
-          var adSlot = getNextGamingAd();
-          var adCard = document.createElement('aside');
-          adCard.className = 'ad-card';
-          adCard.innerHTML =
-            '<div class="card-head">' +
-              '<strong>' + adSlot.title + '</strong>' +
-              '<span class="badge-ad">' + adSlot.network + ' · Gaming</span>' +
-            '</div>' +
-            '<p style="margin:8px 0 0; font-size:13px; color:#ddd;">' + adSlot.desc + '</p>';
-          list.appendChild(adCard);
+          art.innerHTML =
+            '<div class="card-head"><strong>' + p.author + '</strong>' +
+            '<div style="display:flex;gap:6px;align-items:center;"><span class="tag">' + p.tag + '</span>' +
+            '<button type="button" class="btn-outline" style="padding:4px 8px;font-size:11px;" onclick="adminRemovePost(' + i + ')">Admin हटाएँ</button></div></div>' +
+            '<p style="margin:10px 0 4px;font-size:14px;color:#ddd;">' + p.caption + '</p>' +
+            vidHtml +
+            '<div class="actions">' +
+            '<button class="' + (p.liked ? 'liked' : '') + '" onclick="toggleLike(' + i + ')">Like (' + p.likes + ')</button>' +
+            '<button onclick="toggleComments(' + i + ')">Comment (' + p.comments.length + ')</button>' +
+            '<button onclick="sharePost()">Share</button></div>' +
+            '<div class="comments" id="cbox-' + i + '"><ul class="comment-list">' + cList + '</ul>' +
+            '<div class="row"><input id="cinp-' + i + '" type="text" placeholder="टेक्स्ट कमेंट..." /><button class="btn" onclick="addComment(' + i + ')">भेजें</button></div></div>';
+          box.appendChild(art);
         }
-      });
-
-      document.querySelectorAll('#feedList video').forEach(function(v) {
-        v.muted = false;
-        v.volume = 1.0;
-      });
-    }
-
-    function adminRemovePost(i) {
-      var target = posts[i];
-      if (!target) return;
-      deletedIds.push(String(target.id));
-      saveStorage(STORAGE_KEYS.deletedIds, deletedIds);
-      posts.splice(i, 1);
-      saveStorage(STORAGE_KEYS.posts, posts);
-      renderFeed();
-    }
-
-    function toggleLike(i) {
-      posts[i].liked = !posts[i].liked;
-      posts[i].likes += posts[i].liked ? 1 : -1;
-      saveStorage(STORAGE_KEYS.posts, posts);
-      renderFeed();
-    }
-
-    function toggleComments(i) {
-      var el = document.getElementById('comments-' + i);
-      if (el) el.style.display = el.style.display === 'block' ? 'none' : 'block';
-    }
-
-    function addComment(i) {
-      var input = document.getElementById('input-' + i);
-      if (!input) return;
-      var val = input.value.trim();
-      if (!val) return;
-      posts[i].comments.push(currentUserHandle + ': ' + val);
-      saveStorage(STORAGE_KEYS.posts, posts);
-      renderFeed();
-      var el = document.getElementById('comments-' + i);
-      if (el) el.style.display = 'block';
-    }
-
-    var defaultStories = [
-      { user: 'आपकी स्टोरी', text: 'आपकी वीडियो स्टोरी लाइव है (Max 1 Min • Copyright-Free Music)。', isAd: false, adNetwork: 'Applooney Max', videoUrl: '' },
-      { user: '2friend Demo', text: '2friend पर किसी भी क्वालिटी का 1-मिनट शॉर्ट वीडियो चलाएँ।', isAd: false, adNetwork: 'Applooney Max', videoUrl: '' },
-      { user: 'Gaming Ad · Applooney Max', text: 'Applooney Max (Gaming Ad) → Google → Unity → Meta → AppLovin → ironSource → Chartboost', isAd: true, adNetwork: 'Applooney Max', videoUrl: '' },
-      { user: 'दोस्त 1', text: 'दोस्त 1 की 1-मिनट वीडियो स्टोरी चल रही है।', isAd: false, adNetwork: 'Google', videoUrl: '' },
-      { user: 'दोस्त 2', text: 'दोस्त 2 की 1-मिनट वीडियो स्टोरी चल रही है।', isAd: false, adNetwork: 'Unity', videoUrl: '' },
-      { user: 'Gaming Ad · Google', text: 'Applooney Max (Gaming Ad) → Google → Unity → Meta → AppLovin → ironSource → Chartboost', isAd: true, adNetwork: 'Google', videoUrl: '' }
-    ];
-
-    var storyItems = loadStorage(STORAGE_KEYS.stories, defaultStories);
-
-    function renderStoriesHub() {
-      var hub = document.getElementById('storiesHubList');
-      if (!hub) return;
-      hub.innerHTML = storyItems.map(function(s, idx) {
-        return '<li>' +
-          '<span>' + (s.isAd ? '🎮 ' : '● ') + '<strong>' + s.user + '</strong> — ' + s.text + '</span>' +
-          '<button class="btn-outline" style="padding:5px 10px; font-size:12px;" onclick="openDirectStory(' + idx + ')">खोलें</button>' +
-        '</li>';
-      }).join('');
-    }
-
-    var currentStoryIdx = 0;
-    var storyTimer = null;
-    var progressVal = 0;
-
-    function openDirectStory(idx) {
-      currentStoryIdx = Number(idx) || 0;
-      var modal = document.getElementById('storyModal');
-      if (!modal) return;
-      modal.classList.add('open');
-      showCurrentStory();
-    }
-
-    function showCurrentStory() {
-      clearInterval(storyTimer);
-      progressVal = 0;
-      var item = storyItems[currentStoryIdx] || storyItems[0];
-
-      document.getElementById('storyUser').textContent = item.isAd
-        ? 'Gaming Ad · ' + (item.adNetwork || PRIMARY_AD_NETWORK)
-        : item.user;
-      document.getElementById('storyText').textContent = item.text;
-
-      var badge = document.getElementById('storyAdBadge');
-      if (item.isAd) {
-        badge.style.display = 'inline-block';
-        badge.textContent = (item.adNetwork || PRIMARY_AD_NETWORK) + ' · Gaming';
-      } else {
-        badge.style.display = 'none';
       }
 
-      var mediaSlot = document.getElementById('storyMediaSlot');
-      mediaSlot.innerHTML = item.videoUrl
-        ? '<video class="story-video" src="' + item.videoUrl + '" controls playsinline controlsList="nodownload noplaybackrate" disablePictureInPicture></video>'
-        : '';
+      window.selectPostKind = function (k) {
+        var h = document.getElementById('postKind');
+        if (h) h.value = k;
+      };
 
-      var fill = document.getElementById('storyProgress');
-      fill.style.width = '0%';
+      window.createPost = function () {
+        var status = document.getElementById('createStatus');
+        var fileInp = document.getElementById('postVideoFile');
+        var file = fileInp && fileInp.files ? fileInp.files[0] : null;
+        var rawUrl = (document.getElementById('postMediaUrl') || { value: '' }).value.trim();
+        var base = (document.getElementById('r2BaseInput') || { value: R2_BASE }).value.trim() || R2_BASE;
+        var cap = (document.getElementById('postCaption') || { value: '' }).value.trim() || '2friend 1-मिनट वीडियो';
+        var langVal = (document.getElementById('postLanguage') || { value: langCode }).value || langCode;
+        var musicVal = (document.getElementById('postMusicTrack') || { value: 'Copyright-Free' }).value;
 
-      var storyVid = mediaSlot.querySelector('video');
-      if (storyVid) {
-        storyVid.muted = false;
-        storyVid.volume = 1.0;
-        document.getElementById('storySub').textContent = 'वीडियो स्टोरी चल रही है (Max 1m · Any Quality)';
-        storyVid.play().catch(function() {});
-
-        storyTimer = setInterval(function() {
-          if (storyVid.duration && isFinite(storyVid.duration)) {
-            progressVal = Math.min(100, (storyVid.currentTime / storyVid.duration) * 100);
-            fill.style.width = progressVal + '%';
-          }
-        }, 200);
-
-        storyVid.onended = function() { nextStoryStep(); };
-        return;
-      }
-
-      document.getElementById('storySub').textContent = item.isAd
-        ? 'Gaming Ad Break (' + (item.adNetwork || PRIMARY_AD_NETWORK) + ') • 5 सेकंड में अगली स्टोरी'
-        : 'Max 1m · Any Quality • डाउनलोड/कॉपी-पेस्ट लॉक सक्रिय';
-      document.getElementById('storyBox').style.borderColor = item.isAd ? '#f1c40f' : '#2a2a2a';
-
-      storyTimer = setInterval(function() {
-        progressVal += 4;
-        fill.style.width = progressVal + '%';
-        if (progressVal >= 100) {
-          nextStoryStep();
-        }
-      }, 200);
-    }
-
-    function nextStoryStep() {
-      currentStoryIdx = (currentStoryIdx + 1) % storyItems.length;
-      showCurrentStory();
-    }
-
-    function closeStory() {
-      clearInterval(storyTimer);
-      var mediaSlot = document.getElementById('storyMediaSlot');
-      if (mediaSlot) mediaSlot.innerHTML = '';
-      var modal = document.getElementById('storyModal');
-      if (modal) modal.classList.remove('open');
-    }
-
-    function selectPostKind(kind) {
-      var hiddenInput = document.getElementById('postKind');
-      var feedBtn = document.getElementById('btnKindFeed');
-      var storyBtn = document.getElementById('btnKindStory');
-      if (hiddenInput) hiddenInput.value = kind;
-      if (feedBtn && storyBtn) {
-        feedBtn.className = kind === 'feed' ? 'btn' : 'btn-outline';
-        storyBtn.className = kind === 'story' ? 'btn' : 'btn-outline';
-      }
-    }
-
-    function createPost() {
-      var kind = document.getElementById('postKind').value;
-      var rawTitle = document.getElementById('postTitle').value.trim();
-      var author = rawTitle ? normalizeHandle(rawTitle) : currentUserHandle;
-      var language = document.getElementById('postLanguage').value || 'hi';
-      var musicTrack = document.getElementById('postMusicTrack').value || '2friend Beat 01 (Copyright-Free)';
-      var r2Base = document.getElementById('r2BaseInput').value.trim() || R2_CACHE_BASE;
-      var rawMedia = document.getElementById('postMediaUrl').value.trim();
-      var fileInput = document.getElementById('postVideoFile');
-      var selectedFile = fileInput && fileInput.files ? fileInput.files[0] : null;
-      var rawCaption = document.getElementById('postCaption').value.trim() || '2friend वीडियो';
-      var caption = rawCaption + ' [' + language.toUpperCase() + ' • ' + musicTrack + ']';
-      var status = document.getElementById('createStatus');
-
-      function finishCreate(localVideoUrl, durationSec) {
-        var r2MediaUrl = buildCacheSafeR2Url(r2Base, rawMedia);
-        var mediaUrl = localVideoUrl || r2MediaUrl;
-
-        if (kind === 'story') {
-          storyItems.splice(1, 0, {
-            user: author,
-            text: caption,
-            isAd: false,
-            adNetwork: PRIMARY_AD_NETWORK,
-            videoUrl: mediaUrl
+        function finish(vUrl) {
+          posts.unshift({
+            id: String(Date.now()),
+            author: handle,
+            tag: 'Max 1m · ' + langVal.toUpperCase(),
+            caption: cap + ' [' + langVal.toUpperCase() + ' • ' + musicVal + ']',
+            videoUrl: vUrl,
+            likes: 0,
+            liked: false,
+            comments: []
           });
-          saveStorage(STORAGE_KEYS.stories, storyItems);
-          renderStoriesHub();
+          setStore('2f_posts', posts);
+          if (status) status.textContent = 'वीडियो फ़ीड में जुड़ गया है।';
+          renderFeed();
+          window.switchTab(document.querySelector('nav button'), 'feedView');
+        }
 
-          if (fileInput) fileInput.value = '';
-          document.getElementById('postTitle').value = '';
-          document.getElementById('postMediaUrl').value = '';
-          document.getElementById('postCaption').value = '';
-          status.textContent = 'नई वीडियो स्टोरी फ़ोन में सेव हो गई है — Stories खुल रही है...';
-
-          var storiesBtn = document.querySelectorAll('nav button')[1];
-          if (storiesBtn) switchTab(storiesBtn, 'storiesView');
-          openDirectStory(1);
+        if (file) {
+          var u = URL.createObjectURL(file);
+          var v = document.createElement('video');
+          v.preload = 'metadata';
+          v.onloadedmetadata = function () {
+            var dur = v.duration;
+            URL.revokeObjectURL(u);
+            if (dur > MAX_SEC) {
+              if (status) status.textContent = 'सिर्फ़ 1 मिनट (60 सेकंड) तक का वीडियो मान्य है।';
+              return;
+            }
+            finish(URL.createObjectURL(file));
+          };
+          v.src = u;
           return;
         }
 
-        posts.unshift({
-          id: Date.now(),
-          author: author,
-          tag: 'Cloudflare R2 · Max 1m · ' + language.toUpperCase(),
-          caption: caption + ' (Max 1 min · Any Quality)',
-          videoUrl: mediaUrl,
-          likes: 0,
-          liked: false,
-          comments: []
-        });
-        saveStorage(STORAGE_KEYS.posts, posts);
+        var finalUrl = '';
+        if (rawUrl) {
+          finalUrl = /^https?:\/\//i.test(rawUrl) ? rawUrl : base.replace(/\/+$/, '') + '/' + rawUrl.replace(/^\/+/, '');
+        }
+        finish(finalUrl);
+      };
 
-        if (fileInput) fileInput.value = '';
-        document.getElementById('postTitle').value = '';
-        document.getElementById('postMediaUrl').value = '';
-        document.getElementById('postCaption').value = '';
-        status.textContent = 'वीडियो फ़ोन में सेव होकर Feed में जुड़ गई है।';
-
-        renderFeed();
-        switchTab(document.querySelector('nav button'), 'feedView');
+      function renderStories() {
+        var hub = document.getElementById('storiesHubList');
+        if (!hub) return;
+        hub.innerHTML = '';
+        for (var i = 0; i < stories.length; i++) {
+          var li = document.createElement('li');
+          li.innerHTML = '<span><strong>' + stories[i].user + '</strong> — ' + stories[i].text + '</span>';
+          hub.appendChild(li);
+        }
       }
 
-      if (selectedFile) {
-        validateVideoFile(selectedFile).then(function(meta) {
-          var durationSec = Math.round(meta.duration);
-          var localVideoUrl = URL.createObjectURL(selectedFile);
-          status.textContent = 'वीडियो मान्य है (' + durationSec + 's / Max 60s)।';
-          finishCreate(localVideoUrl, durationSec);
-        }).catch(function(err) {
-          status.textContent = err.message;
-          if (fileInput) fileInput.value = '';
-        });
-        return;
+      window.openDirectStory = function (idx) {
+        var m = document.getElementById('storyModal');
+        var s = stories[idx] || stories[0];
+        if (!m || !s) return;
+        document.getElementById('storyUser').textContent = s.user;
+        document.getElementById('storyText').textContent = s.text;
+        m.classList.add('open');
+      };
+
+      window.nextStoryStep = function () {
+        window.openDirectStory(1);
+      };
+
+      window.closeStory = function () {
+        var m = document.getElementById('storyModal');
+        if (m) m.classList.remove('open');
+      };
+
+      function renderChat() {
+        var ul = document.getElementById('chatList');
+        if (!ul) return;
+        ul.innerHTML = '';
+        for (var i = 0; i < msgs.length; i++) {
+          var li = document.createElement('li');
+          li.innerHTML = '<span>' + msgs[i] + '</span>';
+          ul.appendChild(li);
+        }
       }
 
-      finishCreate('', 0);
-    }
+      window.sendChat = function () {
+        var inp = document.getElementById('chatInput');
+        if (!inp || !inp.value.trim()) return;
+        msgs.push(handle + ': ' + inp.value.trim());
+        setStore('2f_msgs', msgs);
+        inp.value = '';
+        renderChat();
+      };
 
-    var defaultMessages = [
-      '2friend: स्वागत है! यहाँ केवल टेक्स्ट मैसेज सक्रिय है।'
-    ];
-    var savedMessages = loadStorage(STORAGE_KEYS.messages, defaultMessages);
+      function renderUsers() {
+        var ul = document.getElementById('winnerRankList');
+        if (!ul) return;
+        var copy = users.slice().sort(function (a, b) { return b.minutes - a.minutes; });
+        ul.innerHTML = '';
+        for (var i = 0; i < copy.length; i++) {
+          var li = document.createElement('li');
+          li.innerHTML = '<span>#' + (i + 1) + ' ' + copy[i].handle + ' — ' + copy[i].minutes + ' min</span>';
+          ul.appendChild(li);
+        }
+        var pt = document.getElementById('profileScreenTime');
+        if (pt && users[0]) pt.textContent = users[0].minutes + ' min';
+      }
 
-    function renderChat() {
-      var list = document.getElementById('chatList');
-      if (!list) return;
-      list.innerHTML = savedMessages.map(function(m) {
-        return '<li><span>' + m + '</span></li>';
-      }).join('');
-    }
+      window.simulateScreenTime = function () {
+        users[0].minutes += 1;
+        setStore('2f_users', users);
+        renderUsers();
+      };
 
-    function sendChat() {
-      var input = document.getElementById('chatInput');
-      var msg = input.value.trim();
-      if (!msg) return;
-      savedMessages.push(currentUserHandle + ': ' + msg);
-      saveStorage(STORAGE_KEYS.messages, savedMessages);
+      window.processMidnightPayout = function () {
+        var st = document.getElementById('payoutStatus');
+        if (st && users[0]) st.textContent = 'रात 12:00 AM रिवॉर्ड तैयार: ' + users[0].handle;
+      };
+
+      initLangSelect();
+      initHandleBox();
+      applyLang();
+      renderFeed();
+      renderStories();
       renderChat();
-      input.value = '';
-    }
-
-    function sharePost() {
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(window.location.href).catch(function() {});
-      }
-      alert('2friend लिंक तैयार है।');
-    }
-
-    function switchTab(btn, viewId) {
-      document.querySelectorAll('.view').forEach(function(v) { v.classList.remove('active'); });
-      var target = document.getElementById(viewId);
-      if (target) target.classList.add('active');
-      document.querySelectorAll('nav button').forEach(function(b) { b.classList.remove('active'); });
-      if (btn) btn.classList.add('active');
-    }
-
-    var defaultScreenUsers = [
-      { handle: currentUserHandle, minutes: 14 },
-      { handle: '@friend_one', minutes: 11 },
-      { handle: '@friend_two', minutes: 7 }
-    ];
-    var screenUsers = loadStorage(STORAGE_KEYS.screenUsers, defaultScreenUsers);
-
-    function renderWinners() {
-      var list = document.getElementById('winnerRankList');
-      if (!list) return;
-      if (screenUsers[0]) {
-        screenUsers[0].handle = currentUserHandle;
-      }
-      var sorted = screenUsers.slice().sort(function(a, b) { return b.minutes - a.minutes; });
-      list.innerHTML = sorted.map(function(u, idx) {
-        return '<li><span>#' + (idx + 1) + ' ' + u.handle + ' — ' + u.minutes + ' min</span></li>';
-      }).join('');
-      var currentUser = screenUsers.find(function(u) { return u.handle === currentUserHandle; }) || sorted[0];
-      var profileTime = document.getElementById('profileScreenTime');
-      if (profileTime && currentUser) profileTime.textContent = currentUser.minutes + ' min';
-    }
-
-    function simulateScreenTime() {
-      screenUsers[0].minutes += 1;
-      saveStorage(STORAGE_KEYS.screenUsers, screenUsers);
-      renderWinners();
-    }
-
-    function processMidnightPayout() {
-      var status = document.getElementById('payoutStatus');
-      var rewardState = document.getElementById('profileRewardState');
-      var sorted = screenUsers.slice().sort(function(a, b) { return b.minutes - a.minutes; });
-      var top = sorted[0];
-      if (status && top) {
-        status.textContent = 'रात 12:00 AM प्रोसेस पूरा: टॉप विनर ' + top.handle + ' (' + top.minutes + ' min)';
-      }
-      if (rewardState && top) {
-        rewardState.textContent = 'Winner: ' + top.handle;
-      }
-    }
-
-    mountHandleEditor();
-    mountLanguageSwitcher();
-    syncHandleUI();
-    applyLanguageUI(loadStorage(STORAGE_KEYS.uiLang, 'hi'));
-    renderFeed();
-    renderStoriesHub();
-    renderChat();
-    renderWinners();
+      renderUsers();
+    })();
   </script>
