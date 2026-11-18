@@ -14,7 +14,8 @@
     .badge-green { background: #163826; color: #2ecc71; border: 1px solid #2ecc71; font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 600; }
     .badge-ad { background: #2c2210; color: #f1c40f; border: 1px solid #f1c40f; font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 600; }
     .lang-select { background: #1a1a1a; color: #2ecc71; border: 1px solid #333; border-radius: 8px; padding: 5px 8px; font-size: 12px; font-weight: 600; }
-    .stories { display: flex; gap: 14px; padding: 14px 16px; overflow-x: auto; border-bottom: 1px solid #222; background: #141414; }
+    .stories { display: flex; gap: 14px; padding: 14px 16px; overflow-x: auto; border-bottom: 1px solid #222; background: #141414; scrollbar-width: none; }
+    .stories::-webkit-scrollbar { display: none; }
     .story { text-align: center; font-size: 12px; cursor: pointer; min-width: 72px; }
     .ring { width: 58px; height: 58px; border-radius: 50%; border: 2px solid #2ecc71; margin: 0 auto 6px; background: #1c1c1c; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #2ecc71; font-weight: 600; }
     .view { display: none; }
@@ -55,6 +56,7 @@
       height: 100%;
       object-fit: cover;
       background: #000;
+      pointer-events: auto;
     }
     .tiktok-overlay {
       position: absolute;
@@ -95,8 +97,8 @@
     .prev-reel { left: 10px; }
     .next-reel { right: 10px; }
 
-    .actions { display: flex; gap: 20px; font-size: 14px; margin-top: 12px; }
-    .actions button { background: none; border: none; color: #fff; font-size: 14px; cursor: pointer; padding: 0; }
+    .actions { display: flex; gap: 20px; font-size: 14px; margin-top: 12px; align-items: center; }
+    .actions button { background: none; border: none; color: #fff; font-size: 14px; cursor: pointer; padding: 0; display: flex; align-items: center; gap: 4px; }
     .actions button.liked { color: #ff4d6d; font-weight: 600; }
     .comments { margin-top: 12px; border-top: 1px solid #2a2a2a; padding-top: 10px; display: none; }
     .row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
@@ -120,10 +122,10 @@
     .story-modal.open { display: flex; }
     .progress-bar { width: 100%; height: 4px; background: #333; border-radius: 99px; overflow: hidden; margin-bottom: 12px; }
     .progress-fill { height: 100%; width: 0%; background: #2ecc71; transition: width 0.2s linear; }
-    .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
-    .stat-box { background: #121212; border: 1px solid #262626; border-radius: 10px; padding: 12px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; text-align: center; }
+    .stat-box { background: #121212; border: 1px solid #262626; border-radius: 10px; padding: 10px; }
     .stat-box small { display: block; color: #999; font-size: 11px; }
-    .stat-box strong { display: block; margin-top: 4px; font-size: 16px; color: #2ecc71; }
+    .stat-box strong { display: block; margin-top: 4px; font-size: 15px; color: #2ecc71; }
     nav { position: fixed; bottom: 0; left: 0; right: 0; display: flex; background: #141414; border-top: 1px solid #222; z-index: 20; }
     nav button { flex: 1; padding: 14px 0; background: none; border: none; color: #aaa; font-size: 14px; cursor: pointer; }
     nav button.active { color: #2ecc71; font-weight: 600; }
@@ -164,7 +166,7 @@
       <div class="story" onclick="openDirectStory(0)"><div class="ring">+</div>आपकी स्टोरी</div>
       <div class="story" onclick="openDirectStory(1)"><div class="ring">Demo</div>2friend Demo</div>
       <div class="story" onclick="openDirectStory(2)"><div class="ring">D1</div>दोस्त 1</div>
-      <div class="story" onclick="openDirectStory(4)"><div class="ring">D2</div>दोस्त 2</div>
+      <div class="story" onclick="openDirectStory(3)"><div class="ring">D2</div>दोस्त 2</div>
     </div>
 
     <!-- DAILY WINNERS WIDGET -->
@@ -231,16 +233,17 @@
         <input type="text" id="postTitle" placeholder="नाम (जैसे: 2friend Official)" />
       </div>
       <div style="margin-top:10px;">
+        <label style="font-size:12px; color:#aaa; display:block; margin-bottom:4px;">फोन की गैलरी से वीडियो चुनें (या नीचे लिंक डालें):</label>
         <input type="file" id="postVideoFile" accept="video/mp4,video/webm,video/*" />
       </div>
       <div style="margin-top:10px;">
         <input type="text" id="r2BaseInput" value="https://pub-eaf6b9a861824b82ad140f60615e8933.r2.dev" placeholder="Cloudflare R2 Base URL" />
       </div>
       <div style="margin-top:10px;">
-        <input type="text" id="postMediaUrl" placeholder="R2 फ़ाइल पाथ या .m3u8 लिंक (जैसे: video.mp4)" />
+        <input type="text" id="postMediaUrl" placeholder="या R2 फ़ाइल पाथ / .m3u8 लिंक दर्ज करें" />
       </div>
       <div style="margin-top:10px;">
-        <textarea id="postCaption" rows="3" placeholder="टेक्स्ट लिखें..."></textarea>
+        <textarea id="postCaption" rows="3" placeholder="कैप्शन और हैशटैग लिखें (#2friend #delhi)..."></textarea>
       </div>
       <div class="row" style="margin-top:12px;">
         <button class="btn" onclick="createPost()">पब्लिश करें</button>
@@ -261,13 +264,21 @@
       </p>
       <div class="stats-grid">
         <div class="stat-box">
-          <small>आज का स्क्रीन-टाइम</small>
-          <strong id="profileScreenTime">14 min</strong>
+          <small>Posts</small>
+          <strong>3</strong>
         </div>
         <div class="stat-box">
-          <small>रिवॉर्ड स्टेटस</small>
-          <strong id="profileRewardState">12:00 AM Ready</strong>
+          <small>Followers</small>
+          <strong>5,000</strong>
         </div>
+        <div class="stat-box">
+          <small>Languages</small>
+          <strong>14</strong>
+        </div>
+      </div>
+      <div style="margin-top:12px; padding:10px; background:#121212; border-radius:8px; border:1px solid #222;">
+        <small style="color:#999; display:block;">आज का स्क्रीन-टाइम / रिवॉर्ड स्टेटस</small>
+        <strong id="profileScreenTime" style="color:#2ecc71; font-size:14px;">14 min · 12:00 AM Ready</strong>
       </div>
     </div>
 
@@ -385,6 +396,7 @@
       return cleanBase ? `${cleanBase}/${cleanPath}` : cleanPath;
     }
 
+    // Smart Scroll Auto-Play / Auto-Pause Observer
     function setupScrollAutoPlayObserver() {
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -420,7 +432,6 @@
         if (isStory) {
           nextStoryStep();
         } else {
-          // Auto-Loop (Never goes to 0/blank)
           videoEl.currentTime = 0.05;
           videoEl.play().catch(() => {});
         }
@@ -477,7 +488,7 @@
       modal.classList.remove('open');
     }
 
-    // Touch Swipe Gestures for TikTok Mode (ऊपर-नीचे स्वाइप करके रील बदलना)
+    // Touch Swipe Gestures for TikTok Mode
     let touchStartY = 0;
     document.addEventListener('touchstart', e => {
       touchStartY = e.touches[0].clientY;
@@ -490,9 +501,9 @@
       const diff = touchStartY - touchEndY;
       if (Math.abs(diff) > 50) {
         if (diff > 0) {
-          nextTiktokReel(); // Swipe Up -> Next Reel
+          nextTiktokReel();
         } else {
-          prevTiktokReel(); // Swipe Down -> Prev Reel
+          prevTiktokReel();
         }
       }
     });
@@ -534,9 +545,9 @@
         caption: 'Cloudflare R2 और CDN के माध्यम से Cache Hit Rate > 99% है, यानी वीडियो देखने का कोई खर्च नहीं आता।',
         imageUrl: '',
         videoUrl: '',
-        likes: 0,
+        likes: 12,
         liked: false,
-        comments: []
+        comments: ['बहुत बढ़िया सिस्टम है!']
       },
       {
         id: 'photo',
@@ -545,9 +556,9 @@
         caption: '2friend Feed Photo Preview — डाउनलोड और कॉपी-पेस्ट लॉक सक्रिय।',
         imageUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=60',
         videoUrl: '',
-        likes: 0,
+        likes: 25,
         liked: false,
-        comments: []
+        comments: ['शानदार तस्वीर!']
       },
       {
         id: 'official',
@@ -556,9 +567,9 @@
         caption: 'TikTok Style Reel Preview (Max 1 min · Tap video to start Reel-to-Reel mode)',
         imageUrl: '',
         videoUrl: 'https://pub-eaf6b9a861824b82ad140f60615e8933.r2.dev/sample.mp4',
-        likes: 5,
+        likes: 48,
         liked: false,
-        comments: []
+        comments: ['शानदार वीडियो क्वालिटी!']
       }
     ];
 
@@ -586,14 +597,14 @@
             <div class="preview" onclick="openTiktokModal(${index})">
               <video id="feed-vid-${index}" muted playsinline preload="metadata"></video>
               <div style="position:absolute; inset:0; background:rgba(0,0,0,0.2); display:flex; align-items:center; justify-content:center;">
-                <span style="background:rgba(0,0,0,0.7); padding:8px 16px; border-radius:99px; font-size:13px; color:#2ecc71; border:1px solid #2ecc71;">▶ TikTok Reels मोड में देखें (उंगली मारें)</span>
+                <span style="background:rgba(0,0,0,0.7); padding:8px 16px; border-radius:99px; font-size:13px; color:#2ecc71; border:1px solid #2ecc71;">▶ TikTok Reels मोड में देखें</span>
               </div>
             </div>
           ` : ''}
           <div class="actions">
-            <button class="${post.liked ? 'liked' : ''}" onclick="toggleLike(${index})">Like (${post.likes})</button>
-            <button onclick="toggleComments(${index})">Comment (${post.comments.length})</button>
-            <button onclick="sharePost()">Share</button>
+            <button class="${post.liked ? 'liked' : ''}" onclick="toggleLike(${index})"><span>${post.liked ? '❤️' : '🤍'}</span> Like (${post.likes})</button>
+            <button onclick="toggleComments(${index})"><span>💬</span> Comment (${post.comments.length})</button>
+            <button onclick="sharePost()"><span>✈️</span> Share</button>
           </div>
           <div class="comments" id="comments-${index}">
             <ul class="comment-list">
@@ -828,7 +839,7 @@
         caption: isVideo ? `${caption} (Max 1 min · 480p / 128kbps)` : caption,
         imageUrl: mediaUrl && !isVideo ? mediaUrl : '',
         videoUrl: mediaUrl && isVideo ? mediaUrl : '',
-        likes: 0,
+        likes: 1,
         liked: false,
         comments: []
       });
@@ -837,7 +848,7 @@
       document.getElementById('postTitle').value = '';
       document.getElementById('postMediaUrl').value = '';
       document.getElementById('postCaption').value = '';
-      status.textContent = 'पोस्ट Feed में जुड़ गई है (TikTok Reels Mode Active)।';
+      status.textContent = 'पोस्ट Feed में जुड़ गई है!';
 
       renderFeed();
       switchTab(document.querySelector('nav button'), 'feedView');
@@ -881,7 +892,7 @@
         .join('');
       const currentUser = screenUsers.find(u => u.handle === '@2friend_user') || sorted[0];
       const profileTime = document.getElementById('profileScreenTime');
-      if (profileTime && currentUser) profileTime.textContent = `${currentUser.minutes} min`;
+      if (profileTime && currentUser) profileTime.textContent = `${currentUser.minutes} min · 12:00 AM Ready`;
     }
 
     function simulateScreenTime() {
@@ -891,13 +902,9 @@
 
     function processMidnightPayout() {
       const status = document.getElementById('payoutStatus');
-      const rewardState = document.getElementById('profileRewardState');
       const top = [...screenUsers].sort((a, b) => b.minutes - a.minutes)[0];
       if (status && top) {
         status.textContent = `रात 12:00 AM प्रोसेस पूरा: टॉप विनर ${top.handle} (${top.minutes} min)`;
-      }
-      if (rewardState && top) {
-        rewardState.textContent = `Winner: ${top.handle}`;
       }
     }
 
@@ -906,4 +913,4 @@
     renderWinners();
   </script>
 </body>
-    </html>
+</html>
