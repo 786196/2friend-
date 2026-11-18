@@ -553,7 +553,7 @@
         id: 'official',
         author: '2friend Official',
         tag: 'Cloudflare R2 · 480p · Max 1m',
-        caption: 'TikTok Style Reel Preview (Max 1 min · Tap video to start Reel-to-Reel mode)',
+        caption: 'TikTok Style Reel Preview (Max 1 min)',
         imageUrl: '',
         videoUrl: 'https://pub-eaf6b9a861824b82ad140f60615e8933.r2.dev/sample.mp4',
         likes: 5,
@@ -585,9 +585,6 @@
           ${post.videoUrl || post.id === 'official' ? `
             <div class="preview" onclick="openTiktokModal(${index})">
               <video id="feed-vid-${index}" muted playsinline preload="metadata"></video>
-              <div style="position:absolute; inset:0; background:rgba(0,0,0,0.2); display:flex; align-items:center; justify-content:center;">
-                <span style="background:rgba(0,0,0,0.7); padding:8px 16px; border-radius:99px; font-size:13px; color:#2ecc71; border:1px solid #2ecc71;">▶ TikTok Reels मोड में देखें (उंगली मारें)</span>
-              </div>
             </div>
           ` : ''}
           <div class="actions">
@@ -871,35 +868,6 @@
       { handle: '@friend_one', minutes: 11 },
       { handle: '@friend_two', minutes: 7 }
     ];
-
-    function renderWinners() {
-      const list = document.getElementById('winnerRankList');
-      if (!list) return;
-      const sorted = [...screenUsers].sort((a, b) => b.minutes - a.minutes);
-      list.innerHTML = sorted
-        .map((u, idx) => `<li><span>#${idx + 1} ${u.handle} — ${u.minutes} min</span></li>`)
-        .join('');
-      const currentUser = screenUsers.find(u => u.handle === '@2friend_user') || sorted[0];
-      const profileTime = document.getElementById('profileScreenTime');
-      if (profileTime && currentUser) profileTime.textContent = `${currentUser.minutes} min`;
-    }
-
-    function simulateScreenTime() {
-      screenUsers[0].minutes += 1;
-      renderWinners();
-    }
-
-    function processMidnightPayout() {
-      const status = document.getElementById('payoutStatus');
-      const rewardState = document.getElementById('profileRewardState');
-      const top = [...screenUsers].sort((a, b) => b.minutes - a.minutes)[0];
-      if (status && top) {
-        status.textContent = `रात 12:00 AM प्रोसेस पूरा: टॉप विनर ${top.handle} (${top.minutes} min)`;
-      }
-      if (rewardState && top) {
-        rewardState.textContent = `Winner: ${top.handle}`;
-      }
-    }
 
     renderFeed();
     renderStoriesHub();
