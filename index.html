@@ -6,8 +6,8 @@
   <title>2friend</title>
   <style>
     * { box-sizing: border-box; user-select: none; -webkit-user-select: none; }
-    body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: #111; color: #fff; padding-bottom: 72px; }
-    header { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid #222; position: sticky; top: 0; background: #111; z-index: 10; }
+    body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: #111; color: #fff; overflow: hidden; height: 100vh; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid #222; position: fixed; top: 0; left: 0; right: 0; background: rgba(17,17,17,0.95); z-index: 100; backdrop-filter: blur(5px); }
     .brand-wrap { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .badge-green { background: #163826; color: #2ecc71; border: 1px solid #2ecc71; font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 600; }
     .badge-ad { background: #2c2210; color: #f1c40f; border: 1px solid #f1c40f; font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 600; }
@@ -16,23 +16,70 @@
     .ring { width: 58px; height: 58px; border-radius: 50%; border: 2px solid #2ecc71; margin: 0 auto 6px; background: #1c1c1c; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #2ecc71; font-weight: 600; }
     .view { display: none; }
     .view.active { display: block; }
-    .card { margin: 14px; background: #1a1a1a; border-radius: 12px; padding: 14px; border: 1px solid #2a2a2a; }
-    .ad-card { margin: 14px; background: #191712; border-radius: 12px; padding: 14px; border: 1px dashed #f1c40f; }
+
+    /* --- रील्स जैसा फुल-स्क्रीन वर्टिकल स्नैप लेआउट --- */
+    #feedView {
+      height: calc(100vh - 110px);
+      margin-top: 54px;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 60px;
+    }
+    .card {
+      height: calc(100vh - 114px);
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      margin: 0;
+      background: #1a1a1a;
+      border-radius: 0;
+      padding: 14px;
+      border-bottom: 1px solid #2a2a2a;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .ad-card { 
+      height: calc(100vh - 114px);
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      margin: 0;
+      background: #191712; 
+      border-radius: 0; 
+      padding: 20px; 
+      border: none;
+      border-top: 2px dashed #f1c40f;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
     .card-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
     .tag { font-size: 11px; padding: 3px 8px; border-radius: 999px; background: #1d2b44; color: #7fb3ff; font-weight: 600; }
-    .preview { width: 100%; aspect-ratio: 16/10; background: #000; border-radius: 10px; overflow: hidden; margin: 12px 0; border: 1px solid #2a2a2a; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 12px; text-align: center; }
-    video { width: 100%; height: 100%; object-fit: cover; display: block; -webkit-user-drag: none; }
+    .preview { 
+      width: 100%; 
+      flex: 1;
+      background: #000; 
+      border-radius: 10px; 
+      overflow: hidden; 
+      margin: 8px 0; 
+      border: 1px solid #2a2a2a; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      position: relative;
+    }
+    video { width: 100%; height: 100%; object-fit: contain; display: block; -webkit-user-drag: none; }
     .story-video { width: 100%; max-height: 48vh; border-radius: 10px; object-fit: contain; background: #000; -webkit-user-drag: none; }
-    .actions { display: flex; gap: 18px; font-size: 14px; margin-top: 10px; }
+    .actions { display: flex; gap: 18px; font-size: 14px; margin-top: 6px; }
     .actions button { background: none; border: none; color: #fff; font-size: 14px; cursor: pointer; padding: 0; }
     .actions button.liked { color: #ff4d6d; font-weight: 600; }
-    .comments { margin-top: 10px; border-top: 1px solid #2a2a2a; padding-top: 8px; display: none; }
-    .row { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+    .comments { margin-top: 8px; border-top: 1px solid #2a2a2a; padding-top: 6px; display: none; max-height: 120px; overflow-y: auto; }
+    .row { display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
     input, textarea, select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; font-family: inherit; user-select: text; -webkit-user-select: text; }
     .btn { padding: 10px 14px; border: none; border-radius: 8px; background: #2ecc71; color: #000; font-weight: 600; cursor: pointer; white-space: nowrap; }
     .btn-outline { padding: 10px 14px; border: 1px solid #444; border-radius: 8px; background: #1c1c1c; color: #fff; font-weight: 600; cursor: pointer; white-space: nowrap; }
-    .comment-list { list-style: none; padding: 0; margin: 6px 0 0; font-size: 13px; color: #ddd; }
-    .comment-list li { padding: 7px 0; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .comment-list { list-style: none; padding: 0; margin: 4px 0; font-size: 13px; color: #ddd; }
+    .comment-list li { padding: 5px 0; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
     .story-modal {
       display: none;
       position: fixed;
@@ -51,8 +98,8 @@
     .stat-box { background: #121212; border: 1px solid #262626; border-radius: 10px; padding: 10px; }
     .stat-box small { display: block; color: #999; font-size: 11px; }
     .stat-box strong { display: block; margin-top: 4px; font-size: 15px; color: #2ecc71; }
-    nav { position: fixed; bottom: 0; left: 0; right: 0; display: flex; background: #141414; border-top: 1px solid #222; z-index: 20; }
-    nav button { flex: 1; padding: 14px 0; background: none; border: none; color: #aaa; font-size: 14px; cursor: pointer; }
+    nav { position: fixed; bottom: 0; left: 0; right: 0; display: flex; background: #141414; border-top: 1px solid #222; z-index: 100; height: 56px; }
+    nav button { flex: 1; padding: 10px 0; background: none; border: none; color: #aaa; font-size: 14px; cursor: pointer; }
     nav button.active { color: #2ecc71; font-weight: 600; }
   </style>
 </head>
@@ -60,7 +107,7 @@
   <header>
     <div class="brand-wrap">
       <strong>2friend</strong>
-      <span class="badge-green">Max 1m Video · Any Quality</span>
+      <span class="badge-green">Reels Mode</span>
       <span id="apiSyncBadge" class="tag">14 Lang · हिन्दी · Local</span>
       <select id="uiLangSelect" onchange="changeUiLang(this.value)" style="width:auto; padding:4px 8px; font-size:12px; border-radius:999px; background:#1a1a1a; color:#2ecc71; border:1px solid #2ecc71;">
         <option value="hi">हिन्दी</option>
@@ -84,36 +131,12 @@
 
   <!-- 1. FEED VIEW -->
   <section id="feedView" class="view active">
-    <div class="stories" id="topStoriesBar">
-      <div class="story" onclick="openDirectStory(0)"><div class="ring">+</div>आपकी स्टोरी</div>
-      <div class="story" onclick="openDirectStory(1)"><div class="ring">Demo</div>2friend Demo</div>
-      <div class="story" onclick="openDirectStory(3)"><div class="ring">D1</div>दोस्त 1</div>
-      <div class="story" onclick="openDirectStory(4)"><div class="ring">D2</div>दोस्त 2</div>
-    </div>
-
-    <!-- DAILY WINNERS WIDGET -->
-    <section class="card" id="dailyWinnersWidget">
-      <div class="card-head">
-        <strong>Daily Winners Widget</strong>
-        <span class="badge-green">रात 12:00 AM रिवॉर्ड</span>
-      </div>
-      <p style="margin:8px 0 10px; font-size:13px; color:#aaa;">
-        आज के टॉप स्क्रीन-टाइम यूज़र्स — रात 12 बजे कैश रिवॉर्ड प्रोसेस होता है।
-      </p>
-      <ul class="comment-list" id="winnerRankList"></ul>
-      <div class="row">
-        <button class="btn" onclick="simulateScreenTime()">+1 Min स्क्रीन-टाइम जोड़ें</button>
-        <button class="btn-outline" onclick="processMidnightPayout()">रात 12 बजे रिवॉर्ड चलाएँ</button>
-      </div>
-      <p id="payoutStatus" style="margin:8px 0 0; font-size:12px; color:#2ecc71;"></p>
-    </section>
-
     <div id="feedList"></div>
   </section>
 
   <!-- 2. STORIES VIEW -->
-  <section id="storiesView" class="view">
-    <div class="card">
+  <section id="storiesView" class="view" style="padding:14px; overflow-y:auto; height:calc(100vh - 110px); margin-top:54px;">
+    <div class="card" style="height:auto; scroll-snap-align:none;">
       <div class="card-head">
         <strong>Stories Loop & Gaming Ad Break</strong>
         <span class="badge-green">Max 1m · Any Quality</span>
@@ -127,7 +150,7 @@
       </div>
     </div>
 
-    <div class="card">
+    <div class="card" style="height:auto; scroll-snap-align:none; margin-top:14px;">
       <div class="card-head">
         <strong>उपलब्ध वीडियो स्टोरीज</strong>
         <span class="tag">Cloudflare R2 · CDN</span>
@@ -137,8 +160,8 @@
   </section>
 
   <!-- 3. CREATE VIEW -->
-  <section id="createView" class="view">
-    <div class="card">
+  <section id="createView" class="view" style="padding:14px; overflow-y:auto; height:calc(100vh - 110px); margin-top:54px;">
+    <div class="card" style="height:auto; scroll-snap-align:none;">
       <div class="card-head">
         <strong>नई 1-मिनट वीडियो पोस्ट / स्टोरी बनाएं</strong>
         <span class="badge-green">Max 1 Min · Any Quality</span>
@@ -189,18 +212,18 @@
         <input type="text" id="postMediaUrl" placeholder="R2 वीडियो फ़ाइल पाथ (जैसे: videos/hi/clip.mp4)" />
       </div>
       <div style="margin-top:10px;">
-        <textarea id="postCaption" rows="3" placeholder="टेक्स्ट लिखें..."></textarea>
+        <textarea id="postCaption" rows="2" placeholder="टेक्स्ट लिखें..."></textarea>
       </div>
-      <div class="row" style="margin-top:12px;">
+      <div class="row" style="margin-top:10px;">
         <button class="btn" id="btnPublish" onclick="createPost()">पब्लिश करें</button>
       </div>
-      <p id="createStatus" style="margin:8px 0 0; font-size:12px; color:#2ecc71;"></p>
+      <p id="createStatus" style="margin:6px 0 0; font-size:12px; color:#2ecc71;"></p>
     </div>
   </section>
 
   <!-- 4. PROFILE VIEW -->
-  <section id="profileView" class="view">
-    <div class="card">
+  <section id="profileView" class="view" style="padding:14px; overflow-y:auto; height:calc(100vh - 110px); margin-top:54px;">
+    <div class="card" style="height:auto; scroll-snap-align:none; margin-bottom:14px;">
       <div class="card-head">
         <strong id="profileHandleTitle">@2friend_user</strong>
         <span class="badge-green">Verified · Max 1m Video</span>
@@ -224,12 +247,12 @@
       </div>
     </div>
 
-    <div class="card">
+    <div class="card" style="height:auto; scroll-snap-align:none;">
       <div class="card-head">
         <strong id="chatHeading">टेक्स्ट मैसेज (केवल टेक्स्ट)</strong>
         <span class="tag">1-on-1 Text Only</span>
       </div>
-      <ul class="comment-list" id="chatList">
+      <ul class="comment-list" id="chatList" style="max-height:100px; overflow-y:auto;">
         <li><span>2friend: स्वागत है! यहाँ केवल टेक्स्ट मैसेज सक्रिय है।</span></li>
       </ul>
       <div class="row">
@@ -474,10 +497,10 @@
               <button type="button" class="btn-outline" style="padding:4px 8px; font-size:11px; border-color:#7f1d1d; color:#fca5a5;" onclick="adminRemovePost(${index})">Admin हटाएँ</button>
             </div>
           </div>
-          ${post.caption ? `<p style="margin:10px 0 4px; font-size:14px; color:#ddd; line-height:1.45;">${post.caption}</p>` : ''}
+          ${post.caption ? `<p style="margin:6px 0; font-size:13px; color:#ddd; line-height:1.4;">${post.caption}</p>` : ''}
           ${post.videoUrl ? `
             <div class="preview">
-              <video src="${post.videoUrl}" controls playsinline preload="metadata" controlsList="nodownload noplaybackrate" disablePictureInPicture></video>
+              <video src="${post.videoUrl}" class="feed-video" controls playsinline preload="auto" controlsList="nodownload noplaybackrate" disablePictureInPicture></video>
             </div>
           ` : `
             <div class="preview" style="color:#aaa; font-size:14px;">
@@ -485,9 +508,9 @@
             </div>
           `}
           <div class="actions">
-            <button class="${post.liked ? 'liked' : ''}" onclick="toggleLike(${index})">Like (${post.likes})</button>
-            <button onclick="toggleComments(${index})">Comment (${post.comments.length})</button>
-            <button onclick="sharePost()">Share</button>
+            <button class="${post.liked ? 'liked' : ''}" onclick="toggleLike(${index})">❤️ Like (${post.likes})</button>
+            <button onclick="toggleComments(${index})">💬 Comment (${post.comments.length})</button>
+            <button onclick="sharePost()">↗️ Share</button>
           </div>
           <div class="comments" id="comments-${index}">
             <ul class="comment-list">
@@ -495,7 +518,7 @@
             </ul>
             <div class="row">
               <input type="text" id="input-${index}" placeholder="टेक्स्ट कमेंट लिखें..." />
-              <button class="btn" onclick="addComment(${index})">भेजें</button>
+              <button class="btn" style="padding:6px 12px; font-size:12px;" onclick="addComment(${index})">भेजें</button>
             </div>
           </div>
         `;
@@ -519,11 +542,6 @@
           `;
           list.appendChild(adCard);
         }
-      });
-
-      document.querySelectorAll('#feedList video').forEach(v => {
-        v.muted = false;
-        v.volume = 1.0;
       });
     }
 
@@ -821,51 +839,15 @@
     ]);
 
     function renderWinners() {
-      const list = document.getElementById('winnerRankList');
-      if (!list) return;
-      if (screenUsers[0]) screenUsers[0].handle = currentHandle;
-      const sorted = [...screenUsers].sort((a, b) => b.minutes - a.minutes);
-      list.innerHTML = sorted
-        .map((u, idx) => `<li><span>#${idx + 1} ${u.handle} — ${u.minutes} min</span></li>`)
-        .join('');
-      const currentUser = screenUsers.find(u => u.handle === currentHandle) || sorted[0];
+      const currentUser = screenUsers.find(u => u.handle === currentHandle) || screenUsers[0];
       const profileTime = document.getElementById('profileScreenTime');
       if (profileTime && currentUser) profileTime.textContent = `${currentUser.minutes} min`;
     }
 
-    async function simulateScreenTime() {
-      const apiRes = await apiCall('/api/screen-time', {
-        method: 'POST',
-        body: JSON.stringify({ userHandle: currentHandle, addMinutes: 1 })
-      });
-
-      if (apiRes && Array.isArray(apiRes.topUsers) && apiRes.topUsers.length) {
-        screenUsers.length = 0;
-        apiRes.topUsers.forEach(row => {
-          screenUsers.push({ handle: row.user_handle, minutes: Number(row.minutes_watched) || 0 });
-        });
-      } else {
-        screenUsers[0].minutes += 1;
-      }
-      writeLocal('2friend_final_winners', screenUsers);
-      renderWinners();
-    }
-
     async function processMidnightPayout() {
-      const apiRes = await apiCall('/api/payouts/midnight', { method: 'POST' });
       const status = document.getElementById('payoutStatus');
-      const rewardState = document.getElementById('profileRewardState');
-
-      if (apiRes && Array.isArray(apiRes.winners) && apiRes.winners.length) {
-        const top = apiRes.winners[0];
-        if (status) status.textContent = `रात 12:00 AM API प्रोसेस पूरा: टॉप विनर ${top.user_handle} (${top.minutes_watched} min)`;
-        if (rewardState) rewardState.textContent = `Winner: ${top.user_handle}`;
-        return;
-      }
-
       const top = [...screenUsers].sort((a, b) => b.minutes - a.minutes)[0];
-      if (status && top) status.textContent = `रात 12:00 AM प्रोसेस पूरा: टॉप विनर ${top.handle} (${top.minutes} min)`;
-      if (rewardState && top) rewardState.textContent = `Winner: ${top.handle}`;
+      if (status && top) status.textContent = `रात 12:00 AM प्रोसेस पूरा: विनर ${top.handle}`;
     }
 
     async function syncFromBackend() {
@@ -890,6 +872,37 @@
         renderFeed();
       }
     }
+
+    // --- रील्स ऑटो-प्ले, ऑटो-पॉज़ और फुल-स्क्रीन स्नैप ऑब्जर्वर ---
+    document.addEventListener("DOMContentLoaded", function () {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          const video = entry.target;
+          if (entry.isIntersecting) {
+            if (video.paused) {
+              video.play().catch(err => console.log("Auto-play blocked:", err));
+            }
+          } else {
+            if (!video.paused) {
+              video.pause();
+            }
+          }
+        });
+      }, { threshold: 0.7 });
+
+      function setupVideoObserver() {
+        document.querySelectorAll('video.feed-video').forEach(video => {
+          if (!video.dataset.observed) {
+            observer.observe(video);
+            video.dataset.observed = "true";
+          }
+        });
+      }
+
+      setupVideoObserver();
+      const mutationObserver = new MutationObserver(() => setupVideoObserver());
+      mutationObserver.observe(document.body, { childList: true, subtree: true });
+    });
 
     syncHandleEverywhere();
     changeUiLang(currentLang);
