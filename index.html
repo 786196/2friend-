@@ -8,40 +8,40 @@
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <style>
     * { box-sizing: border-box; user-select: none; -webkit-user-select: none; }
-    body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: #111; color: #fff; padding-bottom: 76px; }
-    header { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid #222; position: sticky; top: 0; background: #111; z-index: 20; gap: 8px; flex-wrap: wrap; }
+    body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: #111; color: #fff; padding-bottom: 80px; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid #222; position: sticky; top: 0; background: #111; z-index: 20; gap: 8px; flex-wrap: wrap; }
     .brand-wrap { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .badge-green { background: #163826; color: #2ecc71; border: 1px solid #2ecc71; font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 600; }
     .badge-ad { background: #2c2210; color: #f1c40f; border: 1px solid #f1c40f; font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 600; }
     .lang-select { background: #1a1a1a; color: #2ecc71; border: 1px solid #333; border-radius: 8px; padding: 5px 8px; font-size: 12px; font-weight: 600; }
-    .stories { display: flex; gap: 14px; padding: 14px 16px; overflow-x: auto; border-bottom: 1px solid #222; }
+    .stories { display: flex; gap: 14px; padding: 14px 16px; overflow-x: auto; border-bottom: 1px solid #222; background: #141414; }
     .story { text-align: center; font-size: 12px; cursor: pointer; min-width: 72px; }
     .ring { width: 58px; height: 58px; border-radius: 50%; border: 2px solid #2ecc71; margin: 0 auto 6px; background: #1c1c1c; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #2ecc71; font-weight: 600; }
     .view { display: none; }
     .view.active { display: block; }
-    .card { margin: 14px; background: #1a1a1a; border-radius: 12px; padding: 14px; border: 1px solid #2a2a2a; }
-    .ad-card { margin: 14px; background: #191712; border-radius: 12px; padding: 14px; border: 1px dashed #f1c40f; }
+    .card { margin: 14px; background: #1a1a1a; border-radius: 12px; padding: 16px; border: 1px solid #2a2a2a; }
+    .ad-card { margin: 14px; background: #191712; border-radius: 12px; padding: 16px; border: 1px dashed #f1c40f; }
     .card-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
     .tag { font-size: 11px; padding: 3px 8px; border-radius: 999px; background: #1d2b44; color: #7fb3ff; font-weight: 600; }
     .preview { width: 100%; aspect-ratio: 16/10; background: #000; border-radius: 10px; overflow: hidden; margin: 12px 0; border: 1px solid #2a2a2a; display: flex; align-items: center; justify-content: center; flex-direction: column; position: relative; }
     video { width: 100%; height: 100%; object-fit: cover; display: block; -webkit-user-drag: none; background: #000; }
     img.post-img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; -webkit-user-drag: none; }
-    .story-video { width: 100%; max-height: 48vh; border-radius: 10px; object-fit: contain; background: #000; -webkit-user-drag: none; }
-    .actions { display: flex; gap: 18px; font-size: 14px; margin-top: 10px; }
+    .story-video { width: 100%; max-height: 50vh; border-radius: 10px; object-fit: contain; background: #000; -webkit-user-drag: none; }
+    .actions { display: flex; gap: 20px; font-size: 14px; margin-top: 12px; }
     .actions button { background: none; border: none; color: #fff; font-size: 14px; cursor: pointer; padding: 0; }
     .actions button.liked { color: #ff4d6d; font-weight: 600; }
-    .comments { margin-top: 10px; border-top: 1px solid #2a2a2a; padding-top: 8px; display: none; }
-    .row { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+    .comments { margin-top: 12px; border-top: 1px solid #2a2a2a; padding-top: 10px; display: none; }
+    .row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
     input, textarea { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; font-family: inherit; user-select: text; -webkit-user-select: text; }
-    .btn { padding: 10px 14px; border: none; border-radius: 8px; background: #2ecc71; color: #000; font-weight: 600; cursor: pointer; white-space: nowrap; }
-    .btn-outline { padding: 10px 14px; border: 1px solid #444; border-radius: 8px; background: #1c1c1c; color: #fff; font-weight: 600; cursor: pointer; white-space: nowrap; }
+    .btn { padding: 10px 16px; border: none; border-radius: 8px; background: #2ecc71; color: #000; font-weight: 600; cursor: pointer; white-space: nowrap; }
+    .btn-outline { padding: 10px 16px; border: 1px solid #444; border-radius: 8px; background: #1c1c1c; color: #fff; font-weight: 600; cursor: pointer; white-space: nowrap; }
     .comment-list { list-style: none; padding: 0; margin: 6px 0 0; font-size: 13px; color: #ddd; }
-    .comment-list li { padding: 7px 0; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .comment-list li { padding: 8px 0; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
     .story-modal {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.97);
+      background: rgba(0,0,0,0.98);
       z-index: 9999;
       padding: 18px;
       flex-direction: column;
@@ -52,9 +52,9 @@
     .progress-bar { width: 100%; height: 4px; background: #333; border-radius: 99px; overflow: hidden; margin-bottom: 12px; }
     .progress-fill { height: 100%; width: 0%; background: #2ecc71; transition: width 0.2s linear; }
     .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
-    .stat-box { background: #121212; border: 1px solid #262626; border-radius: 10px; padding: 10px; }
+    .stat-box { background: #121212; border: 1px solid #262626; border-radius: 10px; padding: 12px; }
     .stat-box small { display: block; color: #999; font-size: 11px; }
-    .stat-box strong { display: block; margin-top: 4px; font-size: 15px; color: #2ecc71; }
+    .stat-box strong { display: block; margin-top: 4px; font-size: 16px; color: #2ecc71; }
     nav { position: fixed; bottom: 0; left: 0; right: 0; display: flex; background: #141414; border-top: 1px solid #222; z-index: 20; }
     nav button { flex: 1; padding: 14px 0; background: none; border: none; color: #aaa; font-size: 14px; cursor: pointer; }
     nav button.active { color: #2ecc71; font-weight: 600; }
@@ -64,8 +64,8 @@
   <header>
     <div class="brand-wrap">
       <strong>2friend</strong>
-      <span class="badge-green">480p · HLS · 128k · Max 1m</span>
-      <span id="apiSyncBadge" class="tag">R2 Ready</span>
+      <span class="badge-green">Applooney Max (Main) + 4 Networks</span>
+      <span class="tag">R2 Cache &gt; 99% · Zero Cost</span>
     </div>
     <div style="display:flex; align-items:center; gap:8px;">
       <!-- 14 Languages Selector -->
@@ -77,7 +77,7 @@
         <option value="mr">मराठी</option>
         <option value="ta">தமிழ்</option>
         <option value="ur">اردو</option>
-        <option value="gu">ગુજરાતી</option>
+        <option value="gu">ગુજરાती</option>
         <option value="kn">ಕನ್ನಡ</option>
         <option value="ml">മലയാളം</option>
         <option value="or">ଓଡ଼ିଆ</option>
@@ -105,7 +105,7 @@
         <span class="badge-green">रात 12:00 AM रिवॉर्ड</span>
       </div>
       <p style="margin:8px 0 10px; font-size:13px; color:#aaa;">
-        आज के टॉप स्क्रीन-टाइम यूज़र्स — रात 12 बजे रिवॉर्ड प्रोसेस होता है।
+        आज के टॉप स्क्रीन-टाइम यूज़र्स — रात 12 बजे कैश रिवॉर्ड प्रोसेस होता है।
       </p>
       <ul class="comment-list" id="winnerRankList"></ul>
       <div class="row">
@@ -122,11 +122,11 @@
   <section id="storiesView" class="view">
     <div class="card">
       <div class="card-head">
-        <strong>Stories Auto-Loop (हर 3 स्टोरी पर गेम विज्ञापन)</strong>
+        <strong>Stories Auto-Loop (Applooney Max Main Ad)</strong>
         <span class="badge-green">480p · 128k · Max 1m</span>
       </div>
       <p style="color:#aaa; font-size:13px; margin:8px 0;">
-        स्टोरी लूप कभी 0 पर नहीं रुकता—वीडियो खत्म होते ही अपने आप अगली स्टोरी या शुरू से चालू हो जाता है।
+        Applooney Max मुख्य विज्ञापन नेटवर्क है, साथ ही Google, Unity, Meta और AppLovin बैकअप मेडिएशन के रूप में जुड़े हैं।
       </p>
       <div class="row">
         <button class="btn" onclick="openDirectStory(0)">पूरा स्टोरी लूप चलाएँ</button>
@@ -137,7 +137,7 @@
     <div class="card">
       <div class="card-head">
         <strong>उपलब्ध स्टोरीज</strong>
-        <span class="tag">Cloudflare R2 · Auto-Loop</span>
+        <span class="tag">Cloudflare R2 · Zero Cost</span>
       </div>
       <ul class="comment-list" id="storiesHubList"></ul>
     </div>
@@ -148,10 +148,10 @@
     <div class="card">
       <div class="card-head">
         <strong>नई पोस्ट / स्टोरी बनाएं</strong>
-        <span class="badge-green">Max 1 Min (60s) · R2 CDN</span>
+        <span class="badge-green">Max 1 Min (60s) · R2 Zero Cost</span>
       </div>
       <p style="color:#aaa; font-size:12px; margin:8px 0;">
-        अधिकतम वीडियो सीमा <strong>1 मिनट (60 सेकंड)</strong> है। कॉपीराइट-मुक्त म्यूजिक व 480p स्ट्रीमिंग सपोर्ट सक्रिय है।
+        अधिकतम वीडियो सीमा <strong>1 मिनट (60 सेकंड)</strong> है। R2 CDN के कारण वीडियो देखने का कोई खर्च नहीं है।
       </p>
       <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
         <button type="button" class="btn" id="btnKindFeed" onclick="selectPostKind('feed')">Feed Post / Reel</button>
@@ -185,10 +185,10 @@
     <div class="card">
       <div class="card-head">
         <strong>@2friend_user</strong>
-        <span class="badge-green">Verified · 480p/128k · Max 1m</span>
+        <span class="badge-green">Verified · Zero Cost Setup</span>
       </div>
       <p style="color:#aaa; font-size:13px; margin:8px 0;">
-        केवल टेक्स्ट चैट सक्रिय है। कॉलिंग, लाइव स्ट्रीमिंग, ग्रुप चैट, कॉइंस/गिफ्टिंग और डाउनलोड पूरी तरह बंद हैं।
+        केवल टेक्स्ट चैट सक्रिय है। कॉलिंग, लाइव स्ट्रीमिंग, ग्रुप चैट और डाउनलोड पूरी तरह बंद हैं।
       </p>
       <div class="stats-grid">
         <div class="stat-box">
@@ -202,14 +202,14 @@
       </div>
     </div>
 
-    <!-- GAMING AD SLOT BELOW PROFILE -->
+    <!-- MAIN AD SLOT BELOW PROFILE -->
     <aside class="ad-card">
       <div class="card-head">
-        <strong>Gaming Ad · AppLovin MAX / AdMob</strong>
-        <span class="badge-ad">Gaming Ad (Profile Slot)</span>
+        <strong>Applooney Max (Main Ad Network)</strong>
+        <span class="badge-ad">Primary Monetization</span>
       </div>
       <p style="margin:8px 0 0; font-size:13px; color:#ddd;">
-        नया मोबाइल रेसिंग व एक्शन गेम खेलें — तेज़ लोडिंग, कोई रिवॉर्डेड वीडियो विज्ञापन नहीं।
+        Applooney Max मुख्य विज्ञापन स्लॉट — उच्च ईसीपीएम और बेहतरीन रेवेन्यू के साथ।
       </p>
     </aside>
 
@@ -222,9 +222,8 @@
       <ul class="comment-list" id="chatList">
         <li><span>2friend: स्वागत है! यहाँ केवल टेक्स्ट मैसेज सक्रिय है।</span></li>
       </ul>
-      <!-- GAMING AD INSIDE CHAT BOX -->
       <div style="margin:10px 0; padding:8px 10px; border-radius:8px; background:#191712; border:1px dashed #f1c40f; font-size:12px; color:#f1c40f;">
-        🎮 Sponsored Gaming Ad (Unity / Meta): Top Puzzle & Cricket Game — Install Now
+        ⚡ Sponsored Ad (Google / Unity / Meta / AppLovin Mediation): Top Partner Offer — Install Now
       </div>
       <div class="row">
         <input type="text" id="chatInput" placeholder="टेक्स्ट मैसेज लिखें..." />
@@ -233,14 +232,14 @@
     </div>
   </section>
 
-  <!-- STORY LOOP & GAMING AD BREAK MODAL -->
+  <!-- STORY LOOP & AD BREAK MODAL -->
   <div class="story-modal" id="storyModal">
     <div>
       <div class="progress-bar"><div class="progress-fill" id="storyProgress"></div></div>
       <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
         <div>
           <strong id="storyUser">स्टोरी</strong>
-          <span id="storyAdBadge" class="badge-ad" style="display:none; margin-left:6px;">Gaming Ad Break</span>
+          <span id="storyAdBadge" class="badge-ad" style="display:none; margin-left:6px;">Applooney Max (Main)</span>
         </div>
         <button class="btn" id="btnCloseStory" onclick="closeStory()">बंद करें</button>
       </div>
@@ -249,11 +248,11 @@
     <div id="storyBox" style="text-align:center; padding:20px; background:#1c1c1c; border-radius:12px; border:1px solid #2a2a2a;">
       <div id="storyMediaSlot"></div>
       <p id="storyText" style="font-size:16px; line-height:1.5; margin-top:12px;"></p>
-      <small id="storySub" style="color:#2ecc71;">480p · HLS · 128k · Max 1m • डाउनलोड/कॉपी-पेस्ट लॉक सक्रिय</small>
+      <small id="storySub" style="color:#2ecc71;">R2 Cache Hit &gt; 99% • डाउनलोड/कॉपी-पेस्ट लॉक सक्रिय</small>
     </div>
 
     <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
-      <span style="color:#888; font-size:12px;">2friend Auto-Loop (Never Resets to 0)</span>
+      <span style="color:#888; font-size:12px;">2friend Auto-Loop (Zero Cost)</span>
       <button class="btn-outline" id="btnNextStory" onclick="nextStoryStep()">अगला →</button>
     </div>
   </div>
@@ -266,26 +265,25 @@
   </nav>
 
   <script>
-    // Strict Copy/Cut/Paste Block
     document.addEventListener('copy', e => e.preventDefault());
     document.addEventListener('cut', e => e.preventDefault());
     document.addEventListener('paste', e => e.preventDefault());
 
-    const API_BASE_URL = 'http://127.0.0.1:4000';
     const R2_CACHE_BASE = 'https://pub-eaf6b9a861824b82ad140f60615e8933.r2.dev';
     const MAX_VIDEO_SECONDS = 60;
 
-    // Gaming Ad Mediation Priority (No Rewarded Video Ads)
-    const GAMING_AD_NETWORKS = [
-      'AppLovin MAX (Gaming)',
-      'Google AdMob (Gaming)',
-      'Meta Audience Network (Gaming)',
-      'Unity Ads (Gaming)'
+    // Ad Mediation Stack: Applooney Max is Main, followed by Google, Unity, Meta, AppLovin
+    const AD_NETWORKS = [
+      'Applooney Max (Main)',
+      'Google AdMob',
+      'Unity Ads',
+      'Meta Audience Network',
+      'AppLovin MAX'
     ];
 
     let adBreakCounter = 0;
-    function getNextGamingAdNetwork() {
-      const network = GAMING_AD_NETWORKS[adBreakCounter % GAMING_AD_NETWORKS.length];
+    function getNextAdNetwork() {
+      const network = AD_NETWORKS[adBreakCounter % AD_NETWORKS.length];
       adBreakCounter += 1;
       return network;
     }
@@ -303,11 +301,29 @@
       return cleanBase ? `${cleanBase}/${cleanPath}` : cleanPath;
     }
 
-    // Attach HLS or MP4 video with Auto-Loop & Anti-Zero protection
+    // Smart Scroll Observer: Auto-play when visible, Auto-pause when scrolled out of view
+    function setupScrollAutoPlayObserver() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          const vid = entry.target;
+          if (entry.isIntersecting) {
+            vid.play().catch(() => {});
+          } else {
+            vid.pause();
+          }
+        });
+      }, { threshold: 0.5 });
+
+      document.querySelectorAll('video[data-autoplay-scroll]').forEach(v => {
+        observer.observe(v);
+      });
+    }
+
     function attachVideoSource(videoEl, url, isStory = false) {
       if (!videoEl || !url) return;
       videoEl.muted = false;
       videoEl.volume = 1.0;
+      videoEl.setAttribute('data-autoplay-scroll', 'true');
 
       if (url.endsWith('.m3u8') && window.Hls && Hls.isSupported()) {
         const hls = new Hls({ maxBufferLength: 15, maxMaxBufferLength: 30 });
@@ -317,7 +333,6 @@
         videoEl.src = url;
       }
 
-      // Prevent video screen from going blank/0 after ending
       videoEl.addEventListener('ended', () => {
         if (isStory) {
           nextStoryStep();
@@ -326,20 +341,6 @@
           videoEl.play().catch(() => {});
         }
       });
-    }
-
-    async function apiCall(path, options = {}) {
-      if (!API_BASE_URL) return null;
-      try {
-        const res = await fetch(`${API_BASE_URL.replace(/\/+$/, '')}${path}`, {
-          headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
-          ...options
-        });
-        if (!res.ok) return null;
-        return await res.json();
-      } catch (_) {
-        return null;
-      }
     }
 
     function validateVideoDuration(file) {
@@ -375,8 +376,8 @@
       {
         id: 'tips',
         author: '2friend Tips',
-        tag: '14 Languages · Text Feed',
-        caption: '2friend पर केवल टेक्स्ट कमेंट और मैसेज चलते हैं, वीडियो सीमा अधिकतम 1 मिनट (480p HLS) है, और मीडिया डाउनलोड/कॉपी-पेस्ट लॉक सक्रिय है।',
+        tag: '14 Languages · Zero Cost',
+        caption: 'Cloudflare R2 और CDN के माध्यम से Cache Hit Rate > 99% है, यानी वीडियो देखने का कोई खर्च नहीं आता।',
         imageUrl: '',
         videoUrl: '',
         likes: 0,
@@ -398,18 +399,7 @@
         id: 'official',
         author: '2friend Official',
         tag: 'Cloudflare R2 · 480p · Max 1m',
-        caption: 'Short Reel Preview (Max 1 min · 480p / H.264 / AAC 128kbps · Auto-Loop)',
-        imageUrl: '',
-        videoUrl: '',
-        likes: 0,
-        liked: false,
-        comments: []
-      },
-      {
-        id: 'community',
-        author: '2friend India',
-        tag: 'Copyright-Free Music · 480p',
-        caption: '14 भारतीय भाषाओं में अपना छोटा वीडियो शेयर करें।',
+        caption: 'Short Reel Preview (Max 1 min · 480p / H.264 / AAC 128kbps · Scroll Auto-Play/Pause)',
         imageUrl: '',
         videoUrl: '',
         likes: 0,
@@ -440,11 +430,11 @@
           ` : ''}
           ${post.videoUrl ? `
             <div class="preview">
-              <video id="feed-vid-${index}" controls playsinline loop preload="metadata" controlsList="nodownload noplaybackrate" disablePictureInPicture></video>
+              <video id="feed-vid-${index}" controls playsinline preload="metadata" controlsList="nodownload noplaybackrate" disablePictureInPicture></video>
             </div>
           ` : (post.id === 'official' ? `
             <div class="preview" style="color:#aaa; font-size:14px;">
-              480p HLS Video Ready (Max 1 min · Auto-Loop Active)
+              480p HLS Video Ready (Max 1 min · Scroll Auto-Play/Pause Active)
             </div>
           ` : '')}
           <div class="actions">
@@ -469,23 +459,25 @@
           attachVideoSource(vidEl, post.videoUrl, false);
         }
 
-        // Gaming Ad after every 4 reels/posts
         if ((index + 1) % 4 === 0) {
-          const adNetwork = getNextGamingAdNetwork();
+          const adNetwork = getNextAdNetwork();
+          const isMain = adNetwork.includes('Main');
           const adCard = document.createElement('aside');
           adCard.className = 'ad-card';
           adCard.innerHTML = `
             <div class="card-head">
-              <strong>🎮 Gaming Ad · ${adNetwork}</strong>
-              <span class="badge-ad">Every 4 Reels Slot</span>
+              <strong>${isMain ? '⭐ Applooney Max (Main Ad)' : `Sponsored Ad · ${adNetwork}`}</strong>
+              <span class="badge-ad">${adNetwork}</span>
             </div>
             <p style="margin:8px 0 0; font-size:13px; color:#ddd;">
-              टॉप मोबाइल गेमिंग विज्ञापन — तेज़ 480p फीड के साथ (कोई रिवॉर्डेड वीडियो विज्ञापन नहीं)।
+              ${isMain ? 'Applooney Max मुख्य विज्ञापन स्लॉट सक्रिय — उच्चतम रेवेन्यू।' : `${adNetwork} बैकअप विज्ञापन स्लॉट सक्रिय।`}
             </p>
           `;
           list.appendChild(adCard);
         }
       });
+
+      setupScrollAutoPlayObserver();
     }
 
     function toggleLike(i) {
@@ -510,12 +502,11 @@
       if (el) el.style.display = 'block';
     }
 
-    // Stories with Gaming Ad after every 3 stories
     const storyItems = [
       { user: 'आपकी स्टोरी', text: 'आपकी 480p स्टोरी लाइव है (Max 1 Min)।', isAd: false, adNetwork: '', videoUrl: '' },
       { user: '2friend Demo', text: '2friend पर तेज़ 480p वीडियो और 128k ऑडियो का अनुभव लें।', isAd: false, adNetwork: '', videoUrl: '' },
       { user: 'दोस्त 1', text: 'दोस्त 1 की शॉर्ट स्टोरी चल रही है।', isAd: false, adNetwork: '', videoUrl: '' },
-      { user: 'Gaming Ad · AppLovin MAX', text: '🎮 Play Action & Cricket Mobile Games — Sponsored Gaming Break', isAd: true, adNetwork: 'AppLovin MAX', videoUrl: '' },
+      { user: 'Applooney Max (Main Ad)', text: '⭐ Applooney Max मुख्य विज्ञापन ब्रेक — उच्च रेवेन्यू ऑफर', isAd: true, adNetwork: 'Applooney Max (Main)', videoUrl: '' },
       { user: 'दोस्त 2', text: 'दोस्त 2 की शॉर्ट स्टोरी चल रही है।', isAd: false, adNetwork: '', videoUrl: '' }
     ];
 
@@ -525,7 +516,7 @@
       hub.innerHTML = storyItems
         .map((s, idx) => `
           <li>
-            <span>${s.isAd ? '🎮 ' : '● '}<strong>${s.user}</strong> — ${s.text}</span>
+            <span>${s.isAd ? '⭐ ' : '● '}<strong>${s.user}</strong> — ${s.text}</span>
             <button class="btn-outline" style="padding:5px 10px; font-size:12px;" onclick="openDirectStory(${idx})">खोलें</button>
           </li>
         `)
@@ -550,14 +541,14 @@
       const item = storyItems[currentStoryIdx] || storyItems[0];
 
       document.getElementById('storyUser').textContent = item.isAd
-        ? `Gaming Ad · ${item.adNetwork || 'AppLovin MAX'}`
+        ? `${item.adNetwork || 'Applooney Max (Main)'}`
         : item.user;
       document.getElementById('storyText').textContent = item.text;
 
       const badge = document.getElementById('storyAdBadge');
       if (item.isAd) {
         badge.style.display = 'inline-block';
-        badge.textContent = `Gaming Ad · ${item.adNetwork || 'AppLovin MAX'}`;
+        badge.textContent = `${item.adNetwork || 'Applooney Max (Main)'}`;
       } else {
         badge.style.display = 'none';
       }
@@ -570,7 +561,7 @@
         mediaSlot.innerHTML = `<video id="activeStoryVid" class="story-video" controls playsinline controlsList="nodownload noplaybackrate" disablePictureInPicture></video>`;
         const storyVid = document.getElementById('activeStoryVid');
         attachVideoSource(storyVid, item.videoUrl, true);
-        document.getElementById('storySub').textContent = 'वीडियो स्टोरी चल रही है (Max 1m · खत्म होने पर अगली स्टोरी अपने आप चलेगी)';
+        document.getElementById('storySub').textContent = 'वीडियो स्टोरी चल रही है (Max 1m)';
         storyVid.play().catch(() => {});
 
         storyTimer = setInterval(() => {
@@ -582,12 +573,11 @@
         return;
       }
 
-      // Keep clean placeholder instead of blank/0 screen when no video URL is attached
-      mediaSlot.innerHTML = `<div style="padding:18px; border-radius:10px; background:#141414; border:1px solid #2a2a2a; color:#2ecc71; font-size:13px;">${item.isAd ? '🎮 Gaming Ad Slot Active' : '▶ 2friend 480p Story Active'}</div>`;
+      mediaSlot.innerHTML = `<div style="padding:24px; border-radius:10px; background:#141414; border:1px solid #2a2a2a; color:#2ecc71; font-size:14px;">${item.isAd ? '⭐ Applooney Max Main Ad Slot Active' : '▶ 2friend 480p Story Active (R2 CDN Cache Hit > 99%)'}</div>`;
 
       document.getElementById('storySub').textContent = item.isAd
-        ? `Gaming Ad Break (${item.adNetwork || 'AppLovin MAX'}) • 5 सेकंड में अगली स्टोरी`
-        : '480p · HLS · 128k · Max 1m • डाउनलोड/कॉपी-पेस्ट लॉक सक्रिय';
+        ? `Ad Break (${item.adNetwork || 'Applooney Max'}) • 5 सेकंड में अगली स्टोरी`
+        : 'R2 Cache Hit > 99% • डाउनलोड/कॉपी-पेस्ट लॉक सक्रिय';
       document.getElementById('storyBox').style.borderColor = item.isAd ? '#f1c40f' : '#2a2a2a';
 
       storyTimer = setInterval(() => {
@@ -607,9 +597,7 @@
     function closeStory() {
       clearInterval(storyTimer);
       const activeVid = document.getElementById('activeStoryVid');
-      if (activeVid) {
-        activeVid.pause();
-      }
+      if (activeVid) activeVid.pause();
       const modal = document.getElementById('storyModal');
       if (modal) modal.classList.remove('open');
     }
@@ -696,7 +684,7 @@
       document.getElementById('postTitle').value = '';
       document.getElementById('postMediaUrl').value = '';
       document.getElementById('postCaption').value = '';
-      status.textContent = 'पोस्ट Feed में जुड़ गई है (Auto-Loop सक्रिय)।';
+      status.textContent = 'पोस्ट Feed में जुड़ गई है (Zero Cost R2 CDN Active)।';
 
       renderFeed();
       switchTab(document.querySelector('nav button'), 'feedView');
