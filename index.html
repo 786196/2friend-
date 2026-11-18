@@ -401,7 +401,7 @@
         }
         .primary-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* चैट स्क्रीन (सुधारा हुआ लेआउट - अब मैसेज बॉक्स हमेशा दिखेगा) */
+        /* चैट स्क्रीन (सही और पक्का फिक्स) */
         .chat-container {
             display: flex;
             flex-direction: column;
@@ -426,7 +426,7 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            padding-bottom: 70px; /* ताकि नीचे का मैसेज इनपुट चैट के पीछे न छिप Aligned रहे */
+            padding-bottom: 80px;
         }
         .msg-bubble {
             max-width: 78%;
@@ -448,7 +448,7 @@
             border-top: 1px solid #262626;
             display: flex;
             gap: 8px;
-            z-index: 40;
+            z-index: 100;
         }
         .chat-footer input {
             flex: 1;
@@ -584,8 +584,8 @@
                 <div class="story-item" onclick="openStory('दिल्ली क्रिएटर्स', '1 मिनट की शानदार 480p रील्स देखें!')">
                     <div class="story-ring"><div class="story-avatar">D</div></div>
                 </div>
-                <div class="story-item" onclick="openStory('Sanchi Trust', 'बच्चों की शिक्षा और स्टेशनरी वितरण अभियान 📚')">
-                    <div class="story-ring"><div class="story-avatar">S</div></div>
+                <div class="story-item" onclick="openStory('2friend App', 'भारत का अपना सुरक्षित सोशल वीडियो प्लेटफॉर्म 🇮🇳')">
+                    <div class="story-ring"><div class="story-avatar">2F</div></div>
                 </div>
             </div>
 
@@ -668,8 +668,7 @@
             <div class="profile-wrapper">
                 <div class="profile-pic">V</div>
                 <h3 id="profileUsername">Verender Singh Rawat</h3>
-                <p style="color:#aaa; font-size:12px; margin-top:2px;">Founder & President • Sanchi Trust | 2friend</p>
-                <p style="color:#4ade80; font-size:11px; margin-top:2px;">📍 New Delhi, India</p>
+                <p style="color:#4ade80; font-size:12px; margin-top:4px;">📍 New Delhi, India • 2friend Creator</p>
                 <div class="stats-row">
                     <div class="stat-box"><strong id="userPostCount">1</strong><span>Posts</span></div>
                     <div class="stat-box"><strong>5,000+</strong><span>Followers</span></div>
