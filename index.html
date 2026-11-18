@@ -32,11 +32,13 @@
     .card-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
     .tag { font-size: 11px; padding: 3px 8px; border-radius: 999px; background: #1d2b44; color: #7fb3ff; font-weight: 600; }
     
-    /* Video Container - Guaranteed Visible & Responsive */
-    .preview { width: 100%; aspect-ratio: 9/16; background: #0a0a0a; border-radius: 12px; overflow: hidden; margin: 12px 0; border: 1px solid #2a2a2a; position: relative; cursor: pointer; }
+    /* Video Box with Thumbnail & Tap-to-Play Overlay */
+    .preview { width: 100%; aspect-ratio: 9/16; background: #111; border-radius: 12px; overflow: hidden; margin: 12px 0; border: 1px solid #2a2a2a; position: relative; cursor: pointer; }
     .preview video { width: 100%; height: 100%; object-fit: cover; display: block; background: #000; }
-    .sound-btn { position: absolute; bottom: 14px; right: 14px; background: rgba(0,0,0,0.75); color: #fff; border: 1px solid #444; padding: 6px 12px; border-radius: 999px; font-size: 12px; z-index: 15; cursor: pointer; }
-    .fs-badge { position: absolute; top: 14px; right: 14px; background: rgba(0,0,0,0.75); color: #2ecc71; border: 1px solid #2ecc71; padding: 5px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; z-index: 15; }
+    .play-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.45); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; z-index: 10; transition: opacity 0.2s; }
+    .play-circle { width: 64px; height: 64px; border-radius: 50%; background: #2ecc71; color: #000; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: bold; box-shadow: 0 4px 15px rgba(46,204,113,0.4); }
+    .play-label { background: rgba(0,0,0,0.8); color: #fff; padding: 6px 14px; border-radius: 999px; font-size: 13px; font-weight: 600; border: 1px solid #333; }
+    .fs-badge { position: absolute; top: 14px; right: 14px; background: rgba(0,0,0,0.8); color: #2ecc71; border: 1px solid #2ecc71; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; z-index: 15; }
 
     /* TikTok Fullscreen Reels Viewer */
     .tiktok-modal { display: none; position: fixed; inset: 0; background: #000; z-index: 99999; flex-direction: column; justify-content: space-between; align-items: center; }
@@ -241,7 +243,7 @@
     <button class="nav-reels-btn prev-reel" onclick="prevTiktokReel()">▲</button>
     <button class="nav-reels-btn next-reel" onclick="nextTiktokReel()">▼</button>
     <div class="tiktok-container">
-      <video id="tiktokActiveVid" class="tiktok-video" autoplay loop playsinline controlsList="nodownload"></video>
+      <video id="tiktokActiveVid" class="tiktok-video" controls autoplay loop playsinline controlsList="nodownload"></video>
       <div class="reel-side-actions" id="tiktokSideActions"></div>
       <div class="tiktok-overlay">
         <strong id="tiktokAuthor" style="font-size:16px; color:#2ecc71;">@user</strong>
@@ -281,7 +283,6 @@
     document.addEventListener('cut', e => e.preventDefault());
     document.addEventListener('paste', e => e.preventDefault());
 
-    // 100% Reliable Backup Video URLs (Guarantees Zero Black Screen)
     const BACKUP_VIDEOS = [
       'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
       'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4'
@@ -298,8 +299,8 @@
         author: '2friend Official',
         tag: '480p · Zero Cost',
         caption: '2friend शॉर्ट वीडियो प्रिव्यू — तेज़ लोडिंग और साफ़ आवाज़! #2friend #virel #delhi',
-        videoUrl: 'https://pub-eaf6b9a861824b82ad140f60615e8933.r2.dev/sample.mp4',
-        backupUrl: BACKUP_VIDEOS[0],
+        videoUrl: BACKUP_VIDEOS[0],
+        posterUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600',
         likes: 230,
         liked: false,
         comments: ['बहुत बढ़िया ऐप है!', 'वीडियो तुरंत चल रहा है!']
@@ -310,31 +311,25 @@
         tag: '480p · Max 1m',
         caption: 'पहाड़ों की सुबह और हमारा डेली मिनी व्लॉग। #uttarakhand #dailyvlog',
         videoUrl: BACKUP_VIDEOS[1],
-        backupUrl: BACKUP_VIDEOS[0],
+        posterUrl: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=600',
         likes: 185,
         liked: false,
         comments: ['शानदार दृश्य!']
       }
     ];
 
-    function attachSafeVideo(videoEl, primaryUrl, backupUrl) {
-      if (!videoEl) return;
-      videoEl.src = primaryUrl;
-      videoEl.onerror = () => {
-        if (backupUrl && videoEl.src !== backupUrl) {
-          videoEl.src = backupUrl;
-          videoEl.play().catch(() => {});
-        }
-      };
-      videoEl.play().catch(() => {});
-    }
-
-    function toggleVideoMute(btn, index) {
-      event.stopPropagation();
+    function playInlineVideo(index) {
       const vid = document.getElementById(`feed-vid-${index}`);
+      const overlay = document.getElementById(`play-overlay-${index}`);
       if (!vid) return;
-      vid.muted = !vid.muted;
-      btn.textContent = vid.muted ? '🔇 आवाज़ चालू करें' : '🔊 आवाज़ चालू है';
+      if (overlay) overlay.style.display = 'none';
+      vid.controls = true;
+      vid.muted = false;
+      vid.play().catch(err => {
+        // Fallback if unmuted autoplay blocked
+        vid.muted = true;
+        vid.play();
+      });
     }
 
     function renderFeed() {
@@ -352,10 +347,13 @@
             <span class="tag">${post.tag}</span>
           </div>
           <p style="margin:8px 0; font-size:14px; color:#ddd;">${post.caption}</p>
-          <div class="preview" onclick="openTiktokModal(${index})">
-            <video id="feed-vid-${index}" muted autoplay loop playsinline preload="auto"></video>
-            <span class="fs-badge">▶ फुलस्क्रीन</span>
-            <button class="sound-btn" onclick="toggleVideoMute(this, ${index})">🔇 आवाज़ चालू करें</button>
+          <div class="preview">
+            <video id="feed-vid-${index}" poster="${post.posterUrl || ''}" playsinline preload="metadata" src="${post.videoUrl}" controlsList="nodownload"></video>
+            <div class="play-overlay" id="play-overlay-${index}" onclick="playInlineVideo(${index})">
+              <div class="play-circle">▶</div>
+              <span class="play-label">वीडियो चलाने के लिए टैप करें</span>
+            </div>
+            <span class="fs-badge" onclick="openTiktokModal(${index})">⛶ फुलस्क्रीन</span>
           </div>
           <div class="actions">
             <button class="${post.liked ? 'liked' : ''}" onclick="toggleLike(${index})"><span>${post.liked ? '❤️' : '🤍'}</span> Like (${post.likes})</button>
@@ -374,9 +372,6 @@
         `;
         list.appendChild(card);
 
-        const vidEl = document.getElementById(`feed-vid-${index}`);
-        attachSafeVideo(vidEl, post.videoUrl, post.backupUrl);
-
         if ((index + 1) % 2 === 0) {
           const adNet = AD_NETWORKS[adCounter % AD_NETWORKS.length];
           adCounter++;
@@ -392,23 +387,6 @@
           list.appendChild(adCard);
         }
       });
-
-      setupAutoPlayObserver();
-    }
-
-    function setupAutoPlayObserver() {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          const vid = entry.target;
-          if (entry.isIntersecting) {
-            vid.play().catch(() => {});
-          } else {
-            vid.pause();
-          }
-        });
-      }, { threshold: 0.5 });
-
-      document.querySelectorAll('.preview video').forEach(v => observer.observe(v));
     }
 
     function toggleLike(i) {
@@ -459,8 +437,12 @@
       `;
 
       const vid = document.getElementById('tiktokActiveVid');
+      vid.src = item.videoUrl;
       vid.muted = false;
-      attachSafeVideo(vid, item.videoUrl, item.backupUrl);
+      vid.play().catch(() => {
+        vid.muted = true;
+        vid.play();
+      });
     }
 
     function nextTiktokReel() {
@@ -604,7 +586,7 @@
         tag: '480p · Max 1m',
         caption: caption,
         videoUrl: finalVideoUrl,
-        backupUrl: BACKUP_VIDEOS[0],
+        posterUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600',
         likes: 1,
         liked: false,
         comments: []
