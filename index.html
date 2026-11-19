@@ -1041,6 +1041,19 @@
             }
         }
 
+        /* --- रुके हुए वीडियो पर काला पर्दा न दिखे इसके लिए पहला फ्रेम दिखाना --- */
+        function prepareVideoFrame(video) {
+            if (!video) return;
+            video.addEventListener('loadeddata', function onLoaded() {
+                video.removeEventListener('loadeddata', onLoaded);
+                if (video.paused && video.currentTime === 0) {
+                    try {
+                        video.currentTime = 0.1;
+                    } catch (e) {}
+                }
+            });
+        }
+
         function appendVideoSlideToFeed(videoSrc, caption, author, prepend = true) {
             videoCounter++;
             const newVidId = 'vid-' + videoCounter;
@@ -1081,6 +1094,9 @@
                 </div>
             `;
             newSlide.querySelector('.reel-desc').textContent = caption;
+
+            const createdVideoEl = newSlide.querySelector('video');
+            prepareVideoFrame(createdVideoEl);
 
             const feed = document.getElementById('reelsFeedContainer');
             if (prepend && feed.firstChild) {
@@ -1165,6 +1181,9 @@
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
+            const initialVid = document.getElementById('vid-1');
+            prepareVideoFrame(initialVid);
+
             // ऐप खुलते ही पहले से सेव किए गए वीडियो वापस लोड करें
             const savedList = await loadSavedVideosFromLocalDB();
             if (savedList.length > 0) {
