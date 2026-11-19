@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>2friend - India's Own Social Video App</title>
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        await OneSignal.init({
+          appId: "72e22f54-652f-4d74-9ae3-fdd2cf750a2f",
+        });
+      });
+    </script>
     <style>
         * {
             box-sizing: border-box;
@@ -415,7 +424,7 @@
         }
         .primary-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* चैट स्क्रीन - फिक्स्ड इनपुट बार (अब कभी नहीं छिपेलगा) */
+        /* चैट स्क्रीन - फिक्स्ड इनपुट बार */
         .chat-container {
             display: flex;
             flex-direction: column;
@@ -457,12 +466,12 @@
             display: flex;
             gap: 8px;
             padding: 10px 14px;
-            flex-shrink: 0; /* यह सुनिश्चित करता है कि इनपुट बार हमेशा दिखे */
+            flex-shrink: 0;
         }
         .chat-footer input {
             flex: 1;
             background: #222;
-            border: 1px solid #4ade80; /* स्पष्ट हरा बॉर्डर ताकि टाइपिंग बॉक्स साफ दिखे */
+            border: 1px solid #4ade80;
             color: #fff;
             padding: 10px 14px;
             border-radius: 20px;
@@ -588,7 +597,7 @@
     <!-- मुख्य बॉडी -->
     <div class="app-body">
 
-        <!-- 1. होम स्क्रीन (वीडियो और आवाज़ फिक्स) -->
+        <!-- 1. होम स्क्रीन -->
         <div id="view-home" class="screen-view active">
             <div class="stories-bar">
                 <div class="story-item" onclick="addMyStory()">
@@ -615,7 +624,6 @@
                 <div class="reel-slide">
                     <span class="quality-tag">480p • Cloud4R2 CDN</span>
                     <button class="sound-toggle-btn" id="sound-btn-1" onclick="toggleAudio('vid-1', 'sound-btn-1')">🔇 Muted</button>
-                    <!-- वीडियो लैग फिक्स: playsinline, preload="auto", muted -->
                     <video id="vid-1" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" loop autoplay muted playsinline preload="auto" controlsList="nodownload" disablePictureInPicture oncontextmenu="return false;"></video>
                     <div class="center-play-btn" id="btn-1" style="display:none;" onclick="toggleVideo('vid-1', 'btn-1')">▶</div>
                     <div class="reel-bottom-info">
@@ -664,7 +672,7 @@
             </div>
         </div>
 
-        <!-- 3. चैट स्क्रीन (टाइपिंग इनपुट फिक्स) -->
+        <!-- 3. चैट स्क्रीन -->
         <div id="view-chat" class="screen-view">
             <div class="chat-container">
                 <div class="chat-header-info">
@@ -787,7 +795,6 @@
             }
         }
 
-        // आवाज़ ऑन/ऑफ करने का नया फंक्शन
         function toggleAudio(videoId, soundBtnId) {
             const video = document.getElementById(videoId);
             const btn = document.getElementById(soundBtnId);
@@ -899,7 +906,7 @@
                 feedback.innerText = "";
                 pendingVideoURL = null;
 
-                alert("🎉 बधाई हो! आपका वीडियो R2 स्टोरेज पर सफलतापूप्रक सेव हो गया है।");
+                alert("🎉 बधाई हो! आपका वीडियो R2 स्टोरेज पर सफलतापूर्वक सेव हो गया है।");
                 navigateTab('home', document.querySelectorAll('.nav-tab')[0]);
             }, 1000);
         }
