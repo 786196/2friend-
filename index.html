@@ -30,7 +30,7 @@
         body {
             background-color: #000;
             color: #fff;
-            height: 100dvh; /* मोबाइल स्क्रीन के हिसाब से सही ऊंचाई */
+            height: 100dvh;
             width: 100vw;
             display: flex;
             flex-direction: column;
@@ -123,7 +123,7 @@
             outline: none;
         }
 
-        /* नेविगेशन बार */
+        /* नेविगेशन बार (5 टैब: होम, क्रिएट, चैट, नोटिफिकेशन घंटी, प्रोफाइल) */
         nav {
             height: 50px;
             background: #0f0f0f;
@@ -141,14 +141,18 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 50px;
+            width: 48px;
             height: 40px;
             cursor: pointer;
+            position: relative;
             transition: color 0.2s, transform 0.15s;
         }
         .nav-tab.active {
             color: #fff;
             transform: scale(1.08);
+        }
+        .nav-tab.active.notif-tab {
+            color: #1877f2;
         }
         .nav-tab svg {
             width: 24px;
@@ -161,6 +165,18 @@
         }
         .nav-tab.active svg.fill-active {
             fill: currentColor;
+        }
+        .notif-badge {
+            position: absolute;
+            top: 4px;
+            right: 6px;
+            background: #ff2a6d;
+            color: #fff;
+            font-size: 9px;
+            font-weight: bold;
+            padding: 1px 4px;
+            border-radius: 10px;
+            line-height: 1.1;
         }
 
         /* मुख्य स्क्रीन क्षेत्र */
@@ -202,6 +218,7 @@
             justify-content: center;
             cursor: pointer;
             flex-shrink: 0;
+            gap: 4px;
         }
         .story-ring {
             width: 54px;
@@ -220,8 +237,17 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 20px;
+            font-size: 18px;
+            font-weight: bold;
             color: #fff;
+        }
+        .story-label {
+            font-size: 10px;
+            color: #ccc;
+            max-width: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         /* विज्ञापन बैनर */
@@ -297,7 +323,6 @@
             border: 1px solid rgba(74, 222, 128, 0.3);
             z-index: 10;
         }
-        /* आवाज़ चालू/बंद करने का बटन */
         .sound-toggle-btn {
             position: absolute;
             top: 10px;
@@ -424,7 +449,7 @@
         }
         .primary-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* चैट स्क्रीन - फिक्स्ड इनपुट बार */
+        /* चैट स्क्रीन */
         .chat-container {
             display: flex;
             flex-direction: column;
@@ -488,6 +513,63 @@
             cursor: pointer;
         }
 
+        /* नोटिफिकेशन स्क्रीन */
+        .notif-wrapper {
+            flex: 1;
+            overflow-y: auto;
+            background: #000;
+        }
+        .notif-top-bar {
+            padding: 14px 16px;
+            border-bottom: 1px solid #222;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .notif-enable-btn {
+            background: #1877f2;
+            color: #fff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .notif-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-bottom: 1px solid #1a1a1a;
+            background: #0d1520;
+        }
+        .notif-item.read {
+            background: #000;
+        }
+        .notif-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #1877f2, #00d2ff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        .notif-text {
+            font-size: 13px;
+            line-height: 1.35;
+            color: #eee;
+        }
+        .notif-time {
+            font-size: 11px;
+            color: #888;
+            margin-top: 3px;
+        }
+
         /* प्रोफाइल स्क्रीन */
         .profile-wrapper {
             flex: 1;
@@ -528,11 +610,26 @@
             margin: 0 8px;
         }
 
-        /* स्टोरी और कमेंट मोडल */
+        /* स्टोरी व्यूअर और स्टोरी अपलोड मोडल */
         .story-modal {
             position: fixed; inset: 0; background: #000; z-index: 200; display: none; flex-direction: column;
         }
         .story-modal.open { display: flex; }
+        .story-progress-bar {
+            height: 3px; background: rgba(255,255,255,0.25); width: 100%;
+        }
+        .story-progress-fill {
+            height: 100%; background: #fff; width: 0%; transition: width 0.08s linear;
+        }
+        .story-creator-modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 250;
+            display: none; justify-content: center; align-items: center; padding: 16px;
+        }
+        .story-creator-modal.open { display: flex; }
+        .story-creator-card {
+            width: 100%; max-width: 360px; background: #161616; border: 1px solid #333;
+            border-radius: 16px; padding: 20px;
+        }
         .comment-sheet {
             position: fixed; bottom: 0; left: 0; right: 0; height: 52%;
             background: #161616; border-top-left-radius: 16px; border-top-right-radius: 16px;
@@ -578,7 +675,7 @@
         </div>
     </header>
 
-    <!-- नेविगेशन बार -->
+    <!-- नेविगेशन बार (घंटी आइकॉन सहित) -->
     <nav>
         <button class="nav-tab active" onclick="navigateTab('home', this)" aria-label="Home">
             <svg class="fill-active" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
@@ -588,6 +685,10 @@
         </button>
         <button class="nav-tab" onclick="navigateTab('chat', this)" aria-label="Chat">
             <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+        </button>
+        <button class="nav-tab notif-tab" onclick="navigateTab('notifications', this)" aria-label="Notifications">
+            <svg class="fill-active" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+            <span class="notif-badge" id="notifCountBadge">2</span>
         </button>
         <button class="nav-tab" onclick="navigateTab('profile', this)" aria-label="Profile">
             <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
@@ -599,19 +700,22 @@
 
         <!-- 1. होम स्क्रीन -->
         <div id="view-home" class="screen-view active">
-            <div class="stories-bar">
-                <div class="story-item" onclick="addMyStory()">
+            <div class="stories-bar" id="storiesBarContainer">
+                <div class="story-item" onclick="openStoryCreator()">
                     <div class="story-ring add-ring">
                         <div class="story-avatar">
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                         </div>
                     </div>
+                    <span class="story-label">+ स्टोरी</span>
                 </div>
-                <div class="story-item" onclick="openStory('Verender Rawat', '2friend ऐप R2 स्टोरेज और D1 डेटाबेस पर लाइव है! 🚀')">
+                <div class="story-item" onclick="openVideoStory('Verender Rawat', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4', '2friend ऐप R2 स्टोरेज और D1 डेटाबेस पर लाइव है! 🚀')">
                     <div class="story-ring"><div class="story-avatar">V</div></div>
+                    <span class="story-label">Verender</span>
                 </div>
                 <div class="story-item" onclick="openStory('दिल्ली क्रिएटर्स', '1 मिनट की शानदार 480p रील्स देखें!')">
                     <div class="story-ring"><div class="story-avatar">D</div></div>
+                    <span class="story-label">दिल्ली</span>
                 </div>
             </div>
 
@@ -690,7 +794,31 @@
             </div>
         </div>
 
-        <!-- 4. प्रोफाइल स्क्रीन -->
+        <!-- 4. नोटिफिकेशन स्क्रीन (घंटी दबाने पर खुलेगी) -->
+        <div id="view-notifications" class="screen-view">
+            <div class="notif-top-bar">
+                <h2 style="font-size: 20px; font-weight: 800;">Notifications</h2>
+                <button class="notif-enable-btn" onclick="requestPushPermission()">🔔 Push चालू करें</button>
+            </div>
+            <div class="notif-wrapper" id="notificationsList">
+                <div class="notif-item" onclick="this.classList.add('read')">
+                    <div class="notif-avatar">2F</div>
+                    <div>
+                        <div class="notif-text"><strong>2friend Official:</strong> OneSignal पुश नोटिफिकेशन (`72e22f54...`) सफलतापूर्वक जुड़ गया है!</div>
+                        <div class="notif-time">अभी</div>
+                    </div>
+                </div>
+                <div class="notif-item" onclick="this.classList.add('read')">
+                    <div class="notif-avatar" style="background:linear-gradient(45deg,#ff9933,#ff2a6d);">V</div>
+                    <div>
+                        <div class="notif-text"><strong>Verender Rawat</strong> ने 480p वीडियो स्टोरी और रील लाइव की है।</div>
+                        <div class="notif-time">1h</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. प्रोफाइल स्क्रीन -->
         <div id="view-profile" class="screen-view">
             <div class="profile-wrapper">
                 <div class="profile-pic">V</div>
@@ -708,6 +836,7 @@
                     <div style="font-weight:bold; margin-bottom:6px; color:#fff;">⚙️ क्लाउड स्टोरेज और डेटाबेस स्टेटस:</div>
                     <div style="color:#4ade80;">● Cloudflare R2 (Cloud4R2): Connected</div>
                     <div style="color:#4ade80; margin-top:2px;">● Cloudflare D1 Database: Synced</div>
+                    <div style="color:#4ade80; margin-top:2px;">● OneSignal Push: Active</div>
                 </div>
                 <div class="policy-links">
                     <a href="#" onclick="alert('Google Privacy Policy: User data is protected.')">Privacy Policy</a> | 
@@ -718,15 +847,35 @@
 
     </div>
 
-    <!-- स्टोरी व्यूअर मोडल -->
+    <!-- स्टोरी डालने का नया बॉक्स (वीडियो + संदेश दोनों के लिए) -->
+    <div class="story-creator-modal" id="storyCreatorModal">
+        <div class="story-creator-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                <strong style="font-size:16px;">नई स्टोरी डालें (वीडियो / संदेश)</strong>
+                <button onclick="closeStoryCreator()" style="background:none; border:none; color:#fff; font-size:18px;">✕</button>
+            </div>
+            <div class="drop-zone" style="padding:16px 10px; margin-bottom:10px;" onclick="document.getElementById('storyVideoInput').click()">
+                <div style="font-size:26px; margin-bottom:4px;">🎥</div>
+                <div id="storyVideoFileName" style="font-size:13px; font-weight:bold;">स्टोरी के लिए वीडियो चुनें (वैकल्पिक)</div>
+                <div style="font-size:10px; color:#888;">अधिकतम 60 सेकंड • 480p</div>
+                <input type="file" id="storyVideoInput" accept="video/*" style="display:none;" onchange="handleStoryVideoSelect(this)">
+            </div>
+            <input type="text" id="storyCaptionInput" class="caption-input" placeholder="या स्टोरी का संदेश लिखें...">
+            <div id="storyCreatorStatus" style="font-size:11px; color:#4ade80; margin-bottom:10px; text-align:center;"></div>
+            <button class="primary-btn" onclick="publishNewStory()">स्टोरी शेयर करें</button>
+        </div>
+    </div>
+
+    <!-- स्टोरी व्यूअर मोडल (वीडियो और टेक्स्ट दोनों चलाता है) -->
     <div class="story-modal" id="storyModal">
         <div class="story-progress-bar"><div class="story-progress-fill" id="storyProgress"></div></div>
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:4px 14px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 14px; background:rgba(0,0,0,0.6); z-index:10;">
             <strong id="storyModalUser">User</strong>
             <button onclick="closeStory()" style="background:none; border:none; color:#fff; font-size:20px;">✕</button>
         </div>
-        <div style="flex:1; display:flex; justify-content:center; align-items:center; padding:20px; text-align:center; background:radial-gradient(circle at center, #222, #000);">
-            <p id="storyModalText" style="font-size:18px; line-height:1.4;"></p>
+        <div style="flex:1; position:relative; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#000; overflow:hidden;">
+            <video id="storyModalVideo" style="display:none; width:100%; height:100%; object-fit:contain;" playsinline controlsList="nodownload" disablePictureInPicture></video>
+            <p id="storyModalText" style="font-size:18px; line-height:1.4; padding:20px; text-align:center;"></p>
         </div>
     </div>
 
@@ -754,6 +903,7 @@
 
         let loggedInUser = "@verender_rawat";
         let pendingVideoURL = null;
+        let pendingStoryVideoURL = null;
         let videoCounter = 1;
         let storyTimer = null;
 
@@ -775,11 +925,27 @@
             document.getElementById('view-' + tabId).classList.add('active');
             btnElement.classList.add('active');
 
+            if (tabId === 'notifications') {
+                const badge = document.getElementById('notifCountBadge');
+                if (badge) badge.style.display = 'none';
+            }
+
             if (tabId !== 'home') {
                 document.querySelectorAll('video').forEach(v => v.pause());
             } else {
                 const firstVid = document.getElementById('vid-1');
                 if (firstVid) firstVid.play().catch(e => console.log("Auto-play prevented"));
+            }
+        }
+
+        function requestPushPermission() {
+            if (window.OneSignalDeferred) {
+                window.OneSignalDeferred.push(async function(OneSignal) {
+                    await OneSignal.Notifications.requestPermission();
+                    alert("🔔 नोटिफिकेशन अनुमति जाँची गई!");
+                });
+            } else {
+                alert("OneSignal लोड हो रहा है, कृपया 2 सेकंड बाद दोबारा दबाएं।");
             }
         }
 
@@ -891,7 +1057,7 @@
                             <span class="side-count">0</span>
                         </div>
                         <div class="side-btn-wrap">
-                            <button class="side-btn" onclick="alert('शेर किया गया')">➤</button>
+                            <button class="side-btn" onclick="alert('शेयर किया गया')">➤</button>
                             <span class="side-count">Share</span>
                         </div>
                     </div>
@@ -911,27 +1077,141 @@
             }, 1000);
         }
 
+        /* स्टोरी क्रिएटर और वीडियो स्टोरी प्लेयर */
+        function openStoryCreator() {
+            pendingStoryVideoURL = null;
+            document.getElementById('storyVideoFileName').innerText = "स्टोरी के लिए वीडियो चुनें (वैकल्पिक)";
+            document.getElementById('storyCaptionInput').value = "";
+            document.getElementById('storyCreatorStatus').innerText = "";
+            document.getElementById('storyCreatorModal').classList.add('open');
+        }
+        function closeStoryCreator() {
+            document.getElementById('storyCreatorModal').classList.remove('open');
+        }
+        function handleStoryVideoSelect(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const status = document.getElementById('storyCreatorStatus');
+            const label = document.getElementById('storyVideoFileName');
+            status.style.color = "#facc15";
+            status.innerText = "स्टोरी वीडियो जाँचा जा रहा है (60s नियम)...";
+
+            const tempVid = document.createElement('video');
+            tempVid.preload = 'metadata';
+            tempVid.onloadedmetadata = function() {
+                if (tempVid.duration > CLOUD_CONFIG.maxDurationSeconds + 0.5) {
+                    status.style.color = "#f87171";
+                    status.innerText = "❌ स्टोरी वीडियो अधिकतम 60 सेकंड का ही हो सकता है!";
+                    input.value = "";
+                    pendingStoryVideoURL = null;
+                } else {
+                    pendingStoryVideoURL = URL.createObjectURL(file);
+                    label.innerText = "✅ " + file.name + " (" + Math.round(tempVid.duration) + "s)";
+                    status.style.color = "#4ade80";
+                    status.innerText = "स्टोरी वीडियो तैयार है!";
+                }
+            };
+            tempVid.src = URL.createObjectURL(file);
+        }
+        function publishNewStory() {
+            const txt = document.getElementById('storyCaptionInput').value.trim();
+            if (!pendingStoryVideoURL && !txt) {
+                alert("कृपया स्टोरी के लिए कोई वीडियो चुनें या संदेश लिखें।");
+                return;
+            }
+            const videoUrlToSave = pendingStoryVideoURL;
+            const captionToSave = txt;
+
+            const bar = document.getElementById('storiesBarContainer');
+            const newItem = document.createElement('div');
+            newItem.className = 'story-item';
+            const initial = loggedInUser.replace('@', '').charAt(0).toUpperCase() || 'U';
+            newItem.innerHTML = `
+                <div class="story-ring"><div class="story-avatar">${initial}</div></div>
+                <span class="story-label">आपकी स्टोरी</span>
+            `;
+            newItem.onclick = function() {
+                if (videoUrlToSave) {
+                    openVideoStory(loggedInUser, videoUrlToSave, captionToSave);
+                } else {
+                    openStory(loggedInUser, captionToSave);
+                }
+            };
+            bar.insertBefore(newItem, bar.children[1]);
+
+            closeStoryCreator();
+            if (videoUrlToSave) {
+                openVideoStory(loggedInUser, videoUrlToSave, captionToSave);
+            } else {
+                openStory(loggedInUser, captionToSave);
+            }
+        }
+
         function openStory(userName, text) {
+            const vidEl = document.getElementById('storyModalVideo');
+            const txtEl = document.getElementById('storyModalText');
+            vidEl.pause();
+            vidEl.style.display = 'none';
+            txtEl.style.display = 'block';
+
             document.getElementById('storyModalUser').innerText = userName;
-            document.getElementById('storyModalText').innerText = text;
+            txtEl.innerText = text;
             document.getElementById('storyModal').classList.add('open');
+            startStoryProgress(80);
+        }
+
+        function openVideoStory(userName, videoSrc, caption) {
+            const vidEl = document.getElementById('storyModalVideo');
+            const txtEl = document.getElementById('storyModalText');
+            document.getElementById('storyModalUser').innerText = userName;
+
+            vidEl.src = videoSrc;
+            vidEl.style.display = 'block';
+            vidEl.muted = false;
+            vidEl.play().catch(() => {
+                vidEl.muted = true;
+                vidEl.play();
+            });
+
+            if (caption) {
+                txtEl.style.display = 'block';
+                txtEl.style.position = 'absolute';
+                txtEl.style.bottom = '24px';
+                txtEl.style.background = 'rgba(0,0,0,0.6)';
+                txtEl.style.borderRadius = '10px';
+                txtEl.style.padding = '8px 14px';
+                txtEl.style.fontSize = '14px';
+                txtEl.innerText = caption;
+            } else {
+                txtEl.style.display = 'none';
+            }
+
+            document.getElementById('storyModal').classList.add('open');
+            startStoryProgress(150);
+        }
+
+        function startStoryProgress(stepMs) {
             const progress = document.getElementById('storyProgress');
             progress.style.width = '0%';
             let w = 0;
             clearInterval(storyTimer);
             storyTimer = setInterval(() => {
-                w += 2;
+                w += 1;
                 progress.style.width = w + '%';
                 if (w >= 100) closeStory();
-            }, 80);
+            }, stepMs);
         }
+
         function closeStory() {
             clearInterval(storyTimer);
+            const vidEl = document.getElementById('storyModalVideo');
+            vidEl.pause();
+            vidEl.src = "";
+            const txtEl = document.getElementById('storyModalText');
+            txtEl.style.position = 'static';
+            txtEl.style.background = 'none';
+            txtEl.style.fontSize = '18px';
             document.getElementById('storyModal').classList.remove('open');
-        }
-        function addMyStory() {
-            const txt = prompt("स्टोरी संदेश लिखें:");
-            if (txt) openStory(loggedInUser, txt);
         }
 
         function sendChatMsg() {
