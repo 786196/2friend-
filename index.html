@@ -151,7 +151,7 @@
             outline: none;
         }
 
-        /* नेविगेशन बार (5 टैब: होम, क्रिएट, चैट, नोटिफिकेशन घंटी, प्रोफाइल) */
+        /* नेविगेशन बार */
         nav {
             height: 50px;
             background: #0f0f0f;
@@ -541,7 +541,7 @@
             cursor: pointer;
         }
 
-        /* नोटिफिकेशन स्क्रीन (साफ फीड लेआउट) */
+        /* नोटिफिकेशन स्क्रीन */
         .notif-wrapper {
             flex: 1;
             overflow-y: auto;
@@ -853,7 +853,7 @@
             </div>
         </div>
 
-        <!-- 4. नोटिफिकेशन स्क्रीन (साफ फीड लेआउट, बिना अलग बटन के) -->
+        <!-- 4. नोटिफिकेशन स्क्रीन -->
         <div id="view-notifications" class="screen-view">
             <div class="notif-top-bar">
                 <h2 style="font-size: 21px; font-weight: 800; letter-spacing: 0.2px;">Notifications</h2>
@@ -912,7 +912,7 @@
 
     </div>
 
-    <!-- स्टोरी डालने का नया बॉक्स (वीडियो + संदेश दोनों के लिए) -->
+    <!-- स्टोरी डालने का नया बॉक्स -->
     <div class="story-creator-modal" id="storyCreatorModal">
         <div class="story-creator-card">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -931,7 +931,7 @@
         </div>
     </div>
 
-    <!-- स्टोरी व्यूअर मोडल (वीडियो और टेक्स्ट दोनों चलाता है) -->
+    <!-- स्टोरी व्यूअर मोडल -->
     <div class="story-modal" id="storyModal">
         <div class="story-progress-bar"><div class="story-progress-fill" id="storyProgress"></div></div>
         <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 14px; background:rgba(0,0,0,0.6); z-index:10;">
@@ -972,6 +972,62 @@
         let videoCounter = 1;
         let storyTimer = null;
         let pushPromptRequested = false;
+
+        function pauseAndMuteOtherVideos(activeVideoId) {
+            document.querySelectorAll('#reelsFeedContainer video').forEach(v => {
+                if (v.id !== activeVideoId) {
+                    v.pause();
+                    v.muted = true;
+                    const idx = v.id.replace('vid-', '');
+                    const sBtn = document.getElementById('sound-btn-' + idx);
+                    if (sBtn) {
+                        sBtn.innerText = "🔇 Muted";
+                        sBtn.style.borderColor = "rgba(255,255,255,0.3)";
+                    }
+                    const pBtn = document.getElementById('btn-' + idx);
+                    if (pBtn) pBtn.style.display = 'none';
+                }
+            });
+        }
+
+        function syncFeedPlaybackOnScroll() {
+            const feed = document.getElementById('reelsFeedContainer');
+            if (!feed || !document.getElementById('view-home').classList.contains('active')) return;
+            const slides = Array.from(feed.querySelectorAll('.reel-slide'));
+            if (!slides.length) return;
+
+            const feedRect = feed.getBoundingClientRect();
+            let bestSlide = slides[0];
+            let minDist = Infinity;
+
+            slides.forEach(slide => {
+                const r = slide.getBoundingClientRect();
+                const dist = Math.abs(r.top - feedRect.top);
+                if (dist < minDist) {
+                    minDist = dist;
+                    bestSlide = slide;
+                }
+            });
+
+            const activeVid = bestSlide.querySelector('video');
+            if (activeVid) {
+                pauseAndMuteOtherVideos(activeVid.id);
+                activeVid.play().catch(() => {});
+                const idx = activeVid.id.replace('vid-', '');
+                const playBtn = document.getElementById('btn-' + idx);
+                if (playBtn) playBtn.style.display = 'none';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const feed = document.getElementById('reelsFeedContainer');
+            if (feed) {
+                feed.addEventListener('scroll', () => {
+                    clearTimeout(feed._scrollTimer);
+                    feed._scrollTimer = setTimeout(syncFeedPlaybackOnScroll, 60);
+                }, { passive: true });
+            }
+        });
 
         async function checkAndSyncPushStatus(oneSignalInstance) {
             try {
@@ -1030,11 +1086,12 @@
             }
 
             if (tabId !== 'home') {
-                document.querySelectorAll('video').forEach(v => v.pause());
+                document.querySelectorAll('video').forEach(v => {
+                    v.pause();
+                    v.muted = true;
+                });
             } else {
-                const feed = document.getElementById('reelsFeedContainer');
-                const targetVid = (feed && feed.querySelector('video')) || document.getElementById('vid-1');
-                if (targetVid) targetVid.play().catch(() => {});
+                syncFeedPlaybackOnScroll();
             }
         }
 
@@ -1043,6 +1100,7 @@
             const btn = document.getElementById(btnId);
             if (!video || !btn) return;
             if (video.paused) {
+                pauseAndMuteOtherVideos(videoId);
                 video.play().catch(() => {});
                 btn.style.display = 'none';
             } else {
@@ -1056,7 +1114,9 @@
             const btn = document.getElementById(soundBtnId);
             if (!video || !btn) return;
             if (video.muted) {
+                pauseAndMuteOtherVideos(videoId);
                 video.muted = false;
+                video.play().catch(() => {});
                 btn.innerText = "🔊 Sound On";
                 btn.style.borderColor = "#4ade80";
             } else {
@@ -1106,26 +1166,47 @@
 
         function validateSelectedVideo(input) {
             const file = input.files && input.files[0];
-            if (!file) return;
-
             const feedback = document.getElementById('uploadFeedback');
             const publishBtn = document.getElementById('publishBtn');
             const fileNameDisplay = document.getElementById('selectedFileName');
 
+            pendingVideoURL = null;
+            publishBtn.disabled = true;
+
+            if (!file) {
+                fileNameDisplay.innerText = "मोबाइल से वीडियो चुनें";
+                feedback.innerText = "";
+                return;
+            }
+
             feedback.style.color = "#facc15";
             feedback.innerText = "वीडियो की जाँच हो रही है (60s नियम)...";
-            publishBtn.disabled = true;
 
             const blobUrl = URL.createObjectURL(file);
             const tempVideo = document.createElement('video');
             tempVideo.preload = 'metadata';
+
+            const metaTimer = setTimeout(() => {
+                URL.revokeObjectURL(blobUrl);
+                feedback.style.color = "#f87171";
+                feedback.innerText = "❌ वीडियो लोड होने में समय लगा, दूसरा वीडियो चुनें या पुनः प्रयास करें।";
+                input.value = "";
+            }, 8000);
+
             tempVideo.onloadedmetadata = function() {
+                clearTimeout(metaTimer);
+                if (!isFinite(tempVideo.duration) || tempVideo.duration <= 0) {
+                    URL.revokeObjectURL(blobUrl);
+                    feedback.style.color = "#f87171";
+                    feedback.innerText = "❌ इस वीडियो की अवधि (duration) पढ़ी नहीं जा सकी।";
+                    input.value = "";
+                    return;
+                }
                 if (tempVideo.duration > CLOUD_CONFIG.maxDurationSeconds + 0.5) {
                     URL.revokeObjectURL(blobUrl);
                     feedback.style.color = "#f87171";
                     feedback.innerText = "❌ वीडियो 1 मिनट से बड़ा है! अधिकतम 60 सेकंड मान्य है।";
                     input.value = "";
-                    pendingVideoURL = null;
                 } else {
                     pendingVideoURL = blobUrl;
                     fileNameDisplay.innerText = "✅ " + file.name + " (" + Math.round(tempVideo.duration) + "s)";
@@ -1135,10 +1216,11 @@
                 }
             };
             tempVideo.onerror = function() {
+                clearTimeout(metaTimer);
                 URL.revokeObjectURL(blobUrl);
                 feedback.style.color = "#f87171";
-                feedback.innerText = "❌ वीडियो फ़ाइल पढ़ी नहीं जा सकी।";
-                pendingVideoURL = null;
+                feedback.innerText = "❌ यह वीडियो फ़ाइल समर्थित नहीं है या खराब है।";
+                input.value = "";
             };
             tempVideo.src = blobUrl;
         }
@@ -1149,6 +1231,7 @@
             const caption = document.getElementById('videoCaptionInput').value.trim() || "मेरा नया वीडियो #2friend";
             const feedback = document.getElementById('uploadFeedback');
             const publishBtn = document.getElementById('publishBtn');
+            const videoSrcToAdd = pendingVideoURL;
 
             publishBtn.disabled = true;
             feedback.style.color = "#4ade80";
@@ -1161,12 +1244,14 @@
                 const newSoundBtnId = 'sound-btn-' + videoCounter;
                 const newLikeId = 'like-' + videoCounter;
 
+                pauseAndMuteOtherVideos(newVidId);
+
                 const newSlide = document.createElement('div');
                 newSlide.className = 'reel-slide';
                 newSlide.innerHTML = `
                     <span class="quality-tag">480p • R2 CDN</span>
                     <button class="sound-toggle-btn" id="${newSoundBtnId}" onclick="toggleAudio('${newVidId}', '${newSoundBtnId}')">🔇 Muted</button>
-                    <video id="${newVidId}" src="${pendingVideoURL}" loop autoplay muted playsinline preload="auto" controlsList="nodownload" disablePictureInPicture oncontextmenu="return false;"></video>
+                    <video id="${newVidId}" src="${videoSrcToAdd}" loop autoplay muted playsinline preload="auto" controlsList="nodownload" disablePictureInPicture oncontextmenu="return false;"></video>
                     <div class="center-play-btn" id="${newBtnId}" style="display:none;" onclick="toggleVideo('${newVidId}', '${newBtnId}')">▶</div>
                     <div class="reel-bottom-info">
                         <div class="reel-user">
@@ -1207,8 +1292,11 @@
                 alert("🎉 बधाई हो! आपका वीडियो R2 स्टोरेज पर सफलतापूर्वक सेव हो गया है।");
                 navigateTab('home', document.querySelectorAll('.nav-tab')[0]);
                 const createdVid = document.getElementById(newVidId);
-                if (createdVid) createdVid.play().catch(() => {});
-            }, 1000);
+                if (createdVid) {
+                    createdVid.load();
+                    createdVid.play().catch(() => {});
+                }
+            }, 600);
         }
 
         /* स्टोरी क्रिएटर और वीडियो स्टोरी प्लेयर */
@@ -1224,9 +1312,16 @@
         }
         function handleStoryVideoSelect(input) {
             const file = input.files && input.files[0];
-            if (!file) return;
             const status = document.getElementById('storyCreatorStatus');
             const label = document.getElementById('storyVideoFileName');
+            pendingStoryVideoURL = null;
+
+            if (!file) {
+                label.innerText = "स्टोरी के लिए वीडियो चुनें (वैकल्पिक)";
+                status.innerText = "";
+                return;
+            }
+
             status.style.color = "#facc15";
             status.innerText = "स्टोरी वीडियो जाँचा जा रहा है (60s नियम)...";
 
@@ -1239,13 +1334,18 @@
                     status.style.color = "#f87171";
                     status.innerText = "❌ स्टोरी वीडियो अधिकतम 60 सेकंड का ही हो सकता है!";
                     input.value = "";
-                    pendingStoryVideoURL = null;
                 } else {
                     pendingStoryVideoURL = blobUrl;
                     label.innerText = "✅ " + file.name + " (" + Math.round(tempVid.duration) + "s)";
                     status.style.color = "#4ade80";
                     status.innerText = "स्टोरी वीडियो तैयार है!";
                 }
+            };
+            tempVid.onerror = function() {
+                URL.revokeObjectURL(blobUrl);
+                status.style.color = "#f87171";
+                status.innerText = "❌ स्टोरी वीडियो पढ़ा नहीं जा सका।";
+                input.value = "";
             };
             tempVid.src = blobUrl;
         }
@@ -1284,6 +1384,10 @@
         }
 
         function openStory(userName, text) {
+            document.querySelectorAll('#reelsFeedContainer video').forEach(v => {
+                v.pause();
+                v.muted = true;
+            });
             const vidEl = document.getElementById('storyModalVideo');
             const txtEl = document.getElementById('storyModalText');
             vidEl.pause();
@@ -1297,6 +1401,10 @@
         }
 
         function openVideoStory(userName, videoSrc, caption) {
+            document.querySelectorAll('#reelsFeedContainer video').forEach(v => {
+                v.pause();
+                v.muted = true;
+            });
             const vidEl = document.getElementById('storyModalVideo');
             const txtEl = document.getElementById('storyModalText');
             document.getElementById('storyModalUser').innerText = userName;
@@ -1348,6 +1456,7 @@
             txtEl.style.background = 'none';
             txtEl.style.fontSize = '18px';
             document.getElementById('storyModal').classList.remove('open');
+            syncFeedPlaybackOnScroll();
         }
 
         function sendChatMsg() {
