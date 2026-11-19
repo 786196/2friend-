@@ -8,10 +8,14 @@
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(async function(OneSignal) {
-        await OneSignal.init({
-          appId: "72e22f54-652f-4d74-9ae3-fdd2cf750a2f",
-        });
-        checkAndSyncPushStatus(OneSignal);
+        try {
+          await OneSignal.init({
+            appId: "72e22f54-652f-4d74-9ae3-fdd2cf750a2f",
+          });
+          await checkAndSyncPushStatus(OneSignal);
+        } catch (err) {
+          console.log("OneSignal init error:", err);
+        }
       });
     </script>
     <style>
@@ -24,7 +28,7 @@
             user-select: none;
             -webkit-touch-callout: none;
         }
-        input, textarea {
+        input, textarea, select {
             -webkit-user-select: text;
             user-select: text;
         }
@@ -761,7 +765,7 @@
                     <div class="reel-bottom-info">
                         <div class="reel-user">
                             <span id="reelAuthorName">@verender_rawat</span>
-                            <button class="follow-chip" onclick="this.innerText='Following ✓'; this.style.background='#333';">Follow</button>
+                            <button class="follow-chip" onclick="toggleFollow(this)">Follow</button>
                         </div>
                         <div class="reel-desc">2friend ऐप पर आपका स्वागत है! 480p क्वालिटी, तेज़ लोडिंग और क्लाउड डेटाबेस सिंक। #2friend #India</div>
                         <div class="reel-music">🎵 Original Audio (Copyright-Free)</div>
@@ -776,7 +780,7 @@
                             <span class="side-count">18</span>
                         </div>
                         <div class="side-btn-wrap">
-                            <button class="side-btn" onclick="alert('लिंक शेयर किया गया')">➤</button>
+                            <button class="side-btn" onclick="shareCurrentReel()">➤</button>
                             <span class="side-count">Share</span>
                         </div>
                     </div>
@@ -835,7 +839,7 @@
                         <span class="notif-mini-badge">🔔</span>
                     </div>
                     <div class="notif-content">
-                        <div class="notif-text"><strong>2friend Official</strong> push notifications connected (`72e22f54...`).</div>
+                        <div class="notif-text"><strong>2friend Official</strong> push notifications connected (72e22f54...).</div>
                         <div class="notif-time">अभी</div>
                     </div>
                 </div>
@@ -923,7 +927,7 @@
             <div><strong>@rahul_delhi:</strong> बहुत ही तेज़ और साफ वीडियो चल रहा है! 🔥</div>
         </div>
         <div class="chat-footer" style="position:relative;">
-            <input type="text" id="commentInput" placeholder="कमेंट लिखें...">
+            <input type="text" id="commentInput" placeholder="कमेंट लिखें..." onkeypress="if(event.key==='Enter') postComment()">
             <button onclick="postComment()">Post</button>
         </div>
     </div>
@@ -944,10 +948,10 @@
 
         async function checkAndSyncPushStatus(oneSignalInstance) {
             try {
-                if (!("Notification" in window)) return;
+                if (!("Notification" in window) || !oneSignalInstance) return;
 
                 if (Notification.permission === "granted") {
-                    if (oneSignalInstance && oneSignalInstance.User && oneSignalInstance.User.PushSubscription) {
+                    if (oneSignalInstance.User && oneSignalInstance.User.PushSubscription) {
                         await oneSignalInstance.User.PushSubscription.optIn();
                     }
                     return;
@@ -955,7 +959,7 @@
 
                 if (Notification.permission === "default" && !pushPromptRequested) {
                     pushPromptRequested = true;
-                    if (oneSignalInstance && oneSignalInstance.Notifications && typeof oneSignalInstance.Notifications.requestPermission === "function") {
+                    if (oneSignalInstance.Notifications && typeof oneSignalInstance.Notifications.requestPermission === "function") {
                         await oneSignalInstance.Notifications.requestPermission();
                     }
                 }
@@ -986,7 +990,7 @@
             document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
             
             document.getElementById('view-' + tabId).classList.add('active');
-            btnElement.classList.add('active');
+            if (btnElement) btnElement.classList.add('active');
 
             if (tabId === 'notifications') {
                 const badge = document.getElementById('notifCountBadge');
@@ -1001,16 +1005,18 @@
             if (tabId !== 'home') {
                 document.querySelectorAll('video').forEach(v => v.pause());
             } else {
-                const firstVid = document.getElementById('vid-1');
-                if (firstVid) firstVid.play().catch(e => console.log("Auto-play prevented"));
+                const feed = document.getElementById('reelsFeedContainer');
+                const targetVid = (feed && feed.querySelector('video')) || document.getElementById('vid-1');
+                if (targetVid) targetVid.play().catch(() => {});
             }
         }
 
         function toggleVideo(videoId, btnId) {
             const video = document.getElementById(videoId);
             const btn = document.getElementById(btnId);
+            if (!video || !btn) return;
             if (video.paused) {
-                video.play();
+                video.play().catch(() => {});
                 btn.style.display = 'none';
             } else {
                 video.pause();
@@ -1021,6 +1027,7 @@
         function toggleAudio(videoId, soundBtnId) {
             const video = document.getElementById(videoId);
             const btn = document.getElementById(soundBtnId);
+            if (!video || !btn) return;
             if (video.muted) {
                 video.muted = false;
                 btn.innerText = "🔊 Sound On";
@@ -1032,20 +1039,46 @@
             }
         }
 
+        function toggleFollow(btn) {
+            if (!btn) return;
+            if (btn.dataset.following === "true") {
+                btn.dataset.following = "false";
+                btn.innerText = "Follow";
+                btn.style.background = "#ff2a6d";
+            } else {
+                btn.dataset.following = "true";
+                btn.innerText = "Following ✓";
+                btn.style.background = "#333";
+            }
+        }
+
         function toggleLike(btn, countId) {
             const countEl = document.getElementById(countId);
-            let count = parseInt(countEl.innerText);
+            if (!countEl) return;
+            let count = parseInt(countEl.innerText, 10) || 0;
             if (btn.classList.contains('liked')) {
                 btn.classList.remove('liked');
-                countEl.innerText = count - 1;
+                countEl.innerText = Math.max(0, count - 1);
             } else {
                 btn.classList.add('liked');
                 countEl.innerText = count + 1;
             }
         }
 
+        function shareCurrentReel() {
+            if (navigator.share) {
+                navigator.share({
+                    title: '2friend Reel',
+                    text: '2friend ऐप पर यह वीडियो देखें!',
+                    url: window.location.href
+                }).catch(() => alert('लिंक तैयार है'));
+            } else {
+                alert('लिंक कॉपी/शेयर करने के लिए तैयार है');
+            }
+        }
+
         function validateSelectedVideo(input) {
-            const file = input.files[0];
+            const file = input.files && input.files[0];
             if (!file) return;
 
             const feedback = document.getElementById('uploadFeedback');
@@ -1056,23 +1089,31 @@
             feedback.innerText = "वीडियो की जाँच हो रही है (60s नियम)...";
             publishBtn.disabled = true;
 
+            const blobUrl = URL.createObjectURL(file);
             const tempVideo = document.createElement('video');
             tempVideo.preload = 'metadata';
             tempVideo.onloadedmetadata = function() {
                 if (tempVideo.duration > CLOUD_CONFIG.maxDurationSeconds + 0.5) {
+                    URL.revokeObjectURL(blobUrl);
                     feedback.style.color = "#f87171";
                     feedback.innerText = "❌ वीडियो 1 मिनट से बड़ा है! अधिकतम 60 सेकंड मान्य है।";
                     input.value = "";
                     pendingVideoURL = null;
                 } else {
-                    pendingVideoURL = URL.createObjectURL(file);
+                    pendingVideoURL = blobUrl;
                     fileNameDisplay.innerText = "✅ " + file.name + " (" + Math.round(tempVideo.duration) + "s)";
                     feedback.style.color = "#4ade80";
                     feedback.innerText = "Cloudflare R2 पर अपलोड के लिए तैयार!";
                     publishBtn.disabled = false;
                 }
             };
-            tempVideo.src = URL.createObjectURL(file);
+            tempVideo.onerror = function() {
+                URL.revokeObjectURL(blobUrl);
+                feedback.style.color = "#f87171";
+                feedback.innerText = "❌ वीडियो फ़ाइल पढ़ी नहीं जा सकी।";
+                pendingVideoURL = null;
+            };
+            tempVideo.src = blobUrl;
         }
 
         function publishVideoToFeed() {
@@ -1083,6 +1124,7 @@
             const publishBtn = document.getElementById('publishBtn');
 
             publishBtn.disabled = true;
+            feedback.style.color = "#4ade80";
             feedback.innerText = "Cloudflare R2 पर सिंक हो रहा है...";
 
             setTimeout(() => {
@@ -1100,8 +1142,11 @@
                     <video id="${newVidId}" src="${pendingVideoURL}" loop autoplay muted playsinline preload="auto" controlsList="nodownload" disablePictureInPicture oncontextmenu="return false;"></video>
                     <div class="center-play-btn" id="${newBtnId}" style="display:none;" onclick="toggleVideo('${newVidId}', '${newBtnId}')">▶</div>
                     <div class="reel-bottom-info">
-                        <div class="reel-user">${loggedInUser} <span style="font-size:10px; color:#4ade80;">(Synced)</span></div>
-                        <div class="reel-desc">${caption}</div>
+                        <div class="reel-user">
+                            <span>${loggedInUser}</span>
+                            <span style="font-size:10px; color:#4ade80;">(Synced)</span>
+                        </div>
+                        <div class="reel-desc"></div>
                         <div class="reel-music">🎵 Original Audio - 2friend</div>
                     </div>
                     <div class="reel-side-actions">
@@ -1114,23 +1159,28 @@
                             <span class="side-count">0</span>
                         </div>
                         <div class="side-btn-wrap">
-                            <button class="side-btn" onclick="alert('शेयर किया गया')">➤</button>
+                            <button class="side-btn" onclick="shareCurrentReel()">➤</button>
                             <span class="side-count">Share</span>
                         </div>
                     </div>
                 `;
+                newSlide.querySelector('.reel-desc').textContent = caption;
 
                 const feed = document.getElementById('reelsFeedContainer');
                 feed.insertBefore(newSlide, feed.firstChild);
+                feed.scrollTop = 0;
                 document.getElementById('userPostCount').innerText = videoCounter;
 
                 document.getElementById('videoCaptionInput').value = "";
                 document.getElementById('selectedFileName').innerText = "मोबाइल से वीडियो चुनें";
+                document.getElementById('videoFileInput').value = "";
                 feedback.innerText = "";
                 pendingVideoURL = null;
 
                 alert("🎉 बधाई हो! आपका वीडियो R2 स्टोरेज पर सफलतापूर्वक सेव हो गया है।");
                 navigateTab('home', document.querySelectorAll('.nav-tab')[0]);
+                const createdVid = document.getElementById(newVidId);
+                if (createdVid) createdVid.play().catch(() => {});
             }, 1000);
         }
 
@@ -1146,29 +1196,31 @@
             document.getElementById('storyCreatorModal').classList.remove('open');
         }
         function handleStoryVideoSelect(input) {
-            const file = input.files[0];
+            const file = input.files && input.files[0];
             if (!file) return;
             const status = document.getElementById('storyCreatorStatus');
             const label = document.getElementById('storyVideoFileName');
             status.style.color = "#facc15";
             status.innerText = "स्टोरी वीडियो जाँचा जा रहा है (60s नियम)...";
 
+            const blobUrl = URL.createObjectURL(file);
             const tempVid = document.createElement('video');
             tempVid.preload = 'metadata';
             tempVid.onloadedmetadata = function() {
                 if (tempVid.duration > CLOUD_CONFIG.maxDurationSeconds + 0.5) {
+                    URL.revokeObjectURL(blobUrl);
                     status.style.color = "#f87171";
                     status.innerText = "❌ स्टोरी वीडियो अधिकतम 60 सेकंड का ही हो सकता है!";
                     input.value = "";
                     pendingStoryVideoURL = null;
                 } else {
-                    pendingStoryVideoURL = URL.createObjectURL(file);
+                    pendingStoryVideoURL = blobUrl;
                     label.innerText = "✅ " + file.name + " (" + Math.round(tempVid.duration) + "s)";
                     status.style.color = "#4ade80";
                     status.innerText = "स्टोरी वीडियो तैयार है!";
                 }
             };
-            tempVid.src = URL.createObjectURL(file);
+            tempVid.src = blobUrl;
         }
         function publishNewStory() {
             const txt = document.getElementById('storyCaptionInput').value.trim();
@@ -1227,7 +1279,7 @@
             vidEl.muted = false;
             vidEl.play().catch(() => {
                 vidEl.muted = true;
-                vidEl.play();
+                vidEl.play().catch(() => {});
             });
 
             if (caption) {
@@ -1278,7 +1330,7 @@
             const box = document.getElementById('chatHistory');
             const div = document.createElement('div');
             div.className = 'msg-bubble msg-sent';
-            div.innerText = msg;
+            div.textContent = msg;
             box.appendChild(div);
             input.value = '';
             box.scrollTop = box.scrollHeight;
@@ -1288,12 +1340,17 @@
         function closeComments() { document.getElementById('commentSheet').classList.remove('open'); }
         function postComment() {
             const input = document.getElementById('commentInput');
-            if (!input.value.trim()) return;
+            const text = input.value.trim();
+            if (!text) return;
             const list = document.getElementById('commentsList');
             const item = document.createElement('div');
-            item.innerHTML = `<strong>${loggedInUser}:</strong> ${input.value.trim()}`;
+            const author = document.createElement('strong');
+            author.textContent = `${loggedInUser}: `;
+            item.appendChild(author);
+            item.appendChild(document.createTextNode(text));
             list.appendChild(item);
             input.value = '';
+            list.scrollTop = list.scrollHeight;
         }
 
         const translations = {
