@@ -262,14 +262,14 @@
             transform: scale(0.97);
         }
         .fb-story-card.has-unseen {
-            border-color: #1877f2;
+            border-color: #ff2a9d;
         }
         .fb-story-card.seen-story {
             border-color: #333;
             opacity: 0.88;
         }
 
-        /* पहला कार्ड (+ स्टोरी) - नीचे अलग रंग की पट्टी */
+        /* पहला कार्ड (+ स्टोरी) */
         .fb-create-card {
             background: #18191a;
             border-color: #2f3031;
@@ -311,7 +311,7 @@
         .fb-story-bg {
             position: absolute;
             inset: 0;
-            background: linear-gradient(155deg, #1d2b53, #7e2553 60%, #ff004d);
+            background: linear-gradient(155deg, #2b1038, #7e2553 60%, #ff2a9d);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -352,8 +352,8 @@
             width: 28px;
             height: 28px;
             border-radius: 50%;
-            background: #1877f2;
-            border: 2px solid #4ea1ff;
+            background: #ff2a9d;
+            border: 2px solid #fff;
             color: #fff;
             font-size: 12px;
             font-weight: 800;
@@ -778,48 +778,258 @@
             margin: 0 8px;
         }
 
-        /* स्टोरी व्यूअर (Facebook स्टाइल मल्टी-प्रोग्रेस बार व लगातार नेविगेशन) */
+        /* नियॉन हार्ट स्टोरी व्यूअर (फोटो के अनुसार) */
         .story-modal {
-            position: fixed; inset: 0; background: #000; z-index: 200; display: none; flex-direction: column;
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 200;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
         }
         .story-modal.open { display: flex; }
+
         .story-progress-row {
+            position: fixed;
+            top: 8px;
+            left: 10px;
+            right: 10px;
             display: flex;
             gap: 4px;
-            padding: 8px 10px 4px;
-            background: rgba(0, 0, 0, 0.72);
-            width: 100%;
-            z-index: 12;
+            z-index: 220;
         }
         .story-progress-seg {
             flex: 1;
             height: 3px;
-            background: rgba(255, 255, 255, 0.28);
+            background: rgba(255, 255, 255, 0.25);
             border-radius: 2px;
             overflow: hidden;
         }
         .story-progress-fill {
             height: 100%;
-            background: #fff;
+            background: #ff4fd8;
             width: 0%;
         }
-        .story-viewer-body {
-            flex: 1;
+
+        .story-close-top-btn {
+            position: fixed;
+            top: 18px;
+            right: 14px;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: rgba(20, 20, 20, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #fff;
+            font-size: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 225;
+        }
+
+        .heart-stage-wrap {
             position: relative;
+            width: min(94vw, 430px);
+            aspect-ratio: 1 / 0.96;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            filter: drop-shadow(0 0 14px rgba(255, 42, 157, 0.85))
+                    drop-shadow(0 0 28px rgba(255, 110, 210, 0.55));
+        }
+
+        /* दिल के आकार के अंदर चलने वाली स्टोरी */
+        .heart-story-clip {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            clip-path: path("M 215 412 C 215 412 22 286 22 136 C 22 64 78 16 142 16 C 179 16 203 37 215 62 C 227 37 251 16 288 16 C 352 16 408 64 408 136 C 408 286 215 412 215 412 Z");
+            background: linear-gradient(160deg, #1b2749 0%, #3d1648 55%, #8a1655 100%);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background: #000;
             overflow: hidden;
         }
+
+        .heart-story-media {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+            z-index: 1;
+        }
+
+        .heart-story-scrim {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to bottom,
+                rgba(0, 0, 0, 0.48) 0%,
+                rgba(0, 0, 0, 0.12) 45%,
+                rgba(0, 0, 0, 0.72) 100%
+            );
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* दिल के ऊपरी हिस्से में यूज़र जानकारी व तीन डॉट्स */
+        .heart-top-bar {
+            position: absolute;
+            top: 22%;
+            left: 22%;
+            right: 22%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+            gap: 8px;
+        }
+        .heart-user-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+        }
+        .heart-user-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff2a6d, #ff9933);
+            border: 2px solid #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 13px;
+            font-weight: 800;
+            color: #fff;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        .heart-user-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+        }
+        .heart-thin-progress {
+            position: absolute;
+            top: calc(22% + 42px);
+            left: 22%;
+            right: 22%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.35);
+            z-index: 10;
+            overflow: hidden;
+        }
+        .heart-thin-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: #fff;
+        }
+        .heart-dots-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 2px 6px;
+            z-index: 12;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+        }
+
+        /* दिल के बीच में स्टोरी टेक्स्ट / कैप्शन */
+        .heart-center-text {
+            position: relative;
+            z-index: 6;
+            padding: 10px 24px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1.28;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.95), 0 0 4px rgba(0, 0, 0, 0.9);
+            max-width: 82%;
+            word-break: break-word;
+        }
+
+        /* दिल के निचले हिस्से में Send message बटन व हार्ट/सेंड आइकॉन */
+        .heart-bottom-bar {
+            position: absolute;
+            bottom: 17%;
+            left: 24%;
+            right: 24%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            z-index: 12;
+        }
+        .heart-reply-btn {
+            flex: 1;
+            background: rgba(15, 15, 15, 0.72);
+            border: 1.5px solid rgba(255, 255, 255, 0.8);
+            color: #fff;
+            border-radius: 22px;
+            padding: 7px 12px;
+            font-size: 12.5px;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            backdrop-filter: blur(4px);
+        }
+        .heart-icon-btn {
+            background: none;
+            border: none;
+            font-size: 21px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2px;
+            color: #fff;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.9);
+            transition: transform 0.15s ease;
+        }
+        .heart-icon-btn:active {
+            transform: scale(1.2);
+        }
+        .heart-icon-btn.liked-heart {
+            color: #ff1e38;
+        }
+
+        /* चमकता हुआ गुलाबी-सफेद हार्ट बॉर्डर SVG */
+        .heart-neon-outline {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 14;
+            overflow: visible;
+        }
+
         .story-tap-zone-prev {
             position: absolute;
             top: 0;
             bottom: 0;
             left: 0;
-            width: 30%;
-            z-index: 8;
+            width: 24%;
+            z-index: 5;
             cursor: pointer;
         }
         .story-tap-zone-next {
@@ -827,10 +1037,11 @@
             top: 0;
             bottom: 0;
             right: 0;
-            width: 70%;
-            z-index: 8;
+            width: 24%;
+            z-index: 5;
             cursor: pointer;
         }
+
         .story-creator-modal {
             position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 250;
             display: none; justify-content: center; align-items: center; padding: 16px;
@@ -843,7 +1054,7 @@
         .comment-sheet {
             position: fixed; bottom: 0; left: 0; right: 0; height: 52%;
             background: #161616; border-top-left-radius: 16px; border-top-right-radius: 16px;
-            z-index: 150; display: none; flex-direction: column; border-top: 1px solid #333;
+            z-index: 300; display: none; flex-direction: column; border-top: 1px solid #333;
         }
         .comment-sheet.open { display: flex; }
     </style>
@@ -892,7 +1103,7 @@
         </div>
     </header>
 
-    <!-- नेविगेशन बार (घंटी आइकॉन सहित) -->
+    <!-- नेविगेशन बार -->
     <nav>
         <button class="nav-tab active" onclick="navigateTab('home', this)" aria-label="Home">
             <svg class="fill-active" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
@@ -1064,7 +1275,7 @@
 
     </div>
 
-    <!-- स्टोरी डालने का नया बॉक्स -->
+    <!-- स्टोरी डालने का बॉक्स -->
     <div class="story-creator-modal" id="storyCreatorModal">
         <div class="story-creator-card">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -1079,25 +1290,66 @@
             </div>
             <input type="text" id="storyCaptionInput" class="caption-input" placeholder="या स्टोरी का संदेश लिखें..." data-key-placeholder="storyMsgPlaceholder">
             <div id="storyCreatorStatus" style="font-size:11px; color:#4ade80; margin-bottom:10px; text-align:center;"></div>
-            <button class="primary-btn" onclick="publishNewStory()" data-key="storyShareBtn">स्टोरी शेयर करें</button>
+            <button id="storyShareBtnEl" class="primary-btn" onclick="publishNewStory()" data-key="storyShareBtn">स्टोरी शेयर करें</button>
         </div>
     </div>
 
-    <!-- स्टोरी व्यूअर मोडल (Facebook स्टाइल कंटीन्यूअस स्टोरी प्लेयर) -->
+    <!-- नियॉन हार्ट स्टोरी व्यूअर -->
     <div class="story-modal" id="storyModal">
         <div class="story-progress-row" id="storyProgressRow"></div>
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 14px; background:rgba(0,0,0,0.65); z-index:12;">
-            <div style="display:flex; align-items:center; gap:8px;">
-                <span id="storyModalBadge" style="width:26px;height:26px;border-radius:50%;background:#1877f2;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;">V</span>
-                <strong id="storyModalUser">User</strong>
+        <button class="story-close-top-btn" onclick="closeStory()" aria-label="Close Story">✕</button>
+
+        <div class="story-tap-zone-prev" onclick="event.stopPropagation(); stepStory(-1)" aria-label="Previous Story"></div>
+        <div class="story-tap-zone-next" onclick="event.stopPropagation(); stepStory(1)" aria-label="Next Story"></div>
+
+        <div class="heart-stage-wrap" onclick="event.stopPropagation(); toggleStoryPlayPause()">
+            <div class="heart-story-clip">
+                <video id="storyModalVideo" class="heart-story-media" playsinline webkit-playsinline controlsList="nodownload" disablePictureInPicture></video>
+                <div class="heart-story-scrim"></div>
+
+                <div class="heart-top-bar" onclick="event.stopPropagation()">
+                    <div class="heart-user-group">
+                        <div class="heart-user-avatar" id="storyModalBadge">V</div>
+                        <span class="heart-user-name" id="storyModalUser">@verender_rawat</span>
+                    </div>
+                    <button class="heart-dots-btn" onclick="event.stopPropagation(); stepStory(1)" title="Next">⋮</button>
+                </div>
+
+                <div class="heart-thin-progress">
+                    <div class="heart-thin-progress-bar" id="heartInnerProgressBar"></div>
+                </div>
+
+                <p class="heart-center-text" id="storyModalText"></p>
+
+                <div class="heart-bottom-bar" onclick="event.stopPropagation()">
+                    <button class="heart-reply-btn" onclick="openChatFromStory()">Send message</button>
+                    <button class="heart-icon-btn" id="heartStoryLikeBtn" onclick="toggleHeartStoryLike(this)" aria-label="Like">♥</button>
+                    <button class="heart-icon-btn" onclick="shareCurrentReel()" aria-label="Share">➤</button>
+                </div>
             </div>
-            <button onclick="closeStory()" style="background:none; border:none; color:#fff; font-size:20px; cursor:pointer; z-index:15;">✕</button>
-        </div>
-        <div class="story-viewer-body" id="storyViewerBody">
-            <div class="story-tap-zone-prev" onclick="event.stopPropagation(); stepStory(-1)" aria-label="Previous Story"></div>
-            <div class="story-tap-zone-next" onclick="event.stopPropagation(); stepStory(1)" aria-label="Next Story"></div>
-            <video id="storyModalVideo" style="display:none; width:100%; height:100%; object-fit:contain;" playsinline webkit-playsinline controlsList="nodownload" disablePictureInPicture></video>
-            <p id="storyModalText" style="font-size:18px; line-height:1.4; padding:20px; text-align:center;"></p>
+
+            <svg class="heart-neon-outline" viewBox="0 0 430 428" fill="none">
+                <defs>
+                    <linearGradient id="neonPinkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#ff66e0"/>
+                        <stop offset="50%" stop-color="#ff1e9e"/>
+                        <stop offset="100%" stop-color="#ff85e8"/>
+                    </linearGradient>
+                </defs>
+                <path
+                    d="M 215 412 C 215 412 22 286 22 136 C 22 64 78 16 142 16 C 179 16 203 37 215 62 C 227 37 251 16 288 16 C 352 16 408 64 408 136 C 408 286 215 412 215 412 Z"
+                    stroke="url(#neonPinkGrad)"
+                    stroke-width="8"
+                    stroke-linejoin="round"
+                />
+                <path
+                    d="M 215 412 C 215 412 22 286 22 136 C 22 64 78 16 142 16 C 179 16 203 37 215 62 C 227 37 251 16 288 16 C 352 16 408 64 408 136 C 408 286 215 412 215 412 Z"
+                    stroke="#ffffff"
+                    stroke-width="2.2"
+                    stroke-linejoin="round"
+                    opacity="0.95"
+                />
+            </svg>
         </div>
     </div>
 
@@ -1168,7 +1420,6 @@
           return await res.json();
         }
 
-        /* --- D1 / R2 फ़ीड लोडिंग व सिंक फ़ंक्शंस --- */
         async function fetchServerFeedReels() {
           const res = await fetch(`${API_BASE}/api/feed`);
           if (!res.ok) throw new Error(`Feed error: ${res.status}`);
@@ -1278,6 +1529,7 @@
         let videoCounter = 1;
         let storyTimer = null;
         let activeStoryIndex = -1;
+        let activeStoryPlayUrl = "";
         let pushPromptRequested = false;
         let userPrefersMuted = false;
         let currentActiveReelId = "reel-1";
@@ -1285,24 +1537,115 @@
         const loadedRemoteReelIds = new Set(["reel-1"]);
         const renderedChatKeys = new Set();
 
-        /* --- Facebook स्टाइल स्टोरीज़ स्टेट व परसिस्टेंस --- */
-        const STORIES_STORAGE_KEY = "2friend_fb_stories_v1";
-        const SEEN_STORIES_KEY = "2friend_seen_stories_v1";
+        /* --- IndexedDB (रील्स + परमानेंट स्टोरी स्टोरेज) --- */
+        const DB_NAME = "2friend_video_store";
+        const STORE_NAME = "uploaded_reels";
+        const STORY_STORE_NAME = "saved_stories";
+
+        function openVideoDB() {
+            return new Promise((resolve, reject) => {
+                const req = indexedDB.open(DB_NAME, 2);
+                req.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        db.createObjectStore(STORE_NAME, { keyPath: "id", autoIncrement: true });
+                    }
+                    if (!db.objectStoreNames.contains(STORY_STORE_NAME)) {
+                        db.createObjectStore(STORY_STORE_NAME, { keyPath: "id" });
+                    }
+                };
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => reject(req.error);
+            });
+        }
+
+        async function saveStoryRecordToDB(record) {
+            try {
+                const db = await openVideoDB();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(STORY_STORE_NAME, "readwrite");
+                    const store = tx.objectStore(STORY_STORE_NAME);
+                    const req = store.put(record);
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error);
+                });
+            } catch (err) {
+                console.log("Story DB save error:", err);
+            }
+        }
+
+        async function loadStoryRecordsFromDB() {
+            try {
+                const db = await openVideoDB();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(STORY_STORE_NAME, "readonly");
+                    const store = tx.objectStore(STORY_STORE_NAME);
+                    const req = store.getAll();
+                    req.onsuccess = () => resolve(req.result || []);
+                    req.onerror = () => reject(req.error);
+                });
+            } catch (err) {
+                console.log("Story DB load error:", err);
+                return [];
+            }
+        }
+
+        async function saveVideoToLocalDB(fileBlob, caption, author) {
+            try {
+                const db = await openVideoDB();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(STORE_NAME, "readwrite");
+                    const store = tx.objectStore(STORE_NAME);
+                    const req = store.add({
+                        blob: fileBlob,
+                        caption: caption,
+                        author: author,
+                        createdAt: Date.now()
+                    });
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error);
+                });
+            } catch (err) {
+                console.log("Local DB save error:", err);
+            }
+        }
+
+        async function loadSavedVideosFromLocalDB() {
+            try {
+                const db = await openVideoDB();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(STORE_NAME, "readonly");
+                    const store = tx.objectStore(STORE_NAME);
+                    const req = store.getAll();
+                    req.onsuccess = () => resolve(req.result || []);
+                    req.onerror = () => reject(req.error);
+                });
+            } catch (err) {
+                console.log("Local DB load error:", err);
+                return [];
+            }
+        }
+
+        /* --- स्टोरी स्टेट व परसिस्टेंस (गायब न होने वाला सिस्टम) --- */
+        const STORIES_META_KEY = "2friend_fb_stories_meta_v2";
+        const SEEN_STORIES_KEY = "2friend_seen_stories_v2";
 
         const DEFAULT_STORIES = [
             {
                 id: "story-verender",
-                user: "Verender",
+                user: "@verender_rawat",
                 label: "Verender",
                 videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-                text: "2friend ऐप R2 स्टोरेज और D1 डेटाबेस पर लाइव है! 🚀"
+                text: "2friend • 480p Story",
+                createdAt: 1700000002000
             },
             {
                 id: "story-delhi",
-                user: "दिल्ली क्रिएटर्स",
+                user: "@delhi_creators",
                 label: "दिल्ली",
                 videoUrl: "",
-                text: "1 मिनट की शानदार 480p रील्स देखें!"
+                text: "1 मिनट की शानदार 480p स्टोरीज़ और रील्स!",
+                createdAt: 1700000001000
             }
         ];
 
@@ -1325,29 +1668,103 @@
             } catch (e) {}
         }
 
-        function persistTextStories() {
+        function persistStoriesMetadata() {
             try {
-                const serializable = storiesList
-                    .filter(s => !s._ephemeralBlob)
-                    .map(s => ({
-                        id: s.id,
-                        user: s.user,
-                        label: s.label,
-                        videoUrl: s.videoUrl || "",
-                        text: s.text || ""
-                    }));
-                localStorage.setItem(STORIES_STORAGE_KEY, JSON.stringify(serializable));
+                const meta = storiesList.map(s => ({
+                    id: s.id,
+                    user: s.user,
+                    label: s.label,
+                    videoUrl: s.remoteVideoUrl || (!s.hasBlob && s.videoUrl && !s.videoUrl.startsWith("blob:") ? s.videoUrl : ""),
+                    remoteVideoUrl: s.remoteVideoUrl || "",
+                    hasBlob: Boolean(s.hasBlob),
+                    text: s.text || "",
+                    createdAt: s.createdAt || Date.now()
+                }));
+                localStorage.setItem(STORIES_META_KEY, JSON.stringify(meta));
             } catch (e) {}
         }
 
-        function initStories() {
-            loadSeenStories();
-            try {
-                const saved = JSON.parse(localStorage.getItem(STORIES_STORAGE_KEY) || "null");
-                storiesList = Array.isArray(saved) && saved.length > 0 ? saved : [...DEFAULT_STORIES];
-            } catch (e) {
-                storiesList = [...DEFAULT_STORIES];
+        function getPlayableStoryVideoUrl(story) {
+            if (!story) return "";
+            if (story.remoteVideoUrl) return story.remoteVideoUrl;
+            if (story.blob instanceof Blob) {
+                story.videoUrl = URL.createObjectURL(story.blob);
+                return story.videoUrl;
             }
+            if (story.videoUrl && !story.videoUrl.startsWith("blob:")) {
+                return story.videoUrl;
+            }
+            return story.videoUrl || "";
+        }
+
+        async function initStories() {
+            loadSeenStories();
+
+            let metaArr = [];
+            try {
+                const raw = localStorage.getItem(STORIES_META_KEY);
+                const parsed = raw ? JSON.parse(raw) : null;
+                if (Array.isArray(parsed)) metaArr = parsed;
+            } catch (e) {}
+
+            const dbRecords = await loadStoryRecordsFromDB();
+            const dbMap = new Map();
+            dbRecords.forEach(rec => {
+                if (rec && rec.id) dbMap.set(rec.id, rec);
+            });
+
+            const mergedMap = new Map();
+
+            if (metaArr.length > 0) {
+                metaArr.forEach(m => {
+                    const dbRec = dbMap.get(m.id);
+                    const blob = dbRec && dbRec.blob ? dbRec.blob : (m.blob || null);
+                    const remoteUrl = (dbRec && dbRec.remoteVideoUrl) || m.remoteVideoUrl || (m.videoUrl && !m.videoUrl.startsWith("blob:") ? m.videoUrl : "");
+                    const playableUrl = remoteUrl || (blob ? URL.createObjectURL(blob) : "");
+                    mergedMap.set(m.id, {
+                        id: m.id,
+                        user: (dbRec && dbRec.user) || m.user || loggedInUser,
+                        label: (dbRec && dbRec.label) || m.label || "स्टोरी",
+                        blob: blob,
+                        hasBlob: Boolean(blob || m.hasBlob),
+                        remoteVideoUrl: remoteUrl,
+                        videoUrl: playableUrl,
+                        text: (dbRec && typeof dbRec.text === "string") ? dbRec.text : (m.text || ""),
+                        createdAt: (dbRec && dbRec.createdAt) || m.createdAt || Date.now()
+                    });
+                });
+            }
+
+            dbRecords.forEach(rec => {
+                if (!rec || !rec.id || mergedMap.has(rec.id)) return;
+                const remoteUrl = rec.remoteVideoUrl || "";
+                const playableUrl = remoteUrl || (rec.blob ? URL.createObjectURL(rec.blob) : "");
+                mergedMap.set(rec.id, {
+                    id: rec.id,
+                    user: rec.user || loggedInUser,
+                    label: rec.label || "स्टोरी",
+                    blob: rec.blob || null,
+                    hasBlob: Boolean(rec.blob),
+                    remoteVideoUrl: remoteUrl,
+                    videoUrl: playableUrl,
+                    text: rec.text || "",
+                    createdAt: rec.createdAt || Date.now()
+                });
+            });
+
+            DEFAULT_STORIES.forEach(def => {
+                if (!mergedMap.has(def.id)) {
+                    mergedMap.set(def.id, {
+                        ...def,
+                        hasBlob: false,
+                        remoteVideoUrl: def.videoUrl || "",
+                        blob: null
+                    });
+                }
+            });
+
+            storiesList = Array.from(mergedMap.values()).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            persistStoriesMetadata();
             renderStoriesBar();
         }
 
@@ -1380,12 +1797,13 @@
 
                 const initial = (story.label || story.user || "U").replace(/^@/, "").charAt(0).toUpperCase() || "U";
                 const snippet = story.text || (story.videoUrl ? "480p Video Story" : "Story");
+                const thumbSrc = getPlayableStoryVideoUrl(story);
 
                 const bgDiv = document.createElement("div");
                 bgDiv.className = "fb-story-bg";
-                if (story.videoUrl) {
+                if (thumbSrc) {
                     const thumbVid = document.createElement("video");
-                    thumbVid.src = story.videoUrl;
+                    thumbVid.src = thumbSrc;
                     thumbVid.muted = true;
                     thumbVid.playsinline = true;
                     thumbVid.preload = "metadata";
@@ -1426,11 +1844,7 @@
                 const fill = document.createElement("div");
                 fill.className = "story-progress-fill";
                 fill.id = `story-fill-${i}`;
-                if (i < activeIdx) {
-                    fill.style.width = "100%";
-                } else {
-                    fill.style.width = "0%";
-                }
+                fill.style.width = i < activeIdx ? "100%" : "0%";
                 seg.appendChild(fill);
                 row.appendChild(seg);
             }
@@ -1461,38 +1875,34 @@
             const txtEl = document.getElementById("storyModalText");
             const userEl = document.getElementById("storyModalUser");
             const badgeEl = document.getElementById("storyModalBadge");
+            const likeBtn = document.getElementById("heartStoryLikeBtn");
 
-            const displayName = story.user || story.label || "User";
+            if (likeBtn) likeBtn.classList.remove("liked-heart");
+
+            const displayName = story.user || story.label || "@user";
             userEl.textContent = displayName;
             if (badgeEl) {
-                badgeEl.textContent = displayName.replace(/^@/, "").charAt(0).toUpperCase() || "U";
+                badgeEl.textContent = displayName.replace(/^@/, "").charAt(0).toUpperCase() || "V";
             }
 
             vidEl.pause();
 
             let durationMs = 5000;
+            const playableUrl = getPlayableStoryVideoUrl(story);
+            activeStoryPlayUrl = playableUrl;
 
-            if (story.videoUrl) {
-                vidEl.src = story.videoUrl;
+            if (playableUrl) {
+                vidEl.src = playableUrl;
                 vidEl.style.display = "block";
                 vidEl.muted = false;
+                vidEl.loop = false;
                 vidEl.play().catch(() => {
                     vidEl.muted = true;
                     vidEl.play().catch(() => {});
                 });
 
-                if (story.text) {
-                    txtEl.style.display = "block";
-                    txtEl.style.position = "absolute";
-                    txtEl.style.bottom = "24px";
-                    txtEl.style.background = "rgba(0,0,0,0.65)";
-                    txtEl.style.borderRadius = "10px";
-                    txtEl.style.padding = "8px 14px";
-                    txtEl.style.fontSize = "14px";
-                    txtEl.textContent = story.text;
-                } else {
-                    txtEl.style.display = "none";
-                }
+                txtEl.textContent = story.text || "";
+                txtEl.style.display = story.text ? "block" : "none";
 
                 vidEl.onloadedmetadata = () => {
                     if (isFinite(vidEl.duration) && vidEl.duration > 0) {
@@ -1501,12 +1911,9 @@
                     }
                 };
             } else {
-                vidEl.src = "";
+                vidEl.removeAttribute("src");
                 vidEl.style.display = "none";
                 txtEl.style.display = "block";
-                txtEl.style.position = "static";
-                txtEl.style.background = "none";
-                txtEl.style.fontSize = "18px";
                 txtEl.textContent = story.text || "";
             }
 
@@ -1517,6 +1924,7 @@
         function startStorySegmentTimer(index, durationMs) {
             clearInterval(storyTimer);
             const fill = document.getElementById(`story-fill-${index}`);
+            const innerBar = document.getElementById("heartInnerProgressBar");
             const startedAt = Date.now();
             const total = Math.max(2500, durationMs || 5000);
 
@@ -1524,6 +1932,7 @@
                 const elapsed = Date.now() - startedAt;
                 const pct = Math.min(100, (elapsed / total) * 100);
                 if (fill) fill.style.width = `${pct}%`;
+                if (innerBar) innerBar.style.width = `${pct}%`;
                 if (elapsed >= total) {
                     clearInterval(storyTimer);
                     stepStory(1);
@@ -1542,58 +1951,29 @@
             }
         }
 
-        /* --- IndexedDB लोकल परमानेंट स्टोरेज --- */
-        const DB_NAME = "2friend_video_store";
-        const STORE_NAME = "uploaded_reels";
-
-        function openVideoDB() {
-            return new Promise((resolve, reject) => {
-                const req = indexedDB.open(DB_NAME, 1);
-                req.onupgradeneeded = (e) => {
-                    const db = e.target.result;
-                    if (!db.objectStoreNames.contains(STORE_NAME)) {
-                        db.createObjectStore(STORE_NAME, { keyPath: "id", autoIncrement: true });
-                    }
-                };
-                req.onsuccess = () => resolve(req.result);
-                req.onerror = () => reject(req.error);
-            });
-        }
-
-        async function saveVideoToLocalDB(fileBlob, caption, author) {
-            try {
-                const db = await openVideoDB();
-                return new Promise((resolve, reject) => {
-                    const tx = db.transaction(STORE_NAME, "readwrite");
-                    const store = tx.objectStore(STORE_NAME);
-                    const req = store.add({
-                        blob: fileBlob,
-                        caption: caption,
-                        author: author,
-                        createdAt: Date.now()
-                    });
-                    req.onsuccess = () => resolve(req.result);
-                    req.onerror = () => reject(req.error);
-                });
-            } catch (err) {
-                console.log("Local DB save error:", err);
+        function toggleStoryPlayPause() {
+            const vidEl = document.getElementById("storyModalVideo");
+            if (!vidEl || vidEl.style.display === "none") return;
+            if (vidEl.paused) {
+                vidEl.play().catch(() => {});
+            } else {
+                vidEl.pause();
             }
         }
 
-        async function loadSavedVideosFromLocalDB() {
-            try {
-                const db = await openVideoDB();
-                return new Promise((resolve, reject) => {
-                    const tx = db.transaction(STORE_NAME, "readonly");
-                    const store = tx.objectStore(STORE_NAME);
-                    const req = store.getAll();
-                    req.onsuccess = () => resolve(req.result || []);
-                    req.onerror = () => reject(req.error);
-                });
-            } catch (err) {
-                console.log("Local DB load error:", err);
-                return [];
+        function toggleHeartStoryLike(btn) {
+            if (!btn) return;
+            btn.classList.toggle("liked-heart");
+            const story = storiesList[activeStoryIndex];
+            if (story) {
+                syncLikeToServer(story.id, btn.classList.contains("liked-heart"), btn.classList.contains("liked-heart") ? 1 : 0);
             }
+        }
+
+        function openChatFromStory() {
+            closeStory();
+            const chatNavBtn = document.querySelectorAll(".nav-tab")[2];
+            navigateTab("chat", chatNavBtn);
         }
 
         function prepareVideoFrame(video) {
@@ -1743,7 +2123,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
-            initStories();
+            await initStories();
 
             const langSel = document.getElementById('languageSelect');
             const statEl = document.getElementById('langCountStat');
@@ -1960,8 +2340,8 @@
         function shareCurrentReel() {
             if (navigator.share) {
                 navigator.share({
-                    title: '2friend Reel',
-                    text: '2friend ऐप पर यह वीडियो देखें!',
+                    title: '2friend',
+                    text: '2friend ऐप पर यह स्टोरी/वीडियो देखें!',
                     url: window.location.href
                 }).catch(() => alert('लिंक तैयार है'));
             } else {
@@ -2089,6 +2469,8 @@
         function openStoryCreator() {
             pendingStoryVideoFile = null;
             pendingStoryVideoURL = null;
+            const btn = document.getElementById('storyShareBtnEl');
+            if (btn) btn.disabled = false;
             document.getElementById('storyVideoFileName').innerText = (translations[document.getElementById('languageSelect')?.value] || translations.hi).storyPickVideo;
             document.getElementById('storyCaptionInput').value = "";
             document.getElementById('storyCreatorStatus').innerText = "";
@@ -2138,30 +2520,71 @@
             };
             tempVid.src = blobUrl;
         }
-        function publishNewStory() {
+
+        async function publishNewStory() {
             const txt = document.getElementById('storyCaptionInput').value.trim();
-            if (!pendingStoryVideoURL && !txt) {
+            if (!pendingStoryVideoFile && !pendingStoryVideoURL && !txt) {
                 alert("कृपया स्टोरी के लिए कोई वीडियो चुनें या संदेश लिखें।");
                 return;
             }
-            const videoUrlToSave = pendingStoryVideoURL || "";
+
+            const btn = document.getElementById('storyShareBtnEl');
+            const status = document.getElementById('storyCreatorStatus');
+            if (btn) btn.disabled = true;
+            if (status) {
+                status.style.color = "#4ade80";
+                status.innerText = "स्टोरी सेव हो रही है...";
+            }
+
+            const videoFileToSave = pendingStoryVideoFile || null;
             const captionToSave = txt || "";
-            const isBlobVideo = Boolean(pendingStoryVideoURL);
+            const storyId = "story-" + Date.now();
+            const createdAt = Date.now();
+
+            let remoteVideoUrl = "";
+            if (videoFileToSave) {
+                try {
+                    const upRes = await uploadVideo(videoFileToSave);
+                    if (upRes && typeof upRes.url === "string" && upRes.url.trim() !== "") {
+                        remoteVideoUrl = upRes.url.trim();
+                    }
+                } catch (e) {
+                    console.log("Story R2 upload fallback:", e);
+                }
+            }
+
+            const playableUrl = remoteVideoUrl || (videoFileToSave ? URL.createObjectURL(videoFileToSave) : (pendingStoryVideoURL || ""));
 
             const storyObj = {
-                id: "story-" + Date.now(),
+                id: storyId,
                 user: loggedInUser,
-                label: "आपकी स्टोरी",
-                videoUrl: videoUrlToSave,
+                label: loggedInUser.replace(/^@/, "") || "स्टोरी",
+                blob: videoFileToSave,
+                hasBlob: Boolean(videoFileToSave),
+                remoteVideoUrl: remoteVideoUrl,
+                videoUrl: playableUrl,
                 text: captionToSave,
-                _ephemeralBlob: isBlobVideo
+                createdAt: createdAt
             };
 
+            await saveStoryRecordToDB({
+                id: storyId,
+                user: storyObj.user,
+                label: storyObj.label,
+                blob: videoFileToSave,
+                remoteVideoUrl: remoteVideoUrl,
+                text: captionToSave,
+                createdAt: createdAt
+            });
+
             storiesList.unshift(storyObj);
-            if (!isBlobVideo) {
-                persistTextStories();
-            }
+            persistStoriesMetadata();
             renderStoriesBar();
+
+            pendingStoryVideoFile = null;
+            pendingStoryVideoURL = null;
+            document.getElementById('storyVideoInput').value = "";
+            if (btn) btn.disabled = false;
 
             closeStoryCreator();
             openStoryAtIndex(0);
@@ -2177,15 +2600,20 @@
                     user: userName,
                     label: userName,
                     videoUrl: "",
+                    remoteVideoUrl: "",
+                    blob: null,
+                    hasBlob: false,
                     text: text || "",
-                    _ephemeralBlob: true
+                    createdAt: Date.now()
                 });
+                persistStoriesMetadata();
+                renderStoriesBar();
                 openStoryAtIndex(0);
             }
         }
 
         function openVideoStory(userName, videoSrc, caption) {
-            const idx = storiesList.findIndex(s => s.user === userName && s.videoUrl === videoSrc);
+            const idx = storiesList.findIndex(s => s.user === userName && (s.videoUrl === videoSrc || s.remoteVideoUrl === videoSrc));
             if (idx >= 0) {
                 openStoryAtIndex(idx);
             } else {
@@ -2194,9 +2622,14 @@
                     user: userName,
                     label: userName,
                     videoUrl: videoSrc,
+                    remoteVideoUrl: videoSrc && !videoSrc.startsWith("blob:") ? videoSrc : "",
+                    blob: null,
+                    hasBlob: false,
                     text: caption || "",
-                    _ephemeralBlob: true
+                    createdAt: Date.now()
                 });
+                persistStoriesMetadata();
+                renderStoriesBar();
                 openStoryAtIndex(0);
             }
         }
@@ -2204,13 +2637,12 @@
         function closeStory() {
             clearInterval(storyTimer);
             activeStoryIndex = -1;
+            activeStoryPlayUrl = "";
             const vidEl = document.getElementById('storyModalVideo');
             vidEl.pause();
-            vidEl.src = "";
-            const txtEl = document.getElementById('storyModalText');
-            txtEl.style.position = 'static';
-            txtEl.style.background = 'none';
-            txtEl.style.fontSize = '18px';
+            vidEl.removeAttribute('src');
+            const innerBar = document.getElementById('heartInnerProgressBar');
+            if (innerBar) innerBar.style.width = "0%";
             document.getElementById('storyModal').classList.remove('open');
             syncFeedPlaybackOnScroll();
         }
