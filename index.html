@@ -778,7 +778,7 @@
             margin: 0 8px;
         }
 
-        /* नियॉन हार्ट स्टोरी व्यूअर (फोटो के अनुसार) */
+        /* नियॉन हार्ट स्टोरी व्यूअर */
         .story-modal {
             position: fixed;
             inset: 0;
@@ -843,7 +843,6 @@
                     drop-shadow(0 0 28px rgba(255, 110, 210, 0.55));
         }
 
-        /* दिल के आकार के अंदर चलने वाली स्टोरी */
         .heart-story-clip {
             position: relative;
             width: 100%;
@@ -880,7 +879,6 @@
             pointer-events: none;
         }
 
-        /* दिल के ऊपरी हिस्से में यूज़र जानकारी व तीन डॉट्स */
         .heart-top-bar {
             position: absolute;
             top: 22%;
@@ -949,7 +947,6 @@
             text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
         }
 
-        /* दिल के बीच में स्टोरी टेक्स्ट / कैप्शन */
         .heart-center-text {
             position: relative;
             z-index: 6;
@@ -964,7 +961,6 @@
             word-break: break-word;
         }
 
-        /* दिल के निचले हिस्से में Send message बटन व हार्ट/सेंड आइकॉन */
         .heart-bottom-bar {
             position: absolute;
             bottom: 17%;
@@ -1012,7 +1008,6 @@
             color: #ff1e38;
         }
 
-        /* चमकता हुआ गुलाबी-सफेद हार्ट बॉर्डर SVG */
         .heart-neon-outline {
             position: absolute;
             inset: 0;
@@ -1529,13 +1524,33 @@
         let videoCounter = 1;
         let storyTimer = null;
         let activeStoryIndex = -1;
-        let activeStoryPlayUrl = "";
+        let activeStoryObjectUrl = "";
         let pushPromptRequested = false;
         let userPrefersMuted = false;
         let currentActiveReelId = "reel-1";
         let currentCommentCountEl = document.getElementById("comment-count-1");
         const loadedRemoteReelIds = new Set(["reel-1"]);
         const renderedChatKeys = new Set();
+
+        /* सभी वीडियो (रील्स व स्टोरी) तुरंत ऑटो-पॉज़ और म्यूट करने का हेल्पर */
+        function pauseAllVideosAndMute(exceptVideoId = null) {
+            document.querySelectorAll("video").forEach(v => {
+                if (exceptVideoId && v.id === exceptVideoId) return;
+                try {
+                    v.pause();
+                    v.muted = true;
+                } catch (e) {}
+            });
+        }
+
+        function revokeActiveStoryObjectUrl() {
+            if (activeStoryObjectUrl) {
+                try {
+                    URL.revokeObjectURL(activeStoryObjectUrl);
+                } catch (e) {}
+                activeStoryObjectUrl = "";
+            }
+        }
 
         /* --- IndexedDB (रील्स + परमानेंट स्टोरी स्टोरेज) --- */
         const DB_NAME = "2friend_video_store";
@@ -1626,7 +1641,7 @@
             }
         }
 
-        /* --- स्टोरी स्टेट व परसिस्टेंस (गायब न होने वाला सिस्टम) --- */
+        /* --- स्टोरी स्टेट व परसिस्टेंस --- */
         const STORIES_META_KEY = "2friend_fb_stories_meta_v2";
         const SEEN_STORIES_KEY = "2friend_seen_stories_v2";
 
@@ -1676,7 +1691,7 @@
                     label: s.label,
                     videoUrl: s.remoteVideoUrl || (!s.hasBlob && s.videoUrl && !s.videoUrl.startsWith("blob:") ? s.videoUrl : ""),
                     remoteVideoUrl: s.remoteVideoUrl || "",
-                    hasBlob: Boolean(s.hasBlob),
+                    hasBlob: Boolean(s.hasBlob || s.blob),
                     text: s.text || "",
                     createdAt: s.createdAt || Date.now()
                 }));
@@ -1684,17 +1699,33 @@
             } catch (e) {}
         }
 
-        function getPlayableStoryVideoUrl(story) {
+        /* हर बार स्टोरी चलाने के लिए ताज़ा व सही प्ले करने योग्य URL */
+        function createFreshStoryPlaybackUrl(story) {
+            revokeActiveStoryObjectUrl();
             if (!story) return "";
-            if (story.remoteVideoUrl) return story.remoteVideoUrl;
             if (story.blob instanceof Blob) {
-                story.videoUrl = URL.createObjectURL(story.blob);
-                return story.videoUrl;
+                const freshUrl = URL.createObjectURL(story.blob);
+                activeStoryObjectUrl = freshUrl;
+                return freshUrl;
+            }
+            if (story.remoteVideoUrl && !story.remoteVideoUrl.startsWith("blob:")) {
+                return story.remoteVideoUrl;
             }
             if (story.videoUrl && !story.videoUrl.startsWith("blob:")) {
                 return story.videoUrl;
             }
-            return story.videoUrl || "";
+            return "";
+        }
+
+        function getThumbStoryUrl(story) {
+            if (!story) return "";
+            if (story.remoteVideoUrl && !story.remoteVideoUrl.startsWith("blob:")) {
+                return story.remoteVideoUrl;
+            }
+            if (story.videoUrl && !story.videoUrl.startsWith("blob:")) {
+                return story.videoUrl;
+            }
+            return "";
         }
 
         async function initStories() {
@@ -1718,9 +1749,8 @@
             if (metaArr.length > 0) {
                 metaArr.forEach(m => {
                     const dbRec = dbMap.get(m.id);
-                    const blob = dbRec && dbRec.blob ? dbRec.blob : (m.blob || null);
+                    const blob = (dbRec && dbRec.blob instanceof Blob) ? dbRec.blob : (m.blob instanceof Blob ? m.blob : null);
                     const remoteUrl = (dbRec && dbRec.remoteVideoUrl) || m.remoteVideoUrl || (m.videoUrl && !m.videoUrl.startsWith("blob:") ? m.videoUrl : "");
-                    const playableUrl = remoteUrl || (blob ? URL.createObjectURL(blob) : "");
                     mergedMap.set(m.id, {
                         id: m.id,
                         user: (dbRec && dbRec.user) || m.user || loggedInUser,
@@ -1728,7 +1758,7 @@
                         blob: blob,
                         hasBlob: Boolean(blob || m.hasBlob),
                         remoteVideoUrl: remoteUrl,
-                        videoUrl: playableUrl,
+                        videoUrl: remoteUrl,
                         text: (dbRec && typeof dbRec.text === "string") ? dbRec.text : (m.text || ""),
                         createdAt: (dbRec && dbRec.createdAt) || m.createdAt || Date.now()
                     });
@@ -1737,16 +1767,16 @@
 
             dbRecords.forEach(rec => {
                 if (!rec || !rec.id || mergedMap.has(rec.id)) return;
+                const blob = rec.blob instanceof Blob ? rec.blob : null;
                 const remoteUrl = rec.remoteVideoUrl || "";
-                const playableUrl = remoteUrl || (rec.blob ? URL.createObjectURL(rec.blob) : "");
                 mergedMap.set(rec.id, {
                     id: rec.id,
                     user: rec.user || loggedInUser,
                     label: rec.label || "स्टोरी",
-                    blob: rec.blob || null,
-                    hasBlob: Boolean(rec.blob),
+                    blob: blob,
+                    hasBlob: Boolean(blob),
                     remoteVideoUrl: remoteUrl,
-                    videoUrl: playableUrl,
+                    videoUrl: remoteUrl,
                     text: rec.text || "",
                     createdAt: rec.createdAt || Date.now()
                 });
@@ -1796,8 +1826,8 @@
                 card.onclick = () => openStoryAtIndex(idx);
 
                 const initial = (story.label || story.user || "U").replace(/^@/, "").charAt(0).toUpperCase() || "U";
-                const snippet = story.text || (story.videoUrl ? "480p Video Story" : "Story");
-                const thumbSrc = getPlayableStoryVideoUrl(story);
+                const snippet = story.text || (story.hasBlob || story.remoteVideoUrl || story.videoUrl ? "480p Video Story" : "Story");
+                const thumbSrc = getThumbStoryUrl(story);
 
                 const bgDiv = document.createElement("div");
                 bgDiv.className = "fb-story-bg";
@@ -1858,16 +1888,14 @@
                 return;
             }
 
+            /* स्टोरी खुलते ही रील्स के सभी वीडियो तुरंत पॉज़ व म्यूट करें */
+            pauseAllVideosAndMute("storyModalVideo");
+
             clearInterval(storyTimer);
             activeStoryIndex = index;
             const story = storiesList[index];
             markStorySeen(story.id);
             renderStoriesBar();
-
-            document.querySelectorAll("#reelsFeedContainer video").forEach(v => {
-                v.pause();
-                v.muted = true;
-            });
 
             buildStoryProgressBars(storiesList.length, index);
 
@@ -1876,7 +1904,9 @@
             const userEl = document.getElementById("storyModalUser");
             const badgeEl = document.getElementById("storyModalBadge");
             const likeBtn = document.getElementById("heartStoryLikeBtn");
+            const innerBar = document.getElementById("heartInnerProgressBar");
 
+            if (innerBar) innerBar.style.width = "0%";
             if (likeBtn) likeBtn.classList.remove("liked-heart");
 
             const displayName = story.user || story.label || "@user";
@@ -1886,32 +1916,50 @@
             }
 
             vidEl.pause();
+            vidEl.onloadedmetadata = null;
+            vidEl.onended = null;
 
             let durationMs = 5000;
-            const playableUrl = getPlayableStoryVideoUrl(story);
-            activeStoryPlayUrl = playableUrl;
+            const playableUrl = createFreshStoryPlaybackUrl(story);
 
             if (playableUrl) {
-                vidEl.src = playableUrl;
                 vidEl.style.display = "block";
-                vidEl.muted = false;
                 vidEl.loop = false;
-                vidEl.play().catch(() => {
-                    vidEl.muted = true;
-                    vidEl.play().catch(() => {});
-                });
+                vidEl.muted = false;
+                vidEl.src = playableUrl;
+                vidEl.currentTime = 0;
+                vidEl.load();
+
+                const startPlay = () => {
+                    vidEl.play().catch(() => {
+                        vidEl.muted = true;
+                        vidEl.play().catch(() => {});
+                    });
+                };
+
+                startPlay();
 
                 txtEl.textContent = story.text || "";
                 txtEl.style.display = story.text ? "block" : "none";
 
                 vidEl.onloadedmetadata = () => {
+                    try {
+                        vidEl.currentTime = 0;
+                    } catch (e) {}
                     if (isFinite(vidEl.duration) && vidEl.duration > 0) {
                         durationMs = Math.min(vidEl.duration * 1000, CLOUD_CONFIG.maxDurationSeconds * 1000);
                         startStorySegmentTimer(index, durationMs);
                     }
+                    startPlay();
+                };
+
+                vidEl.onended = () => {
+                    clearInterval(storyTimer);
+                    stepStory(1);
                 };
             } else {
                 vidEl.removeAttribute("src");
+                vidEl.load();
                 vidEl.style.display = "none";
                 txtEl.style.display = "block";
                 txtEl.textContent = story.text || "";
@@ -1955,6 +2003,7 @@
             const vidEl = document.getElementById("storyModalVideo");
             if (!vidEl || vidEl.style.display === "none") return;
             if (vidEl.paused) {
+                if (vidEl.ended) vidEl.currentTime = 0;
                 vidEl.play().catch(() => {});
             } else {
                 vidEl.pause();
@@ -2050,6 +2099,14 @@
 
         function playActiveVideoWithSound(video) {
             if (!video) return;
+            /* अगर स्टोरी क्रिएटर या स्टोरी व्यूअर खुला है तो रील्स वीडियो न चलाएं */
+            const creatorOpen = document.getElementById('storyCreatorModal')?.classList.contains('open');
+            const storyOpen = document.getElementById('storyModal')?.classList.contains('open');
+            if (creatorOpen || storyOpen) {
+                pauseAllVideosAndMute();
+                return;
+            }
+
             const idx = video.id.replace('vid-', '');
             const ctrl = document.getElementById('ctrl-' + idx);
             const spk = document.getElementById('spk-' + idx);
@@ -2093,6 +2150,13 @@
         }
 
         function syncFeedPlaybackOnScroll() {
+            const creatorOpen = document.getElementById('storyCreatorModal')?.classList.contains('open');
+            const storyOpen = document.getElementById('storyModal')?.classList.contains('open');
+            if (creatorOpen || storyOpen) {
+                pauseAllVideosAndMute();
+                return;
+            }
+
             const feed = document.getElementById('reelsFeedContainer');
             if (!feed || !document.getElementById('view-home').classList.contains('active')) return;
             const slides = Array.from(feed.querySelectorAll('.reel-slide'));
@@ -2242,10 +2306,7 @@
             }
 
             if (tabId !== 'home') {
-                document.querySelectorAll('video').forEach(v => {
-                    v.pause();
-                    v.muted = true;
-                });
+                pauseAllVideosAndMute();
             } else {
                 renderStoriesBar();
                 syncFeedFromD1AndR2();
@@ -2466,7 +2527,9 @@
             }
         }
 
+        /* स्टोरी क्रिएटर खोलते ही चल रहा रील्स वीडियो तुरंत ऑटो-पॉज़ व म्यूट करें */
         function openStoryCreator() {
+            pauseAllVideosAndMute();
             pendingStoryVideoFile = null;
             pendingStoryVideoURL = null;
             const btn = document.getElementById('storyShareBtnEl');
@@ -2476,9 +2539,14 @@
             document.getElementById('storyCreatorStatus').innerText = "";
             document.getElementById('storyCreatorModal').classList.add('open');
         }
+
         function closeStoryCreator() {
             document.getElementById('storyCreatorModal').classList.remove('open');
+            if (!document.getElementById('storyModal')?.classList.contains('open')) {
+                syncFeedPlaybackOnScroll();
+            }
         }
+
         function handleStoryVideoSelect(input) {
             const file = input.files && input.files[0];
             const status = document.getElementById('storyCreatorStatus');
@@ -2553,8 +2621,6 @@
                 }
             }
 
-            const playableUrl = remoteVideoUrl || (videoFileToSave ? URL.createObjectURL(videoFileToSave) : (pendingStoryVideoURL || ""));
-
             const storyObj = {
                 id: storyId,
                 user: loggedInUser,
@@ -2562,7 +2628,7 @@
                 blob: videoFileToSave,
                 hasBlob: Boolean(videoFileToSave),
                 remoteVideoUrl: remoteVideoUrl,
-                videoUrl: playableUrl,
+                videoUrl: remoteVideoUrl,
                 text: captionToSave,
                 createdAt: createdAt
             };
@@ -2586,7 +2652,7 @@
             document.getElementById('storyVideoInput').value = "";
             if (btn) btn.disabled = false;
 
-            closeStoryCreator();
+            document.getElementById('storyCreatorModal').classList.remove('open');
             openStoryAtIndex(0);
         }
 
@@ -2621,7 +2687,7 @@
                     id: "story-vid-" + Date.now(),
                     user: userName,
                     label: userName,
-                    videoUrl: videoSrc,
+                    videoUrl: videoSrc && !videoSrc.startsWith("blob:") ? videoSrc : "",
                     remoteVideoUrl: videoSrc && !videoSrc.startsWith("blob:") ? videoSrc : "",
                     blob: null,
                     hasBlob: false,
@@ -2637,10 +2703,11 @@
         function closeStory() {
             clearInterval(storyTimer);
             activeStoryIndex = -1;
-            activeStoryPlayUrl = "";
             const vidEl = document.getElementById('storyModalVideo');
             vidEl.pause();
             vidEl.removeAttribute('src');
+            vidEl.load();
+            revokeActiveStoryObjectUrl();
             const innerBar = document.getElementById('heartInnerProgressBar');
             if (innerBar) innerBar.style.width = "0%";
             document.getElementById('storyModal').classList.remove('open');
