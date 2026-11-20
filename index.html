@@ -975,6 +975,43 @@
     </div>
 
     <script>
+        const API_BASE = "https://still-star-01fc.sanchirawat786.workers.dev";
+
+        async function getConfig() {
+          const res = await fetch(`${API_BASE}/api/config`);
+          if (!res.ok) throw new Error(`Config error: ${res.status}`);
+          return await res.json();
+        }
+
+        async function sendChatMessage(sender, receiver, text) {
+          const cleanText = typeof text === "string" ? text.trim() : "";
+          if (!cleanText) throw new Error("Empty message");
+
+          const res = await fetch(`${API_BASE}/api/chat`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ sender, receiver, text: cleanText })
+          });
+
+          if (!res.ok) throw new Error(`Chat error: ${res.status}`);
+          return await res.json();
+        }
+
+        async function uploadVideo(file) {
+          if (!file) throw new Error("No video file selected");
+
+          const formData = new FormData();
+          formData.append("video", file);
+
+          const res = await fetch(`${API_BASE}/api/upload-video`, {
+            method: "POST",
+            body: formData
+          });
+
+          if (!res.ok) throw new Error(`Upload error: ${res.status}`);
+          return await res.json();
+        }
+
         const CLOUD_CONFIG = {
             bucketName: "2friend-videos",
             resolution: "480p",
@@ -1194,6 +1231,18 @@
                 }
             } catch (e) {}
             applyLanguage();
+
+            try {
+                const remoteCfg = await getConfig();
+                if (remoteCfg && typeof remoteCfg.maxDurationSeconds === "number") {
+                    CLOUD_CONFIG.maxDurationSeconds = remoteCfg.maxDurationSeconds;
+                }
+                if (remoteCfg && typeof remoteCfg.resolution === "string") {
+                    CLOUD_CONFIG.resolution = remoteCfg.resolution;
+                }
+            } catch (err) {
+                console.log("Config fetch fallback:", err);
+            }
 
             const initialVid = document.getElementById('vid-1');
             prepareVideoFrame(initialVid);
@@ -1438,7 +1487,7 @@
             tempVideo.src = blobUrl;
         }
 
-        function publishVideoToFeed() {
+        async function publishVideoToFeed() {
             if (!pendingVideoURL || !pendingVideoFile) return;
 
             const caption = document.getElementById('videoCaptionInput').value.trim() || "मेरा नया वीडियो #2friend";
@@ -1449,31 +1498,40 @@
 
             publishBtn.disabled = true;
             feedback.style.color = "#4ade80";
-            feedback.innerText = "Cloudflare R2 पर सिंक हो रहा है...";
+            feedback.innerText = "Cloudflare R2 पर अपलोड हो रहा है...";
 
-            setTimeout(async () => {
-                await saveVideoToLocalDB(fileToPersist, caption, loggedInUser);
-
-                const newVidId = appendVideoSlideToFeed(videoSrcToAdd, caption, loggedInUser, true);
-                pauseAndMuteOtherVideos(newVidId);
-
-                const feed = document.getElementById('reelsFeedContainer');
-                feed.scrollTop = 0;
-
-                document.getElementById('videoCaptionInput').value = "";
-                document.getElementById('selectedFileName').innerText = (translations[document.getElementById('languageSelect')?.value] || translations.hi).pickVideo;
-                document.getElementById('videoFileInput').value = "";
-                feedback.innerText = "";
-                pendingVideoFile = null;
-                pendingVideoURL = null;
-
-                alert("🎉 बधाई हो! आपका वीडियो सफलतापूर्वक सेव हो गया है।");
-                navigateTab('home', document.querySelectorAll('.nav-tab')[0]);
-                const createdVid = document.getElementById(newVidId);
-                if (createdVid) {
-                    playActiveVideoWithSound(createdVid);
+            let remoteUrl = null;
+            try {
+                const uploadResult = await uploadVideo(fileToPersist);
+                if (uploadResult && typeof uploadResult.url === "string" && uploadResult.url.trim() !== "") {
+                    remoteUrl = uploadResult.url.trim();
                 }
-            }, 500);
+            } catch (err) {
+                console.log("Worker upload fallback to local:", err);
+            }
+
+            await saveVideoToLocalDB(fileToPersist, caption, loggedInUser);
+
+            const feedVideoSrc = remoteUrl || videoSrcToAdd;
+            const newVidId = appendVideoSlideToFeed(feedVideoSrc, caption, loggedInUser, true);
+            pauseAndMuteOtherVideos(newVidId);
+
+            const feed = document.getElementById('reelsFeedContainer');
+            feed.scrollTop = 0;
+
+            document.getElementById('videoCaptionInput').value = "";
+            document.getElementById('selectedFileName').innerText = (translations[document.getElementById('languageSelect')?.value] || translations.hi).pickVideo;
+            document.getElementById('videoFileInput').value = "";
+            feedback.innerText = "";
+            pendingVideoFile = null;
+            pendingVideoURL = null;
+
+            alert(remoteUrl ? "🎉 बधाई हो! वीडियो Cloudflare R2 पर अपलोड और सेव हो गया है।" : "🎉 बधाई हो! आपका वीडियो सेव हो गया है।");
+            navigateTab('home', document.querySelectorAll('.nav-tab')[0]);
+            const createdVid = document.getElementById(newVidId);
+            if (createdVid) {
+                playActiveVideoWithSound(createdVid);
+            }
         }
 
         function openStoryCreator() {
@@ -1635,7 +1693,7 @@
             syncFeedPlaybackOnScroll();
         }
 
-        function sendChatMsg() {
+        async function sendChatMsg() {
             const input = document.getElementById('chatTextInput');
             const msg = input.value.trim();
             if (!msg) return;
@@ -1646,6 +1704,12 @@
             box.appendChild(div);
             input.value = '';
             box.scrollTop = box.scrollHeight;
+
+            try {
+                await sendChatMessage(loggedInUser, "2friend_support", msg);
+            } catch (err) {
+                console.log("Chat API sync fallback:", err);
+            }
         }
 
         function openComments() { document.getElementById('commentSheet').classList.add('open'); }
