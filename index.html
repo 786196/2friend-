@@ -228,55 +228,158 @@
             display: flex;
         }
 
-        /* स्टोरीज़ सेक्शन */
+        /* Facebook स्टाइल वर्टिकल स्टोरी कार्ड्स बार */
         .stories-bar {
             display: flex;
-            gap: 12px;
-            padding: 8px 12px;
+            gap: 8px;
+            padding: 8px 10px;
             background: #0d0d0d;
             border-bottom: 1px solid #222;
             overflow-x: auto;
             flex-shrink: 0;
             scrollbar-width: none;
+            position: sticky;
+            top: 0;
+            z-index: 25;
         }
         .stories-bar::-webkit-scrollbar { display: none; }
-        .story-item {
+
+        .fb-story-card {
+            width: 88px;
+            height: 132px;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+            cursor: pointer;
+            border: 1px solid #262626;
+            background: #171717;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            flex-shrink: 0;
-            gap: 4px;
+            transition: transform 0.14s ease, border-color 0.2s ease;
         }
-        .story-ring {
-            width: 54px;
-            height: 54px;
-            border-radius: 50%;
-            padding: 2px;
-            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
+        .fb-story-card:active {
+            transform: scale(0.97);
         }
-        .story-ring.add-ring { background: #333; }
-        .story-avatar {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: #1a1a1a;
-            border: 2px solid #000;
+        .fb-story-card.has-unseen {
+            border-color: #1877f2;
+        }
+        .fb-story-card.seen-story {
+            border-color: #333;
+            opacity: 0.88;
+        }
+
+        /* पहला कार्ड (+ स्टोरी) - नीचे अलग रंग की पट्टी */
+        .fb-create-card {
+            background: #18191a;
+            border-color: #2f3031;
+        }
+        .fb-create-top {
+            flex: 1;
+            background: linear-gradient(160deg, #242526, #141516);
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 18px;
-            font-weight: bold;
-            color: #fff;
         }
-        .story-label {
-            font-size: 10px;
-            color: #ccc;
-            max-width: 60px;
+        .fb-create-plus {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: #1877f2;
+            border: 3px solid #18191a;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+        .fb-create-bottom {
+            background: #242526;
+            border-top: 1px solid #323436;
+            padding: 7px 6px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.2;
+            white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+
+        /* यूज़र स्टोरी कार्ड्स */
+        .fb-story-bg {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(155deg, #1d2b53, #7e2553 60%, #ff004d);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 18px 6px 24px;
+        }
+        .fb-story-bg video,
+        .fb-story-bg img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .fb-story-preview-snippet {
+            font-size: 9.5px;
+            line-height: 1.25;
+            color: rgba(255, 255, 255, 0.92);
+            text-align: center;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+        }
+        .fb-story-scrim {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to bottom,
+                rgba(0, 0, 0, 0.35) 0%,
+                rgba(0, 0, 0, 0.05) 45%,
+                rgba(0, 0, 0, 0.78) 100%
+            );
+            pointer-events: none;
+        }
+        .fb-story-avatar-badge {
+            position: absolute;
+            top: 7px;
+            left: 7px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #1877f2;
+            border: 2px solid #4ea1ff;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 800;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+        .fb-story-card.seen-story .fb-story-avatar-badge {
+            border-color: #777;
+            background: #2c2d2e;
+        }
+        .fb-story-name {
+            position: absolute;
+            bottom: 7px;
+            left: 6px;
+            right: 6px;
+            font-size: 10.5px;
+            font-weight: 700;
+            color: #fff;
+            z-index: 2;
             white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
         }
 
         /* विज्ञापन बैनर */
@@ -675,16 +778,58 @@
             margin: 0 8px;
         }
 
-        /* स्टोरी व्यूअर और स्टोरी अपलोड मोडल */
+        /* स्टोरी व्यूअर (Facebook स्टाइल मल्टी-प्रोग्रेस बार व लगातार नेविगेशन) */
         .story-modal {
             position: fixed; inset: 0; background: #000; z-index: 200; display: none; flex-direction: column;
         }
         .story-modal.open { display: flex; }
-        .story-progress-bar {
-            height: 3px; background: rgba(255,255,255,0.25); width: 100%;
+        .story-progress-row {
+            display: flex;
+            gap: 4px;
+            padding: 8px 10px 4px;
+            background: rgba(0, 0, 0, 0.72);
+            width: 100%;
+            z-index: 12;
+        }
+        .story-progress-seg {
+            flex: 1;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.28);
+            border-radius: 2px;
+            overflow: hidden;
         }
         .story-progress-fill {
-            height: 100%; background: #fff; width: 0%; transition: width 0.08s linear;
+            height: 100%;
+            background: #fff;
+            width: 0%;
+        }
+        .story-viewer-body {
+            flex: 1;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+            overflow: hidden;
+        }
+        .story-tap-zone-prev {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 30%;
+            z-index: 8;
+            cursor: pointer;
+        }
+        .story-tap-zone-next {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            width: 70%;
+            z-index: 8;
+            cursor: pointer;
         }
         .story-creator-modal {
             position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 250;
@@ -773,21 +918,13 @@
         <!-- 1. होम स्क्रीन -->
         <div id="view-home" class="screen-view active">
             <div class="stories-bar" id="storiesBarContainer">
-                <div class="story-item" onclick="openStoryCreator()">
-                    <div class="story-ring add-ring">
-                        <div class="story-avatar">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <div class="fb-story-card fb-create-card" onclick="openStoryCreator()">
+                    <div class="fb-create-top">
+                        <div class="fb-create-plus">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                         </div>
                     </div>
-                    <span class="story-label" data-key="addStory">+ स्टोरी</span>
-                </div>
-                <div class="story-item" onclick="openVideoStory('Verender Rawat', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4', '2friend ऐप R2 स्टोरेज और D1 डेटाबेस पर लाइव है! 🚀')">
-                    <div class="story-ring"><div class="story-avatar">V</div></div>
-                    <span class="story-label">Verender</span>
-                </div>
-                <div class="story-item" onclick="openStory('दिल्ली क्रिएटर्स', '1 मिनट की शानदार 480p रील्स देखें!')">
-                    <div class="story-ring"><div class="story-avatar">D</div></div>
-                    <span class="story-label">दिल्ली</span>
+                    <div class="fb-create-bottom" data-key="addStory">+ स्टोरी</div>
                 </div>
             </div>
 
@@ -946,14 +1083,19 @@
         </div>
     </div>
 
-    <!-- स्टोरी व्यूअर मोडल -->
+    <!-- स्टोरी व्यूअर मोडल (Facebook स्टाइल कंटीन्यूअस स्टोरी प्लेयर) -->
     <div class="story-modal" id="storyModal">
-        <div class="story-progress-bar"><div class="story-progress-fill" id="storyProgress"></div></div>
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 14px; background:rgba(0,0,0,0.6); z-index:10;">
-            <strong id="storyModalUser">User</strong>
-            <button onclick="closeStory()" style="background:none; border:none; color:#fff; font-size:20px;">✕</button>
+        <div class="story-progress-row" id="storyProgressRow"></div>
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 14px; background:rgba(0,0,0,0.65); z-index:12;">
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span id="storyModalBadge" style="width:26px;height:26px;border-radius:50%;background:#1877f2;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;">V</span>
+                <strong id="storyModalUser">User</strong>
+            </div>
+            <button onclick="closeStory()" style="background:none; border:none; color:#fff; font-size:20px; cursor:pointer; z-index:15;">✕</button>
         </div>
-        <div style="flex:1; position:relative; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#000; overflow:hidden;">
+        <div class="story-viewer-body" id="storyViewerBody">
+            <div class="story-tap-zone-prev" onclick="event.stopPropagation(); stepStory(-1)" aria-label="Previous Story"></div>
+            <div class="story-tap-zone-next" onclick="event.stopPropagation(); stepStory(1)" aria-label="Next Story"></div>
             <video id="storyModalVideo" style="display:none; width:100%; height:100%; object-fit:contain;" playsinline webkit-playsinline controlsList="nodownload" disablePictureInPicture></video>
             <p id="storyModalText" style="font-size:18px; line-height:1.4; padding:20px; text-align:center;"></p>
         </div>
@@ -1131,15 +1273,274 @@
         let loggedInUser = "@verender_rawat";
         let pendingVideoFile = null;
         let pendingVideoURL = null;
+        let pendingStoryVideoFile = null;
         let pendingStoryVideoURL = null;
         let videoCounter = 1;
         let storyTimer = null;
+        let activeStoryIndex = -1;
         let pushPromptRequested = false;
         let userPrefersMuted = false;
         let currentActiveReelId = "reel-1";
         let currentCommentCountEl = document.getElementById("comment-count-1");
         const loadedRemoteReelIds = new Set(["reel-1"]);
         const renderedChatKeys = new Set();
+
+        /* --- Facebook स्टाइल स्टोरीज़ स्टेट व परसिस्टेंस --- */
+        const STORIES_STORAGE_KEY = "2friend_fb_stories_v1";
+        const SEEN_STORIES_KEY = "2friend_seen_stories_v1";
+
+        const DEFAULT_STORIES = [
+            {
+                id: "story-verender",
+                user: "Verender",
+                label: "Verender",
+                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+                text: "2friend ऐप R2 स्टोरेज और D1 डेटाबेस पर लाइव है! 🚀"
+            },
+            {
+                id: "story-delhi",
+                user: "दिल्ली क्रिएटर्स",
+                label: "दिल्ली",
+                videoUrl: "",
+                text: "1 मिनट की शानदार 480p रील्स देखें!"
+            }
+        ];
+
+        let storiesList = [];
+        let seenStoryIds = new Set();
+
+        function loadSeenStories() {
+            try {
+                const raw = localStorage.getItem(SEEN_STORIES_KEY);
+                const arr = raw ? JSON.parse(raw) : [];
+                if (Array.isArray(arr)) seenStoryIds = new Set(arr);
+            } catch (e) {}
+        }
+
+        function markStorySeen(storyId) {
+            if (!storyId) return;
+            seenStoryIds.add(storyId);
+            try {
+                localStorage.setItem(SEEN_STORIES_KEY, JSON.stringify(Array.from(seenStoryIds)));
+            } catch (e) {}
+        }
+
+        function persistTextStories() {
+            try {
+                const serializable = storiesList
+                    .filter(s => !s._ephemeralBlob)
+                    .map(s => ({
+                        id: s.id,
+                        user: s.user,
+                        label: s.label,
+                        videoUrl: s.videoUrl || "",
+                        text: s.text || ""
+                    }));
+                localStorage.setItem(STORIES_STORAGE_KEY, JSON.stringify(serializable));
+            } catch (e) {}
+        }
+
+        function initStories() {
+            loadSeenStories();
+            try {
+                const saved = JSON.parse(localStorage.getItem(STORIES_STORAGE_KEY) || "null");
+                storiesList = Array.isArray(saved) && saved.length > 0 ? saved : [...DEFAULT_STORIES];
+            } catch (e) {
+                storiesList = [...DEFAULT_STORIES];
+            }
+            renderStoriesBar();
+        }
+
+        function renderStoriesBar() {
+            const bar = document.getElementById("storiesBarContainer");
+            if (!bar) return;
+
+            const addStoryText = (translations[document.getElementById("languageSelect")?.value] || translations.hi).addStory;
+
+            bar.innerHTML = "";
+
+            const createCard = document.createElement("div");
+            createCard.className = "fb-story-card fb-create-card";
+            createCard.onclick = openStoryCreator;
+            createCard.innerHTML = `
+                <div class="fb-create-top">
+                    <div class="fb-create-plus">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </div>
+                </div>
+                <div class="fb-create-bottom">${addStoryText}</div>
+            `;
+            bar.appendChild(createCard);
+
+            storiesList.forEach((story, idx) => {
+                const isSeen = seenStoryIds.has(story.id);
+                const card = document.createElement("div");
+                card.className = `fb-story-card ${isSeen ? "seen-story" : "has-unseen"}`;
+                card.onclick = () => openStoryAtIndex(idx);
+
+                const initial = (story.label || story.user || "U").replace(/^@/, "").charAt(0).toUpperCase() || "U";
+                const snippet = story.text || (story.videoUrl ? "480p Video Story" : "Story");
+
+                const bgDiv = document.createElement("div");
+                bgDiv.className = "fb-story-bg";
+                if (story.videoUrl) {
+                    const thumbVid = document.createElement("video");
+                    thumbVid.src = story.videoUrl;
+                    thumbVid.muted = true;
+                    thumbVid.playsinline = true;
+                    thumbVid.preload = "metadata";
+                    bgDiv.appendChild(thumbVid);
+                } else {
+                    const p = document.createElement("div");
+                    p.className = "fb-story-preview-snippet";
+                    p.textContent = snippet;
+                    bgDiv.appendChild(p);
+                }
+
+                const scrim = document.createElement("div");
+                scrim.className = "fb-story-scrim";
+
+                const avatar = document.createElement("div");
+                avatar.className = "fb-story-avatar-badge";
+                avatar.textContent = initial;
+
+                const nameEl = document.createElement("div");
+                nameEl.className = "fb-story-name";
+                nameEl.textContent = story.label || story.user || "Story";
+
+                card.appendChild(bgDiv);
+                card.appendChild(scrim);
+                card.appendChild(avatar);
+                card.appendChild(nameEl);
+                bar.appendChild(card);
+            });
+        }
+
+        function buildStoryProgressBars(count, activeIdx) {
+            const row = document.getElementById("storyProgressRow");
+            if (!row) return;
+            row.innerHTML = "";
+            for (let i = 0; i < count; i++) {
+                const seg = document.createElement("div");
+                seg.className = "story-progress-seg";
+                const fill = document.createElement("div");
+                fill.className = "story-progress-fill";
+                fill.id = `story-fill-${i}`;
+                if (i < activeIdx) {
+                    fill.style.width = "100%";
+                } else {
+                    fill.style.width = "0%";
+                }
+                seg.appendChild(fill);
+                row.appendChild(seg);
+            }
+        }
+
+        function openStoryAtIndex(index) {
+            if (!Array.isArray(storiesList) || storiesList.length === 0) return;
+            if (index < 0) index = 0;
+            if (index >= storiesList.length) {
+                closeStory();
+                return;
+            }
+
+            clearInterval(storyTimer);
+            activeStoryIndex = index;
+            const story = storiesList[index];
+            markStorySeen(story.id);
+            renderStoriesBar();
+
+            document.querySelectorAll("#reelsFeedContainer video").forEach(v => {
+                v.pause();
+                v.muted = true;
+            });
+
+            buildStoryProgressBars(storiesList.length, index);
+
+            const vidEl = document.getElementById("storyModalVideo");
+            const txtEl = document.getElementById("storyModalText");
+            const userEl = document.getElementById("storyModalUser");
+            const badgeEl = document.getElementById("storyModalBadge");
+
+            const displayName = story.user || story.label || "User";
+            userEl.textContent = displayName;
+            if (badgeEl) {
+                badgeEl.textContent = displayName.replace(/^@/, "").charAt(0).toUpperCase() || "U";
+            }
+
+            vidEl.pause();
+
+            let durationMs = 5000;
+
+            if (story.videoUrl) {
+                vidEl.src = story.videoUrl;
+                vidEl.style.display = "block";
+                vidEl.muted = false;
+                vidEl.play().catch(() => {
+                    vidEl.muted = true;
+                    vidEl.play().catch(() => {});
+                });
+
+                if (story.text) {
+                    txtEl.style.display = "block";
+                    txtEl.style.position = "absolute";
+                    txtEl.style.bottom = "24px";
+                    txtEl.style.background = "rgba(0,0,0,0.65)";
+                    txtEl.style.borderRadius = "10px";
+                    txtEl.style.padding = "8px 14px";
+                    txtEl.style.fontSize = "14px";
+                    txtEl.textContent = story.text;
+                } else {
+                    txtEl.style.display = "none";
+                }
+
+                vidEl.onloadedmetadata = () => {
+                    if (isFinite(vidEl.duration) && vidEl.duration > 0) {
+                        durationMs = Math.min(vidEl.duration * 1000, CLOUD_CONFIG.maxDurationSeconds * 1000);
+                        startStorySegmentTimer(index, durationMs);
+                    }
+                };
+            } else {
+                vidEl.src = "";
+                vidEl.style.display = "none";
+                txtEl.style.display = "block";
+                txtEl.style.position = "static";
+                txtEl.style.background = "none";
+                txtEl.style.fontSize = "18px";
+                txtEl.textContent = story.text || "";
+            }
+
+            document.getElementById("storyModal").classList.add("open");
+            startStorySegmentTimer(index, durationMs);
+        }
+
+        function startStorySegmentTimer(index, durationMs) {
+            clearInterval(storyTimer);
+            const fill = document.getElementById(`story-fill-${index}`);
+            const startedAt = Date.now();
+            const total = Math.max(2500, durationMs || 5000);
+
+            storyTimer = setInterval(() => {
+                const elapsed = Date.now() - startedAt;
+                const pct = Math.min(100, (elapsed / total) * 100);
+                if (fill) fill.style.width = `${pct}%`;
+                if (elapsed >= total) {
+                    clearInterval(storyTimer);
+                    stepStory(1);
+                }
+            }, 50);
+        }
+
+        function stepStory(delta) {
+            const nextIdx = activeStoryIndex + delta;
+            if (nextIdx < 0) {
+                openStoryAtIndex(0);
+            } else if (nextIdx >= storiesList.length) {
+                closeStory();
+            } else {
+                openStoryAtIndex(nextIdx);
+            }
+        }
 
         /* --- IndexedDB लोकल परमानेंट स्टोरेज --- */
         const DB_NAME = "2friend_video_store";
@@ -1342,6 +1743,8 @@
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
+            initStories();
+
             const langSel = document.getElementById('languageSelect');
             const statEl = document.getElementById('langCountStat');
             if (langSel && statEl) {
@@ -1464,6 +1867,7 @@
                     v.muted = true;
                 });
             } else {
+                renderStoriesBar();
                 syncFeedFromD1AndR2();
                 syncFeedPlaybackOnScroll();
             }
@@ -1683,6 +2087,7 @@
         }
 
         function openStoryCreator() {
+            pendingStoryVideoFile = null;
             pendingStoryVideoURL = null;
             document.getElementById('storyVideoFileName').innerText = (translations[document.getElementById('languageSelect')?.value] || translations.hi).storyPickVideo;
             document.getElementById('storyCaptionInput').value = "";
@@ -1696,6 +2101,7 @@
             const file = input.files && input.files[0];
             const status = document.getElementById('storyCreatorStatus');
             const label = document.getElementById('storyVideoFileName');
+            pendingStoryVideoFile = null;
             pendingStoryVideoURL = null;
 
             if (!file) {
@@ -1717,6 +2123,7 @@
                     status.innerText = "❌ स्टोरी वीडियो अधिकतम 60 सेकंड का ही हो सकता है!";
                     input.value = "";
                 } else {
+                    pendingStoryVideoFile = file;
                     pendingStoryVideoURL = blobUrl;
                     label.innerText = "✅ " + file.name + " (" + Math.round(tempVid.duration) + "s)";
                     status.style.color = "#4ade80";
@@ -1737,99 +2144,66 @@
                 alert("कृपया स्टोरी के लिए कोई वीडियो चुनें या संदेश लिखें।");
                 return;
             }
-            const videoUrlToSave = pendingStoryVideoURL;
-            const captionToSave = txt;
+            const videoUrlToSave = pendingStoryVideoURL || "";
+            const captionToSave = txt || "";
+            const isBlobVideo = Boolean(pendingStoryVideoURL);
 
-            const bar = document.getElementById('storiesBarContainer');
-            const newItem = document.createElement('div');
-            newItem.className = 'story-item';
-            const initial = loggedInUser.replace('@', '').charAt(0).toUpperCase() || 'U';
-            newItem.innerHTML = `
-                <div class="story-ring"><div class="story-avatar">${initial}</div></div>
-                <span class="story-label">आपकी स्टोरी</span>
-            `;
-            newItem.onclick = function() {
-                if (videoUrlToSave) {
-                    openVideoStory(loggedInUser, videoUrlToSave, captionToSave);
-                } else {
-                    openStory(loggedInUser, captionToSave);
-                }
+            const storyObj = {
+                id: "story-" + Date.now(),
+                user: loggedInUser,
+                label: "आपकी स्टोरी",
+                videoUrl: videoUrlToSave,
+                text: captionToSave,
+                _ephemeralBlob: isBlobVideo
             };
-            bar.insertBefore(newItem, bar.children[1]);
+
+            storiesList.unshift(storyObj);
+            if (!isBlobVideo) {
+                persistTextStories();
+            }
+            renderStoriesBar();
 
             closeStoryCreator();
-            if (videoUrlToSave) {
-                openVideoStory(loggedInUser, videoUrlToSave, captionToSave);
-            } else {
-                openStory(loggedInUser, captionToSave);
-            }
+            openStoryAtIndex(0);
         }
 
         function openStory(userName, text) {
-            document.querySelectorAll('#reelsFeedContainer video').forEach(v => {
-                v.pause();
-                v.muted = true;
-            });
-            const vidEl = document.getElementById('storyModalVideo');
-            const txtEl = document.getElementById('storyModalText');
-            vidEl.pause();
-            vidEl.style.display = 'none';
-            txtEl.style.display = 'block';
-
-            document.getElementById('storyModalUser').innerText = userName;
-            txtEl.innerText = text;
-            document.getElementById('storyModal').classList.add('open');
-            startStoryProgress(80);
+            const idx = storiesList.findIndex(s => s.user === userName && s.text === text);
+            if (idx >= 0) {
+                openStoryAtIndex(idx);
+            } else {
+                storiesList.unshift({
+                    id: "story-temp-" + Date.now(),
+                    user: userName,
+                    label: userName,
+                    videoUrl: "",
+                    text: text || "",
+                    _ephemeralBlob: true
+                });
+                openStoryAtIndex(0);
+            }
         }
 
         function openVideoStory(userName, videoSrc, caption) {
-            document.querySelectorAll('#reelsFeedContainer video').forEach(v => {
-                v.pause();
-                v.muted = true;
-            });
-            const vidEl = document.getElementById('storyModalVideo');
-            const txtEl = document.getElementById('storyModalText');
-            document.getElementById('storyModalUser').innerText = userName;
-
-            vidEl.src = videoSrc;
-            vidEl.style.display = 'block';
-            vidEl.muted = false;
-            vidEl.play().catch(() => {
-                vidEl.muted = true;
-                vidEl.play().catch(() => {});
-            });
-
-            if (caption) {
-                txtEl.style.display = 'block';
-                txtEl.style.position = 'absolute';
-                txtEl.style.bottom = '24px';
-                txtEl.style.background = 'rgba(0,0,0,0.6)';
-                txtEl.style.borderRadius = '10px';
-                txtEl.style.padding = '8px 14px';
-                txtEl.style.fontSize = '14px';
-                txtEl.innerText = caption;
+            const idx = storiesList.findIndex(s => s.user === userName && s.videoUrl === videoSrc);
+            if (idx >= 0) {
+                openStoryAtIndex(idx);
             } else {
-                txtEl.style.display = 'none';
+                storiesList.unshift({
+                    id: "story-vid-" + Date.now(),
+                    user: userName,
+                    label: userName,
+                    videoUrl: videoSrc,
+                    text: caption || "",
+                    _ephemeralBlob: true
+                });
+                openStoryAtIndex(0);
             }
-
-            document.getElementById('storyModal').classList.add('open');
-            startStoryProgress(150);
-        }
-
-        function startStoryProgress(stepMs) {
-            const progress = document.getElementById('storyProgress');
-            progress.style.width = '0%';
-            let w = 0;
-            clearInterval(storyTimer);
-            storyTimer = setInterval(() => {
-                w += 1;
-                progress.style.width = w + '%';
-                if (w >= 100) closeStory();
-            }, stepMs);
         }
 
         function closeStory() {
             clearInterval(storyTimer);
+            activeStoryIndex = -1;
             const vidEl = document.getElementById('storyModalVideo');
             vidEl.pause();
             vidEl.src = "";
@@ -2608,6 +2982,8 @@
                 const k = el.getAttribute('data-key-placeholder');
                 if (dict[k]) el.placeholder = dict[k];
             });
+
+            renderStoriesBar();
         }
     </script>
 </body>
