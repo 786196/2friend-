@@ -149,6 +149,7 @@
             border-radius: 6px;
             font-size: 12px;
             outline: none;
+            max-width: 130px;
         }
 
         /* नेविगेशन बार */
@@ -326,7 +327,6 @@
             background: #000;
             cursor: pointer;
         }
-        /* फेसबुक जैसा बीच का कंट्रोल ओवरले */
         .center-controls-overlay {
             position: absolute;
             display: flex;
@@ -710,10 +710,10 @@
         <div class="auth-card">
             <img src="logo.png" alt="2friend Logo" class="auth-logo-img" onerror="this.style.display='none'">
             <div class="auth-logo">2friend</div>
-            <p style="color: #aaa; font-size: 13px; margin-bottom: 20px;">अपने क्रिएटर अकाउंट से लॉगिन करें</p>
-            <input type="text" id="loginUsername" class="auth-input" placeholder="यूज़रनेम (जैसे @verender_rawat)">
-            <input type="password" id="loginPassword" class="auth-input" placeholder="पासवर्ड दर्ज करें">
-            <button class="auth-btn" onclick="handleLogin()">लॉगिन करें</button>
+            <p style="color: #aaa; font-size: 13px; margin-bottom: 20px;" data-key="loginSub">अपने क्रिएटर अकाउंट से लॉगिन करें</p>
+            <input type="text" id="loginUsername" class="auth-input" placeholder="यूज़रनेम (जैसे @verender_rawat)" data-key-placeholder="userPlaceholder">
+            <input type="password" id="loginPassword" class="auth-input" placeholder="पासवर्ड दर्ज करें" data-key-placeholder="passPlaceholder">
+            <button class="auth-btn" onclick="handleLogin()" data-key="loginBtn">लॉगिन करें</button>
         </div>
     </div>
 
@@ -728,6 +728,9 @@
             <select class="lang-dropdown" id="languageSelect" onchange="applyLanguage()">
                 <option value="hi">हिन्दी</option>
                 <option value="en">English</option>
+                <option value="en-US">English (USA)</option>
+                <option value="en-GB">English (UK / Britain)</option>
+                <option value="ar-AE">العربية (Dubai / UAE)</option>
                 <option value="bn">বাংলা</option>
                 <option value="te">తెలుగు</option>
                 <option value="mr">मराठी</option>
@@ -776,7 +779,7 @@
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                         </div>
                     </div>
-                    <span class="story-label">+ स्टोरी</span>
+                    <span class="story-label" data-key="addStory">+ स्टोरी</span>
                 </div>
                 <div class="story-item" onclick="openVideoStory('Verender Rawat', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4', '2friend ऐप R2 स्टोरेज और D1 डेटाबेस पर लाइव है! 🚀')">
                     <div class="story-ring"><div class="story-avatar">V</div></div>
@@ -789,8 +792,8 @@
             </div>
 
             <div class="ad-slot-banner">
-                <div><span class="ad-badge">AD</span> <strong>Ludo & Cricket Arena</strong> - खेलें!</div>
-                <span style="color:#fff; text-decoration:underline; cursor:pointer;" onclick="alert('विज्ञापन खुला')">Open</span>
+                <div><span class="ad-badge">AD</span> <strong>Ludo & Cricket Arena</strong> - <span data-key="gamePlayText">खेलें!</span></div>
+                <span style="color:#fff; text-decoration:underline; cursor:pointer;" onclick="alert('विज्ञापन खुला')" data-key="adOpen">Open</span>
             </div>
 
             <div class="reels-feed" id="reelsFeedContainer">
@@ -804,7 +807,7 @@
                     <div class="reel-bottom-info">
                         <div class="reel-user">
                             <span id="reelAuthorName">@verender_rawat</span>
-                            <button class="follow-chip" onclick="toggleFollow(this)">Follow</button>
+                            <button class="follow-chip" onclick="toggleFollow(this)" data-key="followBtn">Follow</button>
                         </div>
                         <div class="reel-desc">2friend ऐप पर आपका स्वागत है! 480p क्वालिटी, तेज़ लोडिंग और क्लाउड डेटाबेस सिंक। #2friend #India</div>
                         <div class="reel-music">🎵 Original Audio (Copyright-Free)</div>
@@ -820,7 +823,7 @@
                         </div>
                         <div class="side-btn-wrap">
                             <button class="side-btn" onclick="shareCurrentReel()">➤</button>
-                            <span class="side-count">Share</span>
+                            <span class="side-count" data-key="shareLabel">Share</span>
                         </div>
                     </div>
                 </div>
@@ -832,17 +835,17 @@
             <div class="create-wrapper">
                 <h3 style="margin-bottom: 12px;" data-key="uploadTitle">नया वीडियो अपलोड करें</h3>
                 <div class="rule-card">
-                    <div>✅ <strong>अधिकतम समय:</strong> 1 मिनट (60 सेकंड)</div>
-                    <div style="margin-top:3px;">✅ <strong>क्वालिटी नियम:</strong> 480p ऑप्टिमाइज्ड</div>
+                    <div>✅ <strong data-key="maxDuration">अधिकतम समय:</strong> <span data-key="maxDurationVal">1 मिनट (60 सेकंड)</span></div>
+                    <div style="margin-top:3px;">✅ <strong data-key="qualityRule">क्वालिटी नियम:</strong> <span data-key="qualityRuleVal">480p ऑप्टिमाइज्ड</span></div>
                 </div>
                 <div class="drop-zone" onclick="document.getElementById('videoFileInput').click()">
                     <div style="font-size: 32px; margin-bottom: 6px;">🎬</div>
-                    <div id="selectedFileName" style="font-weight: bold; margin-bottom: 2px;">मोबाइल से वीडियो चुनें</div>
-                    <div style="font-size: 11px; color: #888;">MP4 / WebM (मैक्स 60 सेकंड)</div>
+                    <div id="selectedFileName" style="font-weight: bold; margin-bottom: 2px;" data-key="pickVideo">मोबाइल से वीडियो चुनें</div>
+                    <div style="font-size: 11px; color: #888;" data-key="videoHint">MP4 / WebM (मैक्स 60 सेकंड)</div>
                     <input type="file" id="videoFileInput" accept="video/*" style="display:none;" onchange="validateSelectedVideo(this)">
                 </div>
-                <input type="text" id="videoCaptionInput" class="caption-input" placeholder="वीडियो का कैप्शन लिखें (#hashtags)...">
-                <button id="publishBtn" class="primary-btn" onclick="publishVideoToFeed()" disabled>Cloudflare R2 पर सेव करें</button>
+                <input type="text" id="videoCaptionInput" class="caption-input" placeholder="वीडियो का कैप्शन लिखें (#hashtags)..." data-key-placeholder="captionPlaceholder">
+                <button id="publishBtn" class="primary-btn" onclick="publishVideoToFeed()" disabled data-key="publishBtn">Cloudflare R2 पर सेव करें</button>
                 <div id="uploadFeedback" style="margin-top: 12px; font-size: 12px; color: #4ade80; text-align: center;"></div>
             </div>
         </div>
@@ -851,16 +854,16 @@
         <div id="view-chat" class="screen-view">
             <div class="chat-container">
                 <div class="chat-header-info">
-                    <span>💬 1-to-1 टेक्स्ट चैट (सुरक्षित)</span>
-                    <span>फोटो/फाइल बंद</span>
+                    <span data-key="chatHeaderLeft">💬 1-to-1 टेक्स्ट चैट (सुरक्षित)</span>
+                    <span data-key="chatHeaderRight">फोटो/फाइल बंद</span>
                 </div>
                 <div class="chat-box-area" id="chatHistory">
                     <div class="msg-bubble msg-received">नमस्ते! 2friend चैट बॉक्स में आपका स्वागत है।</div>
                     <div class="msg-bubble msg-sent">नमस्ते! लॉगिन सफल रहा।</div>
                 </div>
                 <div class="chat-footer">
-                    <input type="text" id="chatTextInput" placeholder="यहाँ संदेश टाइप करें..." onkeypress="if(event.key==='Enter') sendChatMsg()">
-                    <button onclick="sendChatMsg()">भेजें</button>
+                    <input type="text" id="chatTextInput" placeholder="यहाँ संदेश टाइप करें..." data-key-placeholder="chatPlaceholder" onkeypress="if(event.key==='Enter') sendChatMsg()">
+                    <button onclick="sendChatMsg()" data-key="sendBtn">भेजें</button>
                 </div>
             </div>
         </div>
@@ -868,10 +871,10 @@
         <!-- 4. नोटिफिकेशन स्क्रीन -->
         <div id="view-notifications" class="screen-view">
             <div class="notif-top-bar">
-                <h2 style="font-size: 21px; font-weight: 800; letter-spacing: 0.2px;">Notifications</h2>
+                <h2 style="font-size: 21px; font-weight: 800; letter-spacing: 0.2px;" data-key="notifTitle">Notifications</h2>
             </div>
             <div class="notif-wrapper" id="notificationsList">
-                <div class="notif-section-title">New</div>
+                <div class="notif-section-title" data-key="notifNew">New</div>
                 <div class="notif-item" onclick="this.classList.add('read')">
                     <div class="notif-avatar-wrap">
                         <div class="notif-avatar">2F</div>
@@ -902,15 +905,15 @@
                 <h3 id="profileUsername">Verender Singh Rawat</h3>
                 <p style="color:#4ade80; font-size:11px; margin-top:4px;">📍 New Delhi, India • 2friend App</p>
                 <div class="stats-row">
-                    <div class="stat-box"><strong id="userPostCount">1</strong><span>Posts</span></div>
-                    <div class="stat-box"><strong>5,000+</strong><span>Followers</span></div>
-                    <div class="stat-box"><strong>14</strong><span>Languages</span></div>
+                    <div class="stat-box"><strong id="userPostCount">1</strong><span data-key="postsLabel">Posts</span></div>
+                    <div class="stat-box"><strong>5,000+</strong><span data-key="followersLabel">Followers</span></div>
+                    <div class="stat-box"><strong id="langCountStat">17</strong><span data-key="langsLabel">Languages</span></div>
                 </div>
                 <div class="profile-ad-box">
                     <span class="ad-badge">AD</span> <strong>Gaming Ads Mediation Active</strong> (AdMob / AppLovin)
                 </div>
                 <div style="width:100%; margin-top:14px; background:#121212; padding:12px; border-radius:10px; border:1px solid #262626; font-size:12px;">
-                    <div style="font-weight:bold; margin-bottom:6px; color:#fff;">⚙️ क्लाउड स्टोरेज और डेटाबेस स्टेटस:</div>
+                    <div style="font-weight:bold; margin-bottom:6px; color:#fff;" data-key="cloudStatusTitle">⚙️ क्लाउड स्टोरेज और डेटाबेस स्टेटस:</div>
                     <div style="color:#4ade80;">● Cloudflare R2 (Cloud4R2): Connected</div>
                     <div style="color:#4ade80; margin-top:2px;">● Cloudflare D1 Database: Synced</div>
                     <div style="color:#4ade80; margin-top:2px;">● OneSignal Push: Active</div>
@@ -928,18 +931,18 @@
     <div class="story-creator-modal" id="storyCreatorModal">
         <div class="story-creator-card">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-                <strong style="font-size:16px;">नई स्टोरी डालें (वीडियो / संदेश)</strong>
+                <strong style="font-size:16px;" data-key="storyModalTitle">नई स्टोरी डालें (वीडियो / संदेश)</strong>
                 <button onclick="closeStoryCreator()" style="background:none; border:none; color:#fff; font-size:18px;">✕</button>
             </div>
             <div class="drop-zone" style="padding:16px 10px; margin-bottom:10px;" onclick="document.getElementById('storyVideoInput').click()">
                 <div style="font-size:26px; margin-bottom:4px;">🎥</div>
-                <div id="storyVideoFileName" style="font-size:13px; font-weight:bold;">स्टोरी के लिए वीडियो चुनें (वैकल्पिक)</div>
-                <div style="font-size:10px; color:#888;">अधिकतम 60 सेकंड • 480p</div>
+                <div id="storyVideoFileName" style="font-size:13px; font-weight:bold;" data-key="storyPickVideo">स्टोरी के लिए वीडियो चुनें (वैकल्पिक)</div>
+                <div style="font-size:10px; color:#888;" data-key="storyHint">अधिकतम 60 सेकंड • 480p</div>
                 <input type="file" id="storyVideoInput" accept="video/*" style="display:none;" onchange="handleStoryVideoSelect(this)">
             </div>
-            <input type="text" id="storyCaptionInput" class="caption-input" placeholder="या स्टोरी का संदेश लिखें...">
+            <input type="text" id="storyCaptionInput" class="caption-input" placeholder="या स्टोरी का संदेश लिखें..." data-key-placeholder="storyMsgPlaceholder">
             <div id="storyCreatorStatus" style="font-size:11px; color:#4ade80; margin-bottom:10px; text-align:center;"></div>
-            <button class="primary-btn" onclick="publishNewStory()">स्टोरी शेयर करें</button>
+            <button class="primary-btn" onclick="publishNewStory()" data-key="storyShareBtn">स्टोरी शेयर करें</button>
         </div>
     </div>
 
@@ -959,15 +962,15 @@
     <!-- कमेंट शीट मोडल -->
     <div class="comment-sheet" id="commentSheet">
         <div style="padding:10px 14px; border-bottom:1px solid #333; display:flex; justify-content:space-between; align-items:center;">
-            <strong>Comments (क्लाउड डेटाबेस सिंक)</strong>
+            <strong data-key="commentsTitle">Comments (क्लाउड डेटाबेस सिंक)</strong>
             <button onclick="closeComments()" style="background:none; border:none; color:#fff; font-size:16px;">✕</button>
         </div>
         <div id="commentsList" style="flex:1; padding:12px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; font-size:12px;">
             <div><strong>@rahul_delhi:</strong> बहुत ही तेज़ और साफ वीडियो चल रहा है! 🔥</div>
         </div>
         <div class="chat-footer" style="position:relative;">
-            <input type="text" id="commentInput" placeholder="कमेंट लिखें..." onkeypress="if(event.key==='Enter') postComment()">
-            <button onclick="postComment()">Post</button>
+            <input type="text" id="commentInput" placeholder="कमेंट लिखें..." data-key-placeholder="commentPlaceholder" onkeypress="if(event.key==='Enter') postComment()">
+            <button onclick="postComment()" data-key="postBtn">Post</button>
         </div>
     </div>
 
@@ -987,7 +990,7 @@
         let pushPromptRequested = false;
         let userPrefersMuted = false;
 
-        /* --- IndexedDB लोकल परमानेंट स्टोरेज (ताकि ऐप बंद करके खोलने पर वीडियो गायब न हों) --- */
+        /* --- IndexedDB लोकल परमानेंट स्टोरेज --- */
         const DB_NAME = "2friend_video_store";
         const STORE_NAME = "uploaded_reels";
 
@@ -1041,7 +1044,6 @@
             }
         }
 
-        /* --- रुके हुए वीडियो पर काला पर्दा न दिखे इसके लिए पहला फ्रेम दिखाना --- */
         function prepareVideoFrame(video) {
             if (!video) return;
             video.addEventListener('loadeddata', function onLoaded() {
@@ -1089,7 +1091,7 @@
                     </div>
                     <div class="side-btn-wrap">
                         <button class="side-btn" onclick="shareCurrentReel()">➤</button>
-                        <span class="side-count">Share</span>
+                        <span class="side-count" data-key="shareLabel">${(translations[document.getElementById('languageSelect')?.value] || translations.hi).shareLabel}</span>
                     </div>
                 </div>
             `;
@@ -1108,7 +1110,6 @@
             return newVidId;
         }
 
-        /* --- वीडियो प्लेबैक और दोबारा टैप पर चलने का पक्का समाधान --- */
         function playActiveVideoWithSound(video) {
             if (!video) return;
             const idx = video.id.replace('vid-', '');
@@ -1130,7 +1131,6 @@
                 playPromise.then(() => {
                     if (ctrl) ctrl.style.display = 'none';
                 }).catch(() => {
-                    // मोबाइल/ब्राउज़र ऑटोप्ले ब्लॉक होने पर म्यूट करके तुरंत चलाएँ
                     video.muted = true;
                     if (spk) spk.innerText = "🔇";
                     video.play().then(() => {
@@ -1181,10 +1181,23 @@
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
+            const langSel = document.getElementById('languageSelect');
+            const statEl = document.getElementById('langCountStat');
+            if (langSel && statEl) {
+                statEl.innerText = langSel.options.length;
+            }
+
+            try {
+                const savedLang = localStorage.getItem("2friend_selected_lang");
+                if (savedLang && translations[savedLang] && langSel) {
+                    langSel.value = savedLang;
+                }
+            } catch (e) {}
+            applyLanguage();
+
             const initialVid = document.getElementById('vid-1');
             prepareVideoFrame(initialVid);
 
-            // ऐप खुलते ही पहले से सेव किए गए वीडियो वापस लोड करें
             const savedList = await loadSavedVideosFromLocalDB();
             if (savedList.length > 0) {
                 savedList.forEach(item => {
@@ -1275,7 +1288,6 @@
             }
         }
 
-        // किसी भी वीडियो पर उंगली मारने (टैप करने) पर दोबारा चलने का पक्का लॉजिक
         function handleReelTap(videoId, ctrlId, spkId) {
             const video = document.getElementById(videoId);
             const ctrl = document.getElementById(ctrlId);
@@ -1374,7 +1386,7 @@
             publishBtn.disabled = true;
 
             if (!file) {
-                fileNameDisplay.innerText = "मोबाइल से वीडियो चुनें";
+                fileNameDisplay.innerText = (translations[document.getElementById('languageSelect')?.value] || translations.hi).pickVideo;
                 feedback.innerText = "";
                 return;
             }
@@ -1440,7 +1452,6 @@
             feedback.innerText = "Cloudflare R2 पर सिंक हो रहा है...";
 
             setTimeout(async () => {
-                // वीडियो को परमानेंट लोकल DB में सेव करें ताकि ऐप बंद करने पर गायब न हो
                 await saveVideoToLocalDB(fileToPersist, caption, loggedInUser);
 
                 const newVidId = appendVideoSlideToFeed(videoSrcToAdd, caption, loggedInUser, true);
@@ -1450,7 +1461,7 @@
                 feed.scrollTop = 0;
 
                 document.getElementById('videoCaptionInput').value = "";
-                document.getElementById('selectedFileName').innerText = "मोबाइल से वीडियो चुनें";
+                document.getElementById('selectedFileName').innerText = (translations[document.getElementById('languageSelect')?.value] || translations.hi).pickVideo;
                 document.getElementById('videoFileInput').value = "";
                 feedback.innerText = "";
                 pendingVideoFile = null;
@@ -1465,10 +1476,9 @@
             }, 500);
         }
 
-        /* स्टोरी क्रिएटर और वीडियो स्टोरी प्लेयर */
         function openStoryCreator() {
             pendingStoryVideoURL = null;
-            document.getElementById('storyVideoFileName').innerText = "स्टोरी के लिए वीडियो चुनें (वैकल्पिक)";
+            document.getElementById('storyVideoFileName').innerText = (translations[document.getElementById('languageSelect')?.value] || translations.hi).storyPickVideo;
             document.getElementById('storyCaptionInput').value = "";
             document.getElementById('storyCreatorStatus').innerText = "";
             document.getElementById('storyCreatorModal').classList.add('open');
@@ -1483,7 +1493,7 @@
             pendingStoryVideoURL = null;
 
             if (!file) {
-                label.innerText = "स्टोरी के लिए वीडियो चुनें (वैकल्पिक)";
+                label.innerText = (translations[document.getElementById('languageSelect')?.value] || translations.hi).storyPickVideo;
                 status.innerText = "";
                 return;
             }
@@ -1655,17 +1665,676 @@
             list.scrollTop = list.scrollHeight;
         }
 
+        /* --- भाषाओं का डेटाबेस (भारतीय भाषाएं + USA, UK/Britain, Dubai/Arabic) --- */
         const translations = {
-            hi: { uploadTitle: "नया वीडियो अपलोड करें" },
-            en: { uploadTitle: "Upload New Video" }
+            hi: {
+                loginSub: "अपने क्रिएटर अकाउंट से लॉगिन करें",
+                userPlaceholder: "यूज़रनेम (जैसे @verender_rawat)",
+                passPlaceholder: "पासवर्ड दर्ज करें",
+                loginBtn: "लॉगिन करें",
+                addStory: "+ स्टोरी",
+                gamePlayText: "खेलें!",
+                adOpen: "Open",
+                followBtn: "Follow",
+                shareLabel: "Share",
+                uploadTitle: "नया वीडियो अपलोड करें",
+                maxDuration: "अधिकतम समय:",
+                maxDurationVal: "1 मिनट (60 सेकंड)",
+                qualityRule: "क्वालिटी नियम:",
+                qualityRuleVal: "480p ऑप्टिमाइज्ड",
+                pickVideo: "मोबाइल से वीडियो चुनें",
+                videoHint: "MP4 / WebM (मैक्स 60 सेकंड)",
+                captionPlaceholder: "वीडियो का कैप्शन लिखें (#hashtags)...",
+                publishBtn: "Cloudflare R2 पर सेव करें",
+                chatHeaderLeft: "💬 1-to-1 टेक्स्ट चैट (सुरक्षित)",
+                chatHeaderRight: "फोटो/फाइल बंद",
+                chatPlaceholder: "यहाँ संदेश टाइप करें...",
+                sendBtn: "भेजें",
+                notifTitle: "Notifications",
+                notifNew: "New",
+                postsLabel: "Posts",
+                followersLabel: "Followers",
+                langsLabel: "Languages",
+                cloudStatusTitle: "⚙️ क्लाउड स्टोरेज और डेटाबेस स्टेटस:",
+                storyModalTitle: "नई स्टोरी डालें (वीडियो / संदेश)",
+                storyPickVideo: "स्टोरी के लिए वीडियो चुनें (वैकल्पिक)",
+                storyHint: "अधिकतम 60 सेकंड • 480p",
+                storyMsgPlaceholder: "या स्टोरी का संदेश लिखें...",
+                storyShareBtn: "स्टोरी शेयर करें",
+                commentsTitle: "Comments (क्लाउड डेटाबेस सिंक)",
+                commentPlaceholder: "कमेंट लिखें...",
+                postBtn: "Post"
+            },
+            en: {
+                loginSub: "Sign in with your creator account",
+                userPlaceholder: "Username (e.g. @verender_rawat)",
+                passPlaceholder: "Enter password",
+                loginBtn: "Log In",
+                addStory: "+ Story",
+                gamePlayText: "Play Now!",
+                adOpen: "Open",
+                followBtn: "Follow",
+                shareLabel: "Share",
+                uploadTitle: "Upload New Video",
+                maxDuration: "Max Duration:",
+                maxDurationVal: "1 Minute (60 Seconds)",
+                qualityRule: "Quality Rule:",
+                qualityRuleVal: "480p Optimized",
+                pickVideo: "Choose Video from Phone",
+                videoHint: "MP4 / WebM (Max 60 seconds)",
+                captionPlaceholder: "Write video caption (#hashtags)...",
+                publishBtn: "Save to Cloudflare R2",
+                chatHeaderLeft: "💬 1-to-1 Text Chat (Safe)",
+                chatHeaderRight: "No Photos/Files",
+                chatPlaceholder: "Type a message here...",
+                sendBtn: "Send",
+                notifTitle: "Notifications",
+                notifNew: "New",
+                postsLabel: "Posts",
+                followersLabel: "Followers",
+                langsLabel: "Languages",
+                cloudStatusTitle: "⚙️ Cloud Storage & Database Status:",
+                storyModalTitle: "Post New Story (Video / Text)",
+                storyPickVideo: "Choose Story Video (Optional)",
+                storyHint: "Max 60 seconds • 480p",
+                storyMsgPlaceholder: "Or write a story message...",
+                storyShareBtn: "Share Story",
+                commentsTitle: "Comments (Cloud Database Sync)",
+                commentPlaceholder: "Write a comment...",
+                postBtn: "Post"
+            },
+            "en-US": {
+                loginSub: "Sign in to your USA creator account",
+                userPlaceholder: "Username (e.g. @verender_rawat)",
+                passPlaceholder: "Enter password",
+                loginBtn: "Log In",
+                addStory: "+ Story",
+                gamePlayText: "Play Now!",
+                adOpen: "Open",
+                followBtn: "Follow",
+                shareLabel: "Share",
+                uploadTitle: "Upload New Video (US)",
+                maxDuration: "Max Length:",
+                maxDurationVal: "1 Minute (60 Seconds)",
+                qualityRule: "Quality Rule:",
+                qualityRuleVal: "480p Optimized",
+                pickVideo: "Select Video from Device",
+                videoHint: "MP4 / WebM (60s max)",
+                captionPlaceholder: "Add a caption (#hashtags)...",
+                publishBtn: "Save to Cloudflare R2",
+                chatHeaderLeft: "💬 1-to-1 Text Chat (Safe)",
+                chatHeaderRight: "No Photos/Files",
+                chatPlaceholder: "Type a message...",
+                sendBtn: "Send",
+                notifTitle: "Notifications",
+                notifNew: "New",
+                postsLabel: "Posts",
+                followersLabel: "Followers",
+                langsLabel: "Languages",
+                cloudStatusTitle: "⚙️ Cloud Storage & Database Status:",
+                storyModalTitle: "New Story (Video / Message)",
+                storyPickVideo: "Pick Story Video (Optional)",
+                storyHint: "60s max • 480p",
+                storyMsgPlaceholder: "Or write a story note...",
+                storyShareBtn: "Share Story",
+                commentsTitle: "Comments (Cloud Database Sync)",
+                commentPlaceholder: "Write a comment...",
+                postBtn: "Post"
+            },
+            "en-GB": {
+                loginSub: "Sign in to your UK creator account",
+                userPlaceholder: "Username (e.g. @verender_rawat)",
+                passPlaceholder: "Enter password",
+                loginBtn: "Log In",
+                addStory: "+ Story",
+                gamePlayText: "Play Now!",
+                adOpen: "Open",
+                followBtn: "Follow",
+                shareLabel: "Share",
+                uploadTitle: "Upload New Video (UK)",
+                maxDuration: "Maximum Length:",
+                maxDurationVal: "1 Minute (60 Seconds)",
+                qualityRule: "Quality Standard:",
+                qualityRuleVal: "480p Optimised",
+                pickVideo: "Choose Video from Device",
+                videoHint: "MP4 / WebM (60s max)",
+                captionPlaceholder: "Write a caption (#hashtags)...",
+                publishBtn: "Save to Cloudflare R2",
+                chatHeaderLeft: "💬 1-to-1 Text Chat (Safe)",
+                chatHeaderRight: "No Photos/Files",
+                chatPlaceholder: "Type a message here...",
+                sendBtn: "Send",
+                notifTitle: "Notifications",
+                notifNew: "New",
+                postsLabel: "Posts",
+                followersLabel: "Followers",
+                langsLabel: "Languages",
+                cloudStatusTitle: "⚙️ Cloud Storage & Database Status:",
+                storyModalTitle: "Post New Story (Video / Message)",
+                storyPickVideo: "Choose Story Video (Optional)",
+                storyHint: "60s max • 480p",
+                storyMsgPlaceholder: "Or write a story message...",
+                storyShareBtn: "Share Story",
+                commentsTitle: "Comments (Cloud Database Sync)",
+                commentPlaceholder: "Write a comment...",
+                postBtn: "Post"
+            },
+            "ar-AE": {
+                loginSub: "سجّل الدخول إلى حساب المنشئ (دبي / الإمارات)",
+                userPlaceholder: "اسم المستخدم (مثال @verender_rawat)",
+                passPlaceholder: "أدخل كلمة المرور",
+                loginBtn: "تسجيل الدخول",
+                addStory: "+ قصة",
+                gamePlayText: "العب الآن!",
+                adOpen: "فتح",
+                followBtn: "متابعة",
+                shareLabel: "مشاركة",
+                uploadTitle: "رفع فيديو جديد",
+                maxDuration: "الحد الأقصى للمدة:",
+                maxDurationVal: "دقيقة واحدة (60 ثانية)",
+                qualityRule: "قاعدة الجودة:",
+                qualityRuleVal: "محسّن بدقة 480p",
+                pickVideo: "اختر فيديو من الهاتف",
+                videoHint: "MP4 / WebM (بحد أقصى 60 ثانية)",
+                captionPlaceholder: "اكتب وصف الفيديو (#وسوم)...",
+                publishBtn: "حفظ في Cloudflare R2",
+                chatHeaderLeft: "💬 دردشة نصية فردية (آمنة)",
+                chatHeaderRight: "الصور/الملفات مغلقة",
+                chatPlaceholder: "اكتب رسالتك هنا...",
+                sendBtn: "إرسال",
+                notifTitle: "الإشعارات",
+                notifNew: "جديد",
+                postsLabel: "منشورات",
+                followersLabel: "متابعون",
+                langsLabel: "اللغات",
+                cloudStatusTitle: "⚙️ حالة التخزين السحابي وقاعدة البيانات:",
+                storyModalTitle: "إضافة قصة جديدة (فيديو / رسالة)",
+                storyPickVideo: "اختر فيديو للقصة (اختياري)",
+                storyHint: "بحد أقصى 60 ثانية • 480p",
+                storyMsgPlaceholder: "أو اكتب رسالة للقصة...",
+                storyShareBtn: "نشر القصة",
+                commentsTitle: "التعليقات (مزامنة قاعدة البيانات)",
+                commentPlaceholder: "اكتب تعليقاً...",
+                postBtn: "نشر"
+            },
+            bn: {
+                loginSub: "আপনার ক্রিয়েটর অ্যাকাউন্টে লগইন করুন",
+                userPlaceholder: "ইউজারনেম (@verender_rawat)",
+                passPlaceholder: "পাসওয়ার্ড লিখুন",
+                loginBtn: "লগইন করুন",
+                addStory: "+ স্টোরি",
+                gamePlayText: "খেলুন!",
+                adOpen: "Open",
+                followBtn: "Follow",
+                shareLabel: "Share",
+                uploadTitle: "নতুন ভিডিও আপলোড করুন",
+                maxDuration: "সর্বোচ্চ সময়:",
+                maxDurationVal: "১ মিনিট (৬০ সেকেন্ড)",
+                qualityRule: "কোয়ালিটি নিয়ম:",
+                qualityRuleVal: "480p অপ্টিমাইজড",
+                pickVideo: "ফোন থেকে ভিডিও বেছে নিন",
+                videoHint: "MP4 / WebM (সর্বোচ্চ ৬০ সেকেন্ড)",
+                captionPlaceholder: "ভিডিওর ক্যাপশন লিখুন (#hashtags)...",
+                publishBtn: "Cloudflare R2-এ সেভ করুন",
+                chatHeaderLeft: "💬 ১-টু-১ টেক্সট চ্যাট (নিরাপদ)",
+                chatHeaderRight: "ফটো/ফাইল বন্ধ",
+                chatPlaceholder: "এখানে বার্তা লিখুন...",
+                sendBtn: "পাঠান",
+                notifTitle: "Notifications",
+                notifNew: "New",
+                postsLabel: "Posts",
+                followersLabel: "Followers",
+                langsLabel: "Languages",
+                cloudStatusTitle: "⚙️ ক্লাউড স্টোরেজ ও ডেটাবেস স্ট্যাটাস:",
+                storyModalTitle: "নতুন স্টোরি দিন (ভিডিও / বার্তা)",
+                storyPickVideo: "স্টোরির ভিডিও বেছে নিন (ঐচ্ছিক)",
+                storyHint: "সর্বোচ্চ ৬০ সেকেন্ড • 480p",
+                storyMsgPlaceholder: "অথবা স্টোরির বার্তা লিখুন...",
+                storyShareBtn: "স্টোরি শেয়ার করুন",
+                commentsTitle: "Comments (ক্লাউড ডেটাবেস সিঙ্ক)",
+                commentPlaceholder: "মন্তব্য লিখুন...",
+                postBtn: "Post"
+            },
+            te: {
+                loginSub: "మీ క్రియేటర్ ఖాతాతో లాగిన్ అవ్వండి",
+                userPlaceholder: "యూజర్‌నేమ్ (@verender_rawat)",
+                passPlaceholder: "పాస్‌వర్డ్ నమోదు చేయండి",
+                loginBtn: "లాగిన్",
+                addStory: "+ స్టోరీ",
+                gamePlayText: "ఆడండి!",
+                adOpen: "Open",
+                followBtn: "Follow",
+                shareLabel: "Share",
+                uploadTitle: "కొత్త వీడియో అప్‌లోడ్ చేయండి",
+                maxDuration: "గరిష్ట వ్యవధి:",
+                maxDurationVal: "1 నిమిషం (60 సెకన్లు)",
+                qualityRule: "క్వాలిటీ నియమం:",
+                qualityRuleVal: "480p ఆప్టిమైజ్డ్",
+                pickVideo: "ఫోన్ నుండి వీడియో ఎంచుకోండి",
+                videoHint: "MP4 / WebM (గరిష్టం 60 సెకన్లు)",
+                captionPlaceholder: "వీడియో క్యాప్షన్ రాయండి (#hashtags)...",
+                publishBtn: "Cloudflare R2లో సేవ్ చేయండి",
+                chatHeaderLeft: "💬 1-టు-1 టెక్స్ట్ చాట్ (సురక్షితం)",
+                chatHeaderRight: "ఫోటో/ఫైల్ బంద్",
+                chatPlaceholder: "ఇక్కడ మెసేజ్ టైప్ చేయండి...",
+                sendBtn: "పంపు",
+                notifTitle: "Notifications",
+                notifNew: "New",
+                postsLabel: "Posts",
+                followersLabel: "Followers",
+                langsLabel: "Languages",
+                cloudStatusTitle: "⚙️ క్లౌడ్ స్టోరేజ్ మరియు డేటాబేస్ స్థితి:",
+                storyModalTitle: "కొత్త స్టోరీ పెట్టండి (వీడియో / మెసేజ్)",
+                storyPickVideo: "స్టోరీ వీడియో ఎంచుకోండి (ఐచ్ఛికం)",
+                storyHint: "గరిష్టం 60 సెకన్లు • 480p",
+                storyMsgPlaceholder: "లేదా స్టోరీ మెసేజ్ రాయండి...",
+                storyShareBtn: "స్టోరీ షేర్ చేయండి",
+                commentsTitle: "Comments (క్లౌడ్ డేటాబేస్ సింక్)",
+                commentPlaceholder: "కామెంట్ రాయండి...",
+                postBtn: "Post"
+            },
+            mr: {
+                loginSub: "तुमच्या क्रिएटर खात्याने लॉगिन करा",
+                userPlaceholder: "यूजरनेम (@verender_rawat)",
+                passPlaceholder: "पासवर्ड टाका",
+                loginBtn: "लॉगिन करा",
+                addStory: "+ स्टोरी",
+                gamePlayText: "खेळा!",
+                adOpen: "Open",
+                followBtn: "Follow",
+                shareLabel: "Share",
+                uploadTitle: "नवीन व्हिडिओ अपलोड करा",
+                maxDuration: "कमाल कालावधी:",
+                maxDurationVal: "1 मिनिट (60 सेकंद)",
+                qualityRule: "क्वालिटी नियम:",
+                qualityRuleVal: "480p ऑप्टिमाइज्ड",
+                pickVideo: "फोनवरून व्हिडिओ निवडा",
+                videoHint: "MP4 / WebM (कमाल 60 सेकंद)",
+                captionPlaceholder: "व्हिडिओचे कॅप्शन लिहा (#hashtags)...",
+                publishBtn: "Cloudflare R2 वर सेव्ह करा",
+                chatHeaderLeft: "💬 1-to-1 टेक्स्ट चॅट (सुरक्षित)",
+                chatHeaderRight: "फोटो/फाइल बंद",
+                chatPlaceholder: "येथे संदेश टाइप करा...",
+                sendBtn: "पाठवा",
+                notifTitle: "Notifications",
+                notifNew: "New",
+                postsLabel: "Posts",
+                followersLabel: "Followers",
+                langsLabel: "Languages",
+                cloudStatusTitle: "⚙️ क्लाउड स्टोरेज आणि डेटाबेस स्थिती:",
+                storyModalTitle: "नवीन स्टोरी टाका (व्हिडिओ / संदेश)",
+                storyPickVideo: "स्टोरीसाठी व्हिडिओ निवडा (पर्यायी)",
+                storyHint: "कमाल 60 सेकंद • 480p",
+                storyMsgPlaceholder: "किंवा स्टोरीचा संदेश लिहा...",
+                storyShareBtn: "स्टोरी शेअर करा",
+                commentsTitle: "Comments (क्लाउड डेटाबेस सिंक)",
+                commentPlaceholder: "कमेंट लिहा...",
+                postBtn: "Post"
+            },
+            ta: {
+                loginSub: "உங்கள் கிரியேட்டர் கணக்கில் உள்நுழையவும்",
+                userPlaceholder: "பயனர்பெயர் (@verender_rawat)",
+                passPlaceholder: "கடவுச்சொல்லை உள்ளிடவும்",
+                loginBtn: "உள்நுழைக",
+                addStory: "+ ஸ்டோரி",
+                gamePlayText: "விளையாடுங்கள்!",
+                adOpen: "Open",
+                followBtn: "Follow",
+                shareLabel: "Share",
+                uploadTitle: "புதிய வீடியோவை பதிவேற்றவும்",
+                maxDuration: "அதிகபட்ச நேரம்:",
+                maxDurationVal: "1 நிமிடம் (60 வினாடிகள்)",
+                qualityRule: "தர விதி:",
+                qualityRuleVal: "480p உகந்ததாக்கப்பட்டது",
+                pickVideo: "போனிலிருந்து வீடியோ தேர்ந்தெடுக்கவும்",
+                videoHint: "MP4 / WebM (அதிகபட்சம் 60 வினாடிகள்)",
+                captionPlaceholder: "வீடியோ தலைப்பு எழுதுக (#hashtags)...",
+                publishBtn: "Cloudflare R2-ல் சேமிக்கவும்",
+                chatHeaderLeft: "💬 1-to-1 டெக்ஸ்ட் சாட் (பாதுகாப்பானது)",
+                chatHeaderRight: "புகைப்படம்/கோப்பு இல்லை",
+                chatPlaceholder: "இங்கே செய்தியை தட்டச்சு செய்யவும்...",
+                sendBtn: "அனுப்பு",
+                notifTitle: "Notifications",
+                notifNew: "New",
+                postsLabel: "Posts",
+                followersLabel: "Followers",
+                langsLabel: "Languages",
+                cloudStatusTitle: "⚙️ கிளவுட் சேமிப்பு மற்றும் தரவுத்தள நிலை:",
+                storyModalTitle: "புதிய ஸ்டோரி இடுக (வீடியோ / செய்தி)",
+                storyPickVideo: "ஸ்டோரி வீடியோ தேர்ந்தெடுக்கவும் (விருப்பம்)",
+                storyHint: "அதிகபட்சம் 60 வினாடிகள் • 480p",
+                storyMsgPlaceholder: "அல்லது ஸ்டோரி செய்தி எழுதுக...",
+                storyShareBtn: "ஸ்டோரி பகிரவும்",
+                commentsTitle: "Comments (கிளவுட் தரவுத்தள ஒத்திசைவு)",
+                commentPlaceholder: "கருத்து எழுதுக...",
+                postBtn: "Post"
+            },
+            gu: {
+                loginSub: "તમારા ક્રિએટર એકાઉન્ટથી લૉગિન કરો",
+                userPlaceholder: "યુઝરનેમ (@verender_rawat)",
+                passPlaceholder: "પાસવર્ડ દાખલ કરો",
+                loginBtn: "લૉગિન કરો",
+                addStory: "+ સ્ટોરી",
+                gamePlayText: "રમો!",
+                adOpen: "Open",
+                followBtn: "Follow",
+                shareLabel: "Share",
+                uploadTitle: "નવો વીડિયો અપલોડ કરો",
+                maxDuration: "મહત્તમ સમય:",
+                maxDurationVal: "1 મિનિટ (60 સેકન્ડ)",
+                qualityRule: "ક્વોલિટી નિયમ:",
+                qualityRuleVal: "480p ઑપ્ટિમાઇઝ્ડ",
+                pickVideo: "ફોનમાંથી વીડિયો પસંદ કરો",
+                videoHint: "MP4 / WebM (મહત્તમ 60 સેકન્ડ)",
+                captionPlaceholder: "વીડિયોનું કૅપ્શન લખો (#hashtags)...",
+                publishBtn: "Cloudflare R2 પર સેવ કરો",
+                chatHeaderLeft: "💬 1-to-1 ટેક્સ્ટ ચૅટ (સુરક્ષિત)",
+                chatHeaderRight: "ફોટો/ફાઇલ બંધ",
+                chatPlaceholder: "અહીં સંદેશ લખો...",
+                sendBtn: "મોકલો",
+                notifTitle: "Notifications",
+                notifNew: "New",
+                postsLabel: "Posts",
+                followersLabel: "Followers",
+                langsLabel: "Languages",
+                cloudStatusTitle: "⚙️ ક્લાઉડ સ્ટોરેજ અને ડેટાબેઝ સ્થિતિ:",
+                storyModalTitle: "નવી સ્ટોરી મૂકો (વીડિયો / સંદેશ)",
+                storyPickVideo: "સ્ટોરી માટે વીડિયો પસંદ કરો (વૈકલ્પિક)",
+                storyHint: "મહત્તમ 60 સેકન્ડ • 480p",
+                storyMsgPlaceholder: "અથવા સ્ટોરીનો સંદેશ લખો...",
+                storyShareBtn: "સ્ટોરી શેર કરો",
+                commentsTitle: "Comments (ક્લાઉડ ડેટાબેઝ સિંક)",
+                commentPlaceholder: "કમેન્ટ લખો...",
+                postBtn: "Post"
+            },
+            ur: {
+                loginSub: "اپنے کریئیٹر اکاؤنٹ سے لاگ ان کریں",
+                userPlaceholder: "یوزرنیم (@verender_rawat)",
+                passPlaceholder: "پاس ورڈ درج کریں",
+                loginBtn: "لاگ ان کریں",
+                addStory: "+ اسٹوری",
+                gamePlayText: "کھیلیں!",
+                adOpen: "Open",
+                followBtn: "Follow",
+                shareLabel: "Share",
+                uploadTitle: "نئی ویڈیو اپ لوڈ کریں",
+                maxDuration: "زیادہ سے زیادہ دورانیہ:",
+                maxDurationVal: "1 منٹ (60 سیکنڈ)",
+                qualityRule: "کوالٹی اصول:",
+                qualityRuleVal: "480p آپٹیمائزڈ",
+                pickVideo: "فون سے ویڈیو منتخب کریں",
+                videoHint: "MP4 / WebM (زیادہ سے زیادہ 60 سیکنڈ)",
+                captionPlaceholder: "ویڈیو کا کیپشن لکھیں (#hashtags)...",
+                publishBtn: "Cloudflare R2 پر محفوظ کریں",
+                chatHeaderLeft: "💬 1-to-1 ٹیکسٹ چیٹ (محفوظ)",
+                chatHeaderRight: "فوٹو/فائل بند",
+                chatPlaceholder: "یہاں پیغام لکھیں...",
+                sendBtn: "بھیجیں",
+                notifTitle: "Notifications",
+                notifNew: "New",
+                postsLabel: "Posts",
+                followersLabel: "Followers",
+                langsLabel: "Languages",
+                cloudStatusTitle: "⚙️ کلاؤڈ اسٹوریج اور ڈیٹا بیس اسٹیٹس:",
+                storyModalTitle: "نئی اسٹوری لگائیں (ویڈیو / پیغام)",
+                storyPickVideo: "اسٹوری کے لیے ویڈیو چنیں (اختیاری)",
+                storyHint: "زیادہ سے زیادہ 60 سیکنڈ • 480p",
+                storyMsgPlaceholder: "یا اسٹوری کا پیغام لکھیں...",
+                storyShareBtn: "اسٹوری شیئر کریں",
+                commentsTitle: "Comments (کلاؤڈ ڈیٹا بیس سنک)",
+                commentPlaceholder: "تبصرہ لکھیں...",
+                postBtn: "Post"
+            },
+            kn: {
+                loginSub: "ನಿಮ್ಮ ಕ್ರಿಯೇಟರ್ ಖಾತೆಯೊಂದಿಗೆ ಲಾಗಿನ್ ಮಾಡಿ",
+                userPlaceholder: "ಬಳಕೆದಾರಹೆಸರು (@verender_rawat)",
+                passPlaceholder: "ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ",
+                loginBtn: "ಲಾಗಿನ್",
+                addStory: "+ ಸ್ಟೋರಿ",
+                gamePlayText: "ಆಡಿ!",
+                adOpen: "Open",
+                followBtn: "Follow",
+                shareLabel: "Share",
+                uploadTitle: "ಹೊಸ ವೀಡಿಯೊ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ",
+                maxDuration: "ಗರಿಷ್ಠ ಅವಧಿ:",
+                maxDurationVal: "1 ನಿಮಿಷ (60 ಸೆಕೆಂಡುಗಳು)",
+                qualityRule: "ಗುಣಮಟ್ಟ ನಿಯಮ:",
+                qualityRuleVal: "480p ಆಪ್ಟಿಮೈಸ್ಡ್",
+                pickVideo: "ಫೋನ್‌ನಿಂದ ವೀಡಿಯೊ ಆಯ್ಕೆಮಾಡಿ",
+                videoHint: "MP4 / WebM (ಗರಿಷ್ಠ 60 ಸೆಕೆಂಡುಗಳು)",
+                captionPlaceholder: "ವೀಡಿಯೊ ಶೀರ್ಷಿಕೆ ಬರೆಯಿರಿ (#hashtags)...",
+                publishBtn: "Cloudflare R2 ನಲ್ಲಿ ಉಳಿಸಿ",
+                chatHeaderLeft: "💬 1-to-1 ಟೆಕ್ಸ್ಟ್ ಚಾಟ್ (ಸುರಕ್ಷಿತ)",
+                chatHeaderRight: "ಫೋಟೋ/ಫೈಲ್ ಇಲ್ಲ",
+                chatPlaceholder: "ಇಲ್ಲಿ ಸಂದೇಶ ಟೈಪ್ ಮಾಡಿ...",
+                sendBtn: "ಕಳುಹಿಸಿ",
+                notifTitle: "Notifications",
+                notifNew: "New",
+                postsLabel: "Posts",
+                followersLabel: "Followers",
+                langsLabel: "Languages",
+                cloudStatusTitle: "⚙️ ಕ್ಲೌಡ್ ಸ್ಟೋರೇಜ್ ಮತ್ತು ಡೇಟಾಬೇಸ್ ಸ್ಥಿತಿ:",
+                storyModalTitle: "ಹೊಸ ಸ್ಟೋರಿ ಹಾಕಿ (ವೀಡಿಯೊ / ಸಂದೇಶ)",
+                storyPickVideo: "ಸ್ಟೋರಿಗಾಗಿ ವೀಡಿಯೊ ಆಯ್ಕೆಮಾಡಿ (ಐಚ್ಛಿಕ)",
+                storyHint: "ಗರಿಷ್ಠ 60 ಸೆಕೆಂಡುಗಳು • 480p",
+                storyMsgPlaceholder: "ಅಥವಾ ಸ್ಟೋರಿ ಸಂದೇಶ ಬರೆಯಿರಿ...",
+                storyShareBtn: "ಸ್ಟೋರಿ ಹಂಚಿಕೊಳ್ಳಿ",
+                commentsTitle: "Comments (ಕ್ಲೌಡ್ ಡೇಟಾಬೇಸ್ ಸಿಂಕ್)",
+                commentPlaceholder: "ಕಾಮೆಂಟ್ ಬರೆಯಿರಿ...",
+                postBtn: "Post"
+            },
+            ml: {
+                loginSub: "നിങ്ങളുടെ ക്രിയേറ്റർ അക്കൗണ്ട് ഉപയോഗിച്ച് ലോഗിൻ ചെയ്യുക",
+                userPlaceholder: "യൂസർനെയിം (@verender_rawat)",
+                passPlaceholder: "പാസ്‌വേഡ് നൽകുക",
+                loginBtn: "ലോഗിൻ",
+                addStory: "+ സ്റ്റോറി",
+                gamePlayText: "കളിക്കാം!",
+                adOpen: "Open",
+                followBtn: "Follow",
+                shareLabel: "Share",
+                uploadTitle: "പുതിയ വീഡിയോ അപ്‌ലോഡ് ചെയ്യുക",
+                maxDuration: "പരമാവധി ദൈർഘ്യം:",
+                maxDurationVal: "1 മിനിറ്റ് (60 സെക്കൻഡ്)",
+                qualityRule: "ക്വാളിറ്റി നിയമം:",
+                qualityRuleVal: "480p ഒപ്റ്റിമൈസ്ഡ്",
+                pickVideo: "ഫോണിൽ നിന്ന് വീഡിയോ തിരഞ്ഞെടുക്കുക",
+                videoHint: "MP4 / WebM (പരമാവധി 60 സെക്കൻഡ്)",
+                captionPlaceholder: "വീഡിയോ അടിക്കുറിപ്പ് എഴുതുക (#hashtags)...",
+                publishBtn: "Cloudflare R2-ൽ സേവ് ചെയ്യുക",
+                chatHeaderLeft: "💬 1-to-1 ടെക്സ്റ്റ് ചാറ്റ് (സുരക്ഷിതം)",
+                chatHeaderRight: "ഫോട്ടോ/ഫയൽ ഇല്ല",
+                chatPlaceholder: "ഇവിടെ സന്ദേശം ടൈപ്പ് ചെയ്യുക...",
+                sendBtn: "അയയ്ക്കുക",
+                notifTitle: "Notifications",
+                notifNew: "New",
+                postsLabel: "Posts",
+                followersLabel: "Followers",
+                langsLabel: "Languages",
+                cloudStatusTitle: "⚙️ ക്ലൗഡ് സ്റ്റോറേജും ഡാറ്റാബേസ് നിലയും:",
+                storyModalTitle: "പുതിയ സ്റ്റോറി ചേർക്കുക (വീഡിയോ / സന്ദേശം)",
+                storyPickVideo: "സ്റ്റോറി വീഡിയോ തിരഞ്ഞെടുക്കുക (ഓപ്ഷണൽ)",
+                storyHint: "പരമാവധി 60 സെക്കൻഡ് • 480p",
+                storyMsgPlaceholder: "അല്ലെങ്കിൽ സ്റ്റോറി സന്ദേശം എഴുതുക...",
+                storyShareBtn: "സ്റ്റോറി പങ്കിടുക",
+                commentsTitle: "Comments (ക്ലൗഡ് ഡാറ്റാബേസ് സിങ്ക്)",
+                commentPlaceholder: "കമന്റ് എഴുതുക...",
+                postBtn: "Post"
+            },
+            pa: {
+                loginSub: "ਆਪਣੇ ਕ੍ਰਿਏਟਰ ਖਾਤੇ ਨਾਲ ਲੌਗਇਨ ਕਰੋ",
+                userPlaceholder: "ਯੂਜ਼ਰਨੇਮ (@verender_rawat)",
+                passPlaceholder: "ਪਾਸਵਰਡ ਦਰਜ ਕਰੋ",
+                loginBtn: "ਲੌਗਇਨ ਕਰੋ",
+                addStory: "+ ਸਟੋਰੀ",
+                gamePlayText: "ਖੇਡੋ!",
+                adOpen: "Open",
+                followBtn: "Follow",
+                shareLabel: "Share",
+                uploadTitle: "ਨਵਾਂ ਵੀਡੀਓ ਅੱਪਲੋਡ ਕਰੋ",
+                maxDuration: "ਵੱਧ ਤੋਂ ਵੱਧ ਸਮਾਂ:",
+                maxDurationVal: "1 ਮਿੰਟ (60 ਸਕਿੰਟ)",
+                qualityRule: "ਕੁਆਲਿਟੀ ਨਿਯਮ:",
+                qualityRuleVal: "480p ਔਪਟੀਮਾਈਜ਼ਡ",
+                pickVideo: "ਫ਼ੋਨ ਤੋਂ ਵੀਡੀਓ ਚੁਣੋ",
+                videoHint: "MP4 / WebM (ਵੱਧ ਤੋਂ ਵੱਧ 60 ਸਕਿੰਟ)",
+                captionPlaceholder: "ਵੀਡੀਓ ਕੈਪਸ਼ਨ ਲਿਖੋ (#hashtags)...",
+                publishBtn: "Cloudflare R2 'ਤੇ ਸੇਵ ਕਰੋ",
+                chatHeaderLeft: "💬 1-to-1 ਟੈਕਸਟ ਚੈਟ (ਸੁਰੱਖਿਅਤ)",
+                chatHeaderRight: "ਫ਼ੋਟੋ/ਫ਼ਾਈਲ ਬੰਦ",
+                chatPlaceholder: "ਇੱਥੇ ਸੁਨੇਹਾ ਟਾਈਪ ਕਰੋ...",
+                sendBtn: "ਭੇਜੋ",
+                notifTitle: "Notifications",
+                notifNew: "New",
+                postsLabel: "Posts",
+                followersLabel: "Followers",
+                langsLabel: "Languages",
+                cloudStatusTitle: "⚙️ ਕਲਾਊਡ ਸਟੋਰੇਜ ਅਤੇ ਡਾਟਾਬੇਸ ਸਥਿਤੀ:",
+                storyModalTitle: "ਨਵੀਂ ਸਟੋਰੀ ਪਾਓ (ਵੀਡੀਓ / ਸੁਨੇਹਾ)",
+                storyPickVideo: "ਸਟੋਰੀ ਲਈ ਵੀਡੀਓ ਚੁਣੋ (ਵਿਕਲਪਿਕ)",
+                storyHint: "ਵੱਧ ਤੋਂ ਵੱਧ 60 ਸਕਿੰਟ • 480p",
+                storyMsgPlaceholder: "ਜਾਂ ਸਟੋਰੀ ਦਾ ਸੁਨੇਹਾ ਲਿਖੋ...",
+                storyShareBtn: "ਸਟੋਰੀ ਸਾਂਝੀ ਕਰੋ",
+                commentsTitle: "Comments (ਕਲਾਊਡ ਡਾਟਾਬੇਸ ਸਿੰਕ)",
+                commentPlaceholder: "ਕਮੈਂਟ ਲਿਖੋ...",
+                postBtn: "Post"
+            },
+            or: {
+                loginSub: "ଆପଣଙ୍କ କ୍ରିଏଟର୍ ଆକାଉଣ୍ଟରେ ଲଗଇନ୍ କରନ୍ତୁ",
+                userPlaceholder: "ୟୁଜରନେମ୍ (@verender_rawat)",
+                passPlaceholder: "ପାସୱାର୍ଡ ଦିଅନ୍ତୁ",
+                loginBtn: "ଲଗଇନ୍ କରନ୍ତୁ",
+                addStory: "+ ଷ୍ଟୋରୀ",
+                gamePlayText: "ଖେଳନ୍ତୁ!",
+                adOpen: "Open",
+                followBtn: "Follow",
+                shareLabel: "Share",
+                uploadTitle: "ନୂଆ ଭିଡିଓ ଅପଲୋଡ୍ କରନ୍ତୁ",
+                maxDuration: "ସର୍ବାଧିକ ସମୟ:",
+                maxDurationVal: "୧ ମିନିଟ୍ (୬୦ ସେକେଣ୍ଡ)",
+                qualityRule: "କ୍ୱାଲିଟି ନିୟମ:",
+                qualityRuleVal: "480p ଅପ୍ଟିମାଇଜଡ୍",
+                pickVideo: "ଫୋନରୁ ଭିଡିଓ ବାଛନ୍ତୁ",
+                videoHint: "MP4 / WebM (ସର୍ବାଧିକ ୬୦ ସେକେଣ୍ଡ)",
+                captionPlaceholder: "ଭିଡିଓ କ୍ୟାପସନ୍ ଲେଖନ୍ତୁ (#hashtags)...",
+                publishBtn: "Cloudflare R2 ରେ ସେଭ୍ କରନ୍ତୁ",
+                chatHeaderLeft: "💬 1-to-1 ଟେକ୍ସଟ୍ ଚାଟ୍ (ସୁରକ୍ଷିତ)",
+                chatHeaderRight: "ଫଟୋ/ଫାଇଲ୍ ବନ୍ଦ",
+                chatPlaceholder: "ଏଠାରେ ମେସେଜ୍ ଲେଖନ୍ତୁ...",
+                sendBtn: "ପଠାନ୍ତୁ",
+                notifTitle: "Notifications",
+                notifNew: "New",
+                postsLabel: "Posts",
+                followersLabel: "Followers",
+                langsLabel: "Languages",
+                cloudStatusTitle: "⚙️ କ୍ଲାଉଡ୍ ଷ୍ଟୋରେଜ୍ ଏବଂ ଡାଟାବେସ୍ ସ୍ଥିତି:",
+                storyModalTitle: "ନୂଆ ଷ୍ଟୋରୀ ଦିଅନ୍ତୁ (ଭିଡିଓ / ମେସେଜ୍)",
+                storyPickVideo: "ଷ୍ଟୋରୀ ପାଇଁ ଭିଡିଓ ବାଛନ୍ତୁ (ଇଚ୍ଛାଧୀନ)",
+                storyHint: "ସର୍ବାଧିକ ୬୦ ସେକେଣ୍ଡ • 480p",
+                storyMsgPlaceholder: "କିମ୍ବା ଷ୍ଟୋରୀ ମେସେଜ୍ ଲେଖନ୍ତୁ...",
+                storyShareBtn: "ଷ୍ଟୋରୀ ସେୟାର୍ କରନ୍ତୁ",
+                commentsTitle: "Comments (କ୍ଲାଉଡ୍ ଡାଟାବେସ୍ ସିଙ୍କ୍)",
+                commentPlaceholder: "କମେଣ୍ଟ୍ ଲେଖନ୍ତୁ...",
+                postBtn: "Post"
+            },
+            as: {
+                loginSub: "আপোনাৰ ক্ৰিয়েটৰ একাউণ্টত লগইন কৰক",
+                userPlaceholder: "ইউজাৰনেম (@verender_rawat)",
+                passPlaceholder: "পাছৱৰ্ড দিয়ক",
+                loginBtn: "লগইন কৰক",
+                addStory: "+ ষ্ট'ৰী",
+                gamePlayText: "খেলক!",
+                adOpen: "Open",
+                followBtn: "Follow",
+                shareLabel: "Share",
+                uploadTitle: "নতুন ভিডিঅ' আপলোড কৰক",
+                maxDuration: "সৰ্বোচ্চ সময়:",
+                maxDurationVal: "১ মিনিট (৬০ ছেকেণ্ড)",
+                qualityRule: "কোৱালিটি নিয়ম:",
+                qualityRuleVal: "480p অপ্টিমাইজড",
+                pickVideo: "ফোনৰ পৰা ভিডিঅ' বাছনি কৰক",
+                videoHint: "MP4 / WebM (সৰ্বোচ্চ ৬০ ছেকেণ্ড)",
+                captionPlaceholder: "ভিডিঅ'ৰ কেপশ্যন লিখক (#hashtags)...",
+                publishBtn: "Cloudflare R2-ত ছেভ কৰক",
+                chatHeaderLeft: "💬 1-to-1 টেক্সট চেট (সুৰক্ষিত)",
+                chatHeaderRight: "ফটো/ফাইল বন্ধ",
+                chatPlaceholder: "ইয়াত বাৰ্তা লিখক...",
+                sendBtn: "পঠিয়াওক",
+                notifTitle: "Notifications",
+                notifNew: "New",
+                postsLabel: "Posts",
+                followersLabel: "Followers",
+                langsLabel: "Languages",
+                cloudStatusTitle: "⚙️ ক্লাউড ষ্ট'ৰেজ আৰু ডাটাবেছ অৱস্থা:",
+                storyModalTitle: "নতুন ষ্ট'ৰী দিয়ক (ভিডিঅ' / বাৰ্তা)",
+                storyPickVideo: "ষ্ট'ৰীৰ বাবে ভিডিঅ' বাছনি কৰক (ঐচ্ছিক)",
+                storyHint: "সৰ্বোচ্চ ৬০ ছেকেণ্ড • 480p",
+                storyMsgPlaceholder: "বা ষ্ট'ৰীৰ বাৰ্তা লিখক...",
+                storyShareBtn: "ষ্ট'ৰী শ্বেয়াৰ কৰক",
+                commentsTitle: "Comments (ক্লাউড ডাটাবেছ ছিংক)",
+                commentPlaceholder: "কমেন্ট লিখক...",
+                postBtn: "Post"
+            },
+            ks: {
+                loginSub: "پننہِ کریئیٹر اکاؤنٹ سٟتؠ لاگ اِن کٔریو",
+                userPlaceholder: "یوزرنیم (@verender_rawat)",
+                passPlaceholder: "پاس ورڈ دٔرج کٔریو",
+                loginBtn: "لاگ اِن",
+                addStory: "+ سٹوری",
+                gamePlayText: "کھیٚلیو!",
+                adOpen: "Open",
+                followBtn: "Follow",
+                shareLabel: "Share",
+                uploadTitle: "نٔو ویڈیو اپ لوڈ کٔریو",
+                maxDuration: "زیادہ کھۄتہٕ زیادہ وقت:",
+                maxDurationVal: "1 منٹ (60 سیکنڈ)",
+                qualityRule: "کوالٹی قٲدٕ:",
+                qualityRuleVal: "480p آپٹیمائزڈ",
+                pickVideo: "فونہٕ منٛزٕ ویڈیو ژٲرِو",
+                videoHint: "MP4 / WebM (زیادہ کھۄتہٕ زیادہ 60 سیکنڈ)",
+                captionPlaceholder: "ویڈیو ہُنٛد کیپشن لیکھِو (#hashtags)...",
+                publishBtn: "Cloudflare R2 پؠٹھ سیو کٔریو",
+                chatHeaderLeft: "💬 1-to-1 ٹیکسٹ چیٹ (محفوظ)",
+                chatHeaderRight: "فوٹو/فائل بند",
+                chatPlaceholder: "یتہِ پیغام لیکھِو...",
+                sendBtn: "سوزِو",
+                notifTitle: "Notifications",
+                notifNew: "New",
+                postsLabel: "Posts",
+                followersLabel: "Followers",
+                langsLabel: "Languages",
+                cloudStatusTitle: "⚙️ کلاؤڈ سٹوریج تہٕ ڈیٹا بیس سٹیٹس:",
+                storyModalTitle: "نٔو سٹوری لگٲیِو (ویڈیو / پیغام)",
+                storyPickVideo: "سٹوری خٲطرٕ ویڈیو ژٲرِو (اختیاری)",
+                storyHint: "زیادہ کھۄتہٕ زیادہ 60 سیکنڈ • 480p",
+                storyMsgPlaceholder: "یا سٹوری ہُنٛد پیغام لیکھِو...",
+                storyShareBtn: "سٹوری شیئر کٔریو",
+                commentsTitle: "Comments (کلاؤڈ ڈیٹا بیس سنک)",
+                commentPlaceholder: "کمنٹ لیکھِو...",
+                postBtn: "Post"
+            }
         };
 
         function applyLanguage() {
-            const sel = document.getElementById('languageSelect').value;
+            const selEl = document.getElementById('languageSelect');
+            const sel = selEl ? selEl.value : 'hi';
             const dict = translations[sel] || translations['hi'];
+
+            try {
+                localStorage.setItem("2friend_selected_lang", sel);
+            } catch (e) {}
+
+            document.documentElement.lang = sel;
+            document.documentElement.dir = (sel === 'ur' || sel === 'ks' || sel === 'ar-AE') ? 'rtl' : 'ltr';
+
             document.querySelectorAll('[data-key]').forEach(el => {
                 const k = el.getAttribute('data-key');
                 if (dict[k]) el.innerText = dict[k];
+            });
+
+            document.querySelectorAll('[data-key-placeholder]').forEach(el => {
+                const k = el.getAttribute('data-key-placeholder');
+                if (dict[k]) el.placeholder = dict[k];
             });
         }
     </script>
