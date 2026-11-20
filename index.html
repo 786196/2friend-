@@ -228,12 +228,13 @@
             display: flex;
         }
 
-        /* Facebook स्टाइल वर्टिकल स्टोरी कार्ड्स बार */
+        /* गोलाकार स्टोरी बार (सर्कुलर स्टोरीज़) */
         .stories-bar {
             display: flex;
-            gap: 8px;
-            padding: 8px 10px;
-            background: #0d0d0d;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 10px 12px 8px;
+            background: #0b0b0b;
             border-bottom: 1px solid #222;
             overflow-x: auto;
             flex-shrink: 0;
@@ -244,142 +245,113 @@
         }
         .stories-bar::-webkit-scrollbar { display: none; }
 
-        .fb-story-card {
-            width: 88px;
-            height: 132px;
-            border-radius: 12px;
-            position: relative;
-            overflow: hidden;
+        .circle-story-item {
+            width: 74px;
             flex-shrink: 0;
-            cursor: pointer;
-            border: 1px solid #262626;
-            background: #171717;
             display: flex;
             flex-direction: column;
-            transition: transform 0.14s ease, border-color 0.2s ease;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: transform 0.14s ease;
         }
-        .fb-story-card:active {
-            transform: scale(0.97);
-        }
-        .fb-story-card.has-unseen {
-            border-color: #ff2a9d;
-        }
-        .fb-story-card.seen-story {
-            border-color: #333;
-            opacity: 0.88;
+        .circle-story-item:active {
+            transform: scale(0.95);
         }
 
-        /* पहला कार्ड (+ स्टोरी) */
-        .fb-create-card {
-            background: #18191a;
-            border-color: #2f3031;
-        }
-        .fb-create-top {
-            flex: 1;
-            background: linear-gradient(160deg, #242526, #141516);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .fb-create-plus {
-            width: 34px;
-            height: 34px;
+        .circle-story-ring {
+            width: 68px;
+            height: 68px;
             border-radius: 50%;
-            background: #1877f2;
-            border: 3px solid #18191a;
-            color: #fff;
+            padding: 2.5px;
+            position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(45deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5);
         }
-        .fb-create-bottom {
-            background: #242526;
-            border-top: 1px solid #323436;
-            padding: 7px 6px;
-            text-align: center;
-            font-size: 11px;
-            font-weight: 700;
-            color: #fff;
-            line-height: 1.2;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        .circle-story-item.your-story-item .circle-story-ring {
+            background: #2b2b2b;
+        }
+        .circle-story-item.seen-story .circle-story-ring {
+            background: #3a3a3a;
         }
 
-        /* यूज़र स्टोरी कार्ड्स */
-        .fb-story-bg {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(155deg, #2b1038, #7e2553 60%, #ff2a9d);
+        .circle-story-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: #171717;
+            border: 2.5px solid #0b0b0b;
+            overflow: hidden;
+            position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 18px 6px 24px;
         }
-        .fb-story-bg video,
-        .fb-story-bg img {
+        .circle-story-inner img,
+        .circle-story-inner video {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            display: block;
         }
-        .fb-story-preview-snippet {
-            font-size: 9.5px;
-            line-height: 1.25;
-            color: rgba(255, 255, 255, 0.92);
-            text-align: center;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
-        }
-        .fb-story-scrim {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(
-                to bottom,
-                rgba(0, 0, 0, 0.35) 0%,
-                rgba(0, 0, 0, 0.05) 45%,
-                rgba(0, 0, 0, 0.78) 100%
-            );
-            pointer-events: none;
-        }
-        .fb-story-avatar-badge {
-            position: absolute;
-            top: 7px;
-            left: 7px;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: #ff2a9d;
-            border: 2px solid #fff;
-            color: #fff;
-            font-size: 12px;
-            font-weight: 800;
+        .circle-story-text-thumb {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #3a124e, #a81c68 55%, #ff6b35);
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 2;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-        }
-        .fb-story-card.seen-story .fb-story-avatar-badge {
-            border-color: #777;
-            background: #2c2d2e;
-        }
-        .fb-story-name {
-            position: absolute;
-            bottom: 7px;
-            left: 6px;
-            right: 6px;
-            font-size: 10.5px;
+            padding: 6px;
+            text-align: center;
+            font-size: 9px;
             font-weight: 700;
             color: #fff;
-            z-index: 2;
+            line-height: 1.15;
+            overflow: hidden;
+        }
+        .circle-story-initial {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff9933, #ff2a6d);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .circle-story-plus-badge {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #1877f2;
+            border: 2px solid #0b0b0b;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 3;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.65);
+        }
+
+        .circle-story-label {
+            width: 100%;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 500;
+            color: #f1f1f1;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
+        }
+        .circle-story-item.seen-story .circle-story-label {
+            color: #9a9a9a;
         }
 
         /* विज्ञापन बैनर */
@@ -782,7 +754,7 @@
         .story-modal {
             position: fixed;
             inset: 0;
-            background: #000;
+            background: #06060a;
             z-index: 200;
             display: none;
             flex-direction: column;
@@ -856,6 +828,16 @@
             overflow: hidden;
         }
 
+        .heart-story-poster {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+            z-index: 0;
+        }
+
         .heart-story-media {
             position: absolute;
             inset: 0;
@@ -864,6 +846,7 @@
             object-fit: cover;
             display: none;
             z-index: 1;
+            background: transparent;
         }
 
         .heart-story-scrim {
@@ -871,9 +854,9 @@
             inset: 0;
             background: linear-gradient(
                 to bottom,
-                rgba(0, 0, 0, 0.48) 0%,
-                rgba(0, 0, 0, 0.12) 45%,
-                rgba(0, 0, 0, 0.72) 100%
+                rgba(0, 0, 0, 0.45) 0%,
+                rgba(0, 0, 0, 0.08) 45%,
+                rgba(0, 0, 0, 0.68) 100%
             );
             z-index: 2;
             pointer-events: none;
@@ -1123,16 +1106,8 @@
 
         <!-- 1. होम स्क्रीन -->
         <div id="view-home" class="screen-view active">
-            <div class="stories-bar" id="storiesBarContainer">
-                <div class="fb-story-card fb-create-card" onclick="openStoryCreator()">
-                    <div class="fb-create-top">
-                        <div class="fb-create-plus">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                        </div>
-                    </div>
-                    <div class="fb-create-bottom" data-key="addStory">+ स्टोरी</div>
-                </div>
-            </div>
+            <!-- गोलाकार स्टोरी बार -->
+            <div class="stories-bar" id="storiesBarContainer"></div>
 
             <div class="ad-slot-banner">
                 <div><span class="ad-badge">AD</span> <strong>Ludo & Cricket Arena</strong> - <span data-key="gamePlayText">खेलें!</span></div>
@@ -1299,7 +1274,8 @@
 
         <div class="heart-stage-wrap" onclick="event.stopPropagation(); toggleStoryPlayPause()">
             <div class="heart-story-clip">
-                <video id="storyModalVideo" class="heart-story-media" playsinline webkit-playsinline controlsList="nodownload" disablePictureInPicture></video>
+                <img id="storyModalPoster" class="heart-story-poster" alt="">
+                <video id="storyModalVideo" class="heart-story-media" playsinline webkit-playsinline preload="auto" controlsList="nodownload" disablePictureInPicture></video>
                 <div class="heart-story-scrim"></div>
 
                 <div class="heart-top-bar" onclick="event.stopPropagation()">
@@ -1366,6 +1342,7 @@
     <script>
         const API_BASE = "https://still-star-01fc.sanchirawat786.workers.dev";
         const CHAT_PARTNER = "2friend_support";
+        const STORY_TTL_MS = 24 * 60 * 60 * 1000;
 
         async function getConfig() {
           const res = await fetch(`${API_BASE}/api/config`);
@@ -1521,9 +1498,11 @@
         let pendingVideoURL = null;
         let pendingStoryVideoFile = null;
         let pendingStoryVideoURL = null;
+        let pendingStoryThumbDataUrl = "";
         let videoCounter = 1;
         let storyTimer = null;
         let activeStoryIndex = -1;
+        let activeStoryPlaybackSession = 0;
         let activeStoryObjectUrl = "";
         let pushPromptRequested = false;
         let userPrefersMuted = false;
@@ -1532,7 +1511,7 @@
         const loadedRemoteReelIds = new Set(["reel-1"]);
         const renderedChatKeys = new Set();
 
-        /* सभी वीडियो (रील्स व स्टोरी) तुरंत ऑटो-पॉज़ और म्यूट करने का हेल्पर */
+        /* सभी रील्स व स्टोरी वीडियो को तुरंत ऑटो-पॉज़ और म्यूट करना */
         function pauseAllVideosAndMute(exceptVideoId = null) {
             document.querySelectorAll("video").forEach(v => {
                 if (exceptVideoId && v.id === exceptVideoId) return;
@@ -1552,7 +1531,86 @@
             }
         }
 
-        /* --- IndexedDB (रील्स + परमानेंट स्टोरी स्टोरेज) --- */
+        /* वीडियो फ़ाइल या URL से गोल स्टोरी आइकॉन व पोस्टर के लिए फोटो थंबनेल निकालना */
+        function captureVideoThumbnail(videoSource) {
+            return new Promise((resolve) => {
+                if (!videoSource) {
+                    resolve("");
+                    return;
+                }
+                let tempObjUrl = "";
+                let srcUrl = "";
+                if (videoSource instanceof Blob) {
+                    tempObjUrl = URL.createObjectURL(videoSource);
+                    srcUrl = tempObjUrl;
+                } else if (typeof videoSource === "string") {
+                    srcUrl = videoSource;
+                } else {
+                    resolve("");
+                    return;
+                }
+
+                const vid = document.createElement("video");
+                vid.muted = true;
+                vid.playsInline = true;
+                vid.preload = "metadata";
+                if (!srcUrl.startsWith("blob:") && !srcUrl.startsWith("data:")) {
+                    vid.crossOrigin = "anonymous";
+                }
+
+                let settled = false;
+                const finish = (dataUrl) => {
+                    if (settled) return;
+                    settled = true;
+                    clearTimeout(timer);
+                    try {
+                        vid.pause();
+                        vid.removeAttribute("src");
+                        vid.load();
+                    } catch (e) {}
+                    if (tempObjUrl) {
+                        try { URL.revokeObjectURL(tempObjUrl); } catch (e) {}
+                    }
+                    resolve(dataUrl || "");
+                };
+
+                const timer = setTimeout(() => finish(""), 4500);
+
+                vid.onloadedmetadata = () => {
+                    try {
+                        const seekTarget = isFinite(vid.duration) && vid.duration > 0.3 ? Math.min(0.25, vid.duration / 3) : 0;
+                        vid.currentTime = seekTarget;
+                    } catch (e) {
+                        finish("");
+                    }
+                };
+
+                vid.onseeked = () => {
+                    try {
+                        const w = vid.videoWidth || 240;
+                        const h = vid.videoHeight || 240;
+                        const size = 240;
+                        const canvas = document.createElement("canvas");
+                        canvas.width = size;
+                        canvas.height = size;
+                        const ctx = canvas.getContext("2d");
+                        const scale = Math.max(size / w, size / h);
+                        const dw = w * scale;
+                        const dh = h * scale;
+                        ctx.drawImage(vid, (size - dw) / 2, (size - dh) / 2, dw, dh);
+                        const out = canvas.toDataURL("image/jpeg", 0.78);
+                        finish(out);
+                    } catch (e) {
+                        finish("");
+                    }
+                };
+
+                vid.onerror = () => finish("");
+                vid.src = srcUrl;
+            });
+        }
+
+        /* --- IndexedDB (रील्स + 24 घंटे स्टोरी स्टोरेज) --- */
         const DB_NAME = "2friend_video_store";
         const STORE_NAME = "uploaded_reels";
         const STORY_STORE_NAME = "saved_stories";
@@ -1587,6 +1645,14 @@
             } catch (err) {
                 console.log("Story DB save error:", err);
             }
+        }
+
+        async function deleteExpiredStoryFromDB(id) {
+            try {
+                const db = await openVideoDB();
+                const tx = db.transaction(STORY_STORE_NAME, "readwrite");
+                tx.objectStore(STORY_STORE_NAME).delete(id);
+            } catch (err) {}
         }
 
         async function loadStoryRecordsFromDB() {
@@ -1641,31 +1707,42 @@
             }
         }
 
-        /* --- स्टोरी स्टेट व परसिस्टेंस --- */
-        const STORIES_META_KEY = "2friend_fb_stories_meta_v2";
-        const SEEN_STORIES_KEY = "2friend_seen_stories_v2";
+        /* --- स्टोरी स्टेट व 24 घंटे परसिस्टेंस --- */
+        const STORIES_META_KEY = "2friend_circle_stories_meta_v3";
+        const SEEN_STORIES_KEY = "2friend_seen_stories_v3";
 
         const DEFAULT_STORIES = [
             {
                 id: "story-verender",
                 user: "@verender_rawat",
-                label: "Verender",
+                label: "verender_rawat",
                 videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+                thumbDataUrl: "",
                 text: "2friend • 480p Story",
+                isDefault: true,
                 createdAt: 1700000002000
             },
             {
                 id: "story-delhi",
                 user: "@delhi_creators",
-                label: "दिल्ली",
+                label: "delhi_creators",
                 videoUrl: "",
+                thumbDataUrl: "",
                 text: "1 मिनट की शानदार 480p स्टोरीज़ और रील्स!",
+                isDefault: true,
                 createdAt: 1700000001000
             }
         ];
 
         let storiesList = [];
         let seenStoryIds = new Set();
+
+        function isStoryWithin24Hours(story) {
+            if (!story) return false;
+            if (story.isDefault) return true;
+            const created = Number(story.createdAt) || Date.now();
+            return (Date.now() - created) < STORY_TTL_MS;
+        }
 
         function loadSeenStories() {
             try {
@@ -1691,15 +1768,16 @@
                     label: s.label,
                     videoUrl: s.remoteVideoUrl || (!s.hasBlob && s.videoUrl && !s.videoUrl.startsWith("blob:") ? s.videoUrl : ""),
                     remoteVideoUrl: s.remoteVideoUrl || "",
+                    thumbDataUrl: s.thumbDataUrl || "",
                     hasBlob: Boolean(s.hasBlob || s.blob),
                     text: s.text || "",
+                    isDefault: Boolean(s.isDefault),
                     createdAt: s.createdAt || Date.now()
                 }));
                 localStorage.setItem(STORIES_META_KEY, JSON.stringify(meta));
             } catch (e) {}
         }
 
-        /* हर बार स्टोरी चलाने के लिए ताज़ा व सही प्ले करने योग्य URL */
         function createFreshStoryPlaybackUrl(story) {
             revokeActiveStoryObjectUrl();
             if (!story) return "";
@@ -1708,17 +1786,6 @@
                 activeStoryObjectUrl = freshUrl;
                 return freshUrl;
             }
-            if (story.remoteVideoUrl && !story.remoteVideoUrl.startsWith("blob:")) {
-                return story.remoteVideoUrl;
-            }
-            if (story.videoUrl && !story.videoUrl.startsWith("blob:")) {
-                return story.videoUrl;
-            }
-            return "";
-        }
-
-        function getThumbStoryUrl(story) {
-            if (!story) return "";
             if (story.remoteVideoUrl && !story.remoteVideoUrl.startsWith("blob:")) {
                 return story.remoteVideoUrl;
             }
@@ -1740,44 +1807,55 @@
 
             const dbRecords = await loadStoryRecordsFromDB();
             const dbMap = new Map();
-            dbRecords.forEach(rec => {
-                if (rec && rec.id) dbMap.set(rec.id, rec);
-            });
+            for (const rec of dbRecords) {
+                if (!rec || !rec.id) continue;
+                if (!isStoryWithin24Hours(rec)) {
+                    await deleteExpiredStoryFromDB(rec.id);
+                    continue;
+                }
+                dbMap.set(rec.id, rec);
+            }
 
             const mergedMap = new Map();
 
             if (metaArr.length > 0) {
                 metaArr.forEach(m => {
+                    if (!m || !m.id || !isStoryWithin24Hours(m)) return;
                     const dbRec = dbMap.get(m.id);
-                    const blob = (dbRec && dbRec.blob instanceof Blob) ? dbRec.blob : (m.blob instanceof Blob ? m.blob : null);
+                    const blob = (dbRec && dbRec.blob instanceof Blob) ? dbRec.blob : null;
                     const remoteUrl = (dbRec && dbRec.remoteVideoUrl) || m.remoteVideoUrl || (m.videoUrl && !m.videoUrl.startsWith("blob:") ? m.videoUrl : "");
+                    const thumbDataUrl = (dbRec && dbRec.thumbDataUrl) || m.thumbDataUrl || "";
                     mergedMap.set(m.id, {
                         id: m.id,
                         user: (dbRec && dbRec.user) || m.user || loggedInUser,
-                        label: (dbRec && dbRec.label) || m.label || "स्टोरी",
+                        label: (dbRec && dbRec.label) || m.label || "Story",
                         blob: blob,
                         hasBlob: Boolean(blob || m.hasBlob),
                         remoteVideoUrl: remoteUrl,
                         videoUrl: remoteUrl,
+                        thumbDataUrl: thumbDataUrl,
                         text: (dbRec && typeof dbRec.text === "string") ? dbRec.text : (m.text || ""),
+                        isDefault: Boolean(m.isDefault),
                         createdAt: (dbRec && dbRec.createdAt) || m.createdAt || Date.now()
                     });
                 });
             }
 
-            dbRecords.forEach(rec => {
-                if (!rec || !rec.id || mergedMap.has(rec.id)) return;
+            dbMap.forEach((rec, id) => {
+                if (mergedMap.has(id)) return;
                 const blob = rec.blob instanceof Blob ? rec.blob : null;
                 const remoteUrl = rec.remoteVideoUrl || "";
-                mergedMap.set(rec.id, {
+                mergedMap.set(id, {
                     id: rec.id,
                     user: rec.user || loggedInUser,
-                    label: rec.label || "स्टोरी",
+                    label: rec.label || "Story",
                     blob: blob,
                     hasBlob: Boolean(blob),
                     remoteVideoUrl: remoteUrl,
                     videoUrl: remoteUrl,
+                    thumbDataUrl: rec.thumbDataUrl || "",
                     text: rec.text || "",
+                    isDefault: false,
                     createdAt: rec.createdAt || Date.now()
                 });
             });
@@ -1794,73 +1872,120 @@
             });
 
             storiesList = Array.from(mergedMap.values()).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+            for (const s of storiesList) {
+                if (!s.thumbDataUrl && (s.blob instanceof Blob || s.remoteVideoUrl || s.videoUrl)) {
+                    const generatedThumb = await captureVideoThumbnail(s.blob || s.remoteVideoUrl || s.videoUrl);
+                    if (generatedThumb) {
+                        s.thumbDataUrl = generatedThumb;
+                    }
+                }
+            }
+
             persistStoriesMetadata();
             renderStoriesBar();
         }
 
+        /* गोलाकार स्टोरी बार रेंडर करना (Your story + सभी यूज़र्स की गोल स्टोरी फोटो के साथ) */
         function renderStoriesBar() {
             const bar = document.getElementById("storiesBarContainer");
             if (!bar) return;
 
-            const addStoryText = (translations[document.getElementById("languageSelect")?.value] || translations.hi).addStory;
+            storiesList = storiesList.filter(isStoryWithin24Hours);
+
+            const dict = translations[document.getElementById("languageSelect")?.value] || translations.hi;
+            const yourStoryLabel = dict.yourStory || "Your story";
 
             bar.innerHTML = "";
 
-            const createCard = document.createElement("div");
-            createCard.className = "fb-story-card fb-create-card";
-            createCard.onclick = openStoryCreator;
-            createCard.innerHTML = `
-                <div class="fb-create-top">
-                    <div class="fb-create-plus">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                    </div>
-                </div>
-                <div class="fb-create-bottom">${addStoryText}</div>
-            `;
-            bar.appendChild(createCard);
+            /* पहला गोला: Your story (+ आइकॉन के साथ) */
+            const ownStory = storiesList.find(s => s.user === loggedInUser && !s.isDefault);
+            const yourItem = document.createElement("div");
+            yourItem.className = "circle-story-item your-story-item";
+            yourItem.onclick = openStoryCreator;
 
+            const yourRing = document.createElement("div");
+            yourRing.className = "circle-story-ring";
+            if (ownStory) {
+                yourRing.style.background = "linear-gradient(45deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5)";
+            }
+
+            const yourInner = document.createElement("div");
+            yourInner.className = "circle-story-inner";
+
+            if (ownStory && ownStory.thumbDataUrl) {
+                const img = document.createElement("img");
+                img.src = ownStory.thumbDataUrl;
+                img.alt = yourStoryLabel;
+                yourInner.appendChild(img);
+            } else {
+                const logoImg = document.createElement("img");
+                logoImg.src = "logo.png";
+                logoImg.alt = yourStoryLabel;
+                logoImg.onerror = function() {
+                    this.remove();
+                    const initDiv = document.createElement("div");
+                    initDiv.className = "circle-story-initial";
+                    initDiv.textContent = (loggedInUser || "V").replace(/^@/, "").charAt(0).toUpperCase() || "V";
+                    yourInner.appendChild(initDiv);
+                };
+                yourInner.appendChild(logoImg);
+            }
+
+            const plusBadge = document.createElement("div");
+            plusBadge.className = "circle-story-plus-badge";
+            plusBadge.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`;
+
+            yourRing.appendChild(yourInner);
+            yourRing.appendChild(plusBadge);
+
+            const yourLbl = document.createElement("div");
+            yourLbl.className = "circle-story-label";
+            yourLbl.textContent = yourStoryLabel;
+
+            yourItem.appendChild(yourRing);
+            yourItem.appendChild(yourLbl);
+            bar.appendChild(yourItem);
+
+            /* सभी अलग-अलग स्टोरीज़ (हर एक अपने गोल घेरे और फोटो/झलक के साथ) */
             storiesList.forEach((story, idx) => {
                 const isSeen = seenStoryIds.has(story.id);
-                const card = document.createElement("div");
-                card.className = `fb-story-card ${isSeen ? "seen-story" : "has-unseen"}`;
-                card.onclick = () => openStoryAtIndex(idx);
+                const item = document.createElement("div");
+                item.className = `circle-story-item ${isSeen ? "seen-story" : ""}`;
+                item.onclick = () => openStoryAtIndex(idx);
 
-                const initial = (story.label || story.user || "U").replace(/^@/, "").charAt(0).toUpperCase() || "U";
-                const snippet = story.text || (story.hasBlob || story.remoteVideoUrl || story.videoUrl ? "480p Video Story" : "Story");
-                const thumbSrc = getThumbStoryUrl(story);
+                const ring = document.createElement("div");
+                ring.className = "circle-story-ring";
 
-                const bgDiv = document.createElement("div");
-                bgDiv.className = "fb-story-bg";
-                if (thumbSrc) {
-                    const thumbVid = document.createElement("video");
-                    thumbVid.src = thumbSrc;
-                    thumbVid.muted = true;
-                    thumbVid.playsinline = true;
-                    thumbVid.preload = "metadata";
-                    bgDiv.appendChild(thumbVid);
+                const inner = document.createElement("div");
+                inner.className = "circle-story-inner";
+
+                if (story.thumbDataUrl) {
+                    const img = document.createElement("img");
+                    img.src = story.thumbDataUrl;
+                    img.alt = story.label || story.user || "Story";
+                    inner.appendChild(img);
+                } else if (story.text) {
+                    const txtThumb = document.createElement("div");
+                    txtThumb.className = "circle-story-text-thumb";
+                    txtThumb.textContent = story.text;
+                    inner.appendChild(txtThumb);
                 } else {
-                    const p = document.createElement("div");
-                    p.className = "fb-story-preview-snippet";
-                    p.textContent = snippet;
-                    bgDiv.appendChild(p);
+                    const initDiv = document.createElement("div");
+                    initDiv.className = "circle-story-initial";
+                    initDiv.textContent = (story.label || story.user || "U").replace(/^@/, "").charAt(0).toUpperCase() || "U";
+                    inner.appendChild(initDiv);
                 }
 
-                const scrim = document.createElement("div");
-                scrim.className = "fb-story-scrim";
+                ring.appendChild(inner);
 
-                const avatar = document.createElement("div");
-                avatar.className = "fb-story-avatar-badge";
-                avatar.textContent = initial;
+                const labelEl = document.createElement("div");
+                labelEl.className = "circle-story-label";
+                labelEl.textContent = (story.label || story.user || "story").replace(/^@/, "");
 
-                const nameEl = document.createElement("div");
-                nameEl.className = "fb-story-name";
-                nameEl.textContent = story.label || story.user || "Story";
-
-                card.appendChild(bgDiv);
-                card.appendChild(scrim);
-                card.appendChild(avatar);
-                card.appendChild(nameEl);
-                bar.appendChild(card);
+                item.appendChild(ring);
+                item.appendChild(labelEl);
+                bar.appendChild(item);
             });
         }
 
@@ -1880,8 +2005,13 @@
             }
         }
 
+        /* हर स्टोरी अलग-अलग, बिना ब्लैक हुए और बार-बार देखने पर भी साफ़ चले */
         function openStoryAtIndex(index) {
-            if (!Array.isArray(storiesList) || storiesList.length === 0) return;
+            storiesList = storiesList.filter(isStoryWithin24Hours);
+            if (!Array.isArray(storiesList) || storiesList.length === 0) {
+                closeStory();
+                return;
+            }
             if (index < 0) index = 0;
             if (index >= storiesList.length) {
                 closeStory();
@@ -1892,7 +2022,10 @@
             pauseAllVideosAndMute("storyModalVideo");
 
             clearInterval(storyTimer);
+            activeStoryPlaybackSession++;
+            const sessionId = activeStoryPlaybackSession;
             activeStoryIndex = index;
+
             const story = storiesList[index];
             markStorySeen(story.id);
             renderStoriesBar();
@@ -1900,6 +2033,7 @@
             buildStoryProgressBars(storiesList.length, index);
 
             const vidEl = document.getElementById("storyModalVideo");
+            const posterEl = document.getElementById("storyModalPoster");
             const txtEl = document.getElementById("storyModalText");
             const userEl = document.getElementById("storyModalUser");
             const badgeEl = document.getElementById("storyModalBadge");
@@ -1915,9 +2049,26 @@
                 badgeEl.textContent = displayName.replace(/^@/, "").charAt(0).toUpperCase() || "V";
             }
 
+            /* पहले से चल रहे किसी भी पुराने वीडियो इवेंट को साफ़ करें */
             vidEl.pause();
             vidEl.onloadedmetadata = null;
+            vidEl.onloadeddata = null;
+            vidEl.oncanplay = null;
             vidEl.onended = null;
+            vidEl.onerror = null;
+
+            /* अगर थंबनेल फोटो मौजूद है तो पहले उसे पोस्टर के रूप में दिखाएँ ताकि एक पल भी ब्लैक स्क्रीन न दिखे */
+            if (posterEl) {
+                if (story.thumbDataUrl) {
+                    posterEl.src = story.thumbDataUrl;
+                    posterEl.style.display = "block";
+                } else {
+                    posterEl.removeAttribute("src");
+                    posterEl.style.display = "none";
+                }
+            }
+
+            document.getElementById("storyModal").classList.add("open");
 
             let durationMs = 5000;
             const playableUrl = createFreshStoryPlaybackUrl(story);
@@ -1930,46 +2081,71 @@
                 vidEl.currentTime = 0;
                 vidEl.load();
 
-                const startPlay = () => {
-                    vidEl.play().catch(() => {
-                        vidEl.muted = true;
-                        vidEl.play().catch(() => {});
-                    });
-                };
-
-                startPlay();
-
                 txtEl.textContent = story.text || "";
                 txtEl.style.display = story.text ? "block" : "none";
 
+                const beginVideoPlayback = () => {
+                    if (sessionId !== activeStoryPlaybackSession) return;
+                    const p = vidEl.play();
+                    if (p !== undefined) {
+                        p.catch(() => {
+                            if (sessionId !== activeStoryPlaybackSession) return;
+                            vidEl.muted = true;
+                            vidEl.play().catch(() => {});
+                        });
+                    }
+                };
+
                 vidEl.onloadedmetadata = () => {
+                    if (sessionId !== activeStoryPlaybackSession) return;
                     try {
                         vidEl.currentTime = 0;
                     } catch (e) {}
                     if (isFinite(vidEl.duration) && vidEl.duration > 0) {
                         durationMs = Math.min(vidEl.duration * 1000, CLOUD_CONFIG.maxDurationSeconds * 1000);
-                        startStorySegmentTimer(index, durationMs);
+                        startStorySegmentTimer(index, durationMs, sessionId);
                     }
-                    startPlay();
+                    beginVideoPlayback();
+                };
+
+                vidEl.onloadeddata = () => {
+                    if (sessionId !== activeStoryPlaybackSession) return;
+                    beginVideoPlayback();
+                };
+
+                vidEl.oncanplay = () => {
+                    if (sessionId !== activeStoryPlaybackSession) return;
+                    beginVideoPlayback();
                 };
 
                 vidEl.onended = () => {
+                    if (sessionId !== activeStoryPlaybackSession) return;
                     clearInterval(storyTimer);
                     stepStory(1);
                 };
+
+                vidEl.onerror = () => {
+                    if (sessionId !== activeStoryPlaybackSession) return;
+                    vidEl.style.display = "none";
+                    if (!story.thumbDataUrl) {
+                        txtEl.style.display = "block";
+                        txtEl.textContent = story.text || "2friend Story";
+                    }
+                };
+
+                beginVideoPlayback();
+                startStorySegmentTimer(index, durationMs, sessionId);
             } else {
                 vidEl.removeAttribute("src");
                 vidEl.load();
                 vidEl.style.display = "none";
                 txtEl.style.display = "block";
                 txtEl.textContent = story.text || "";
+                startStorySegmentTimer(index, durationMs, sessionId);
             }
-
-            document.getElementById("storyModal").classList.add("open");
-            startStorySegmentTimer(index, durationMs);
         }
 
-        function startStorySegmentTimer(index, durationMs) {
+        function startStorySegmentTimer(index, durationMs, sessionId) {
             clearInterval(storyTimer);
             const fill = document.getElementById(`story-fill-${index}`);
             const innerBar = document.getElementById("heartInnerProgressBar");
@@ -1977,6 +2153,10 @@
             const total = Math.max(2500, durationMs || 5000);
 
             storyTimer = setInterval(() => {
+                if (sessionId !== activeStoryPlaybackSession) {
+                    clearInterval(storyTimer);
+                    return;
+                }
                 const elapsed = Date.now() - startedAt;
                 const pct = Math.min(100, (elapsed / total) * 100);
                 if (fill) fill.style.width = `${pct}%`;
@@ -2002,7 +2182,7 @@
         function toggleStoryPlayPause() {
             const vidEl = document.getElementById("storyModalVideo");
             if (!vidEl || vidEl.style.display === "none") return;
-            if (vidEl.paused) {
+            if (vidEl.paused || vidEl.ended) {
                 if (vidEl.ended) vidEl.currentTime = 0;
                 vidEl.play().catch(() => {});
             } else {
@@ -2099,7 +2279,6 @@
 
         function playActiveVideoWithSound(video) {
             if (!video) return;
-            /* अगर स्टोरी क्रिएटर या स्टोरी व्यूअर खुला है तो रील्स वीडियो न चलाएं */
             const creatorOpen = document.getElementById('storyCreatorModal')?.classList.contains('open');
             const storyOpen = document.getElementById('storyModal')?.classList.contains('open');
             if (creatorOpen || storyOpen) {
@@ -2271,6 +2450,7 @@
             document.getElementById('profileUsername').innerText = loggedInUser.replace('@', '');
             document.getElementById('auth-screen').style.display = 'none';
 
+            renderStoriesBar();
             userPrefersMuted = false;
             const feed = document.getElementById('reelsFeedContainer');
             if (feed) feed.scrollTop = 0;
@@ -2532,6 +2712,7 @@
             pauseAllVideosAndMute();
             pendingStoryVideoFile = null;
             pendingStoryVideoURL = null;
+            pendingStoryThumbDataUrl = "";
             const btn = document.getElementById('storyShareBtnEl');
             if (btn) btn.disabled = false;
             document.getElementById('storyVideoFileName').innerText = (translations[document.getElementById('languageSelect')?.value] || translations.hi).storyPickVideo;
@@ -2553,6 +2734,7 @@
             const label = document.getElementById('storyVideoFileName');
             pendingStoryVideoFile = null;
             pendingStoryVideoURL = null;
+            pendingStoryThumbDataUrl = "";
 
             if (!file) {
                 label.innerText = (translations[document.getElementById('languageSelect')?.value] || translations.hi).storyPickVideo;
@@ -2566,7 +2748,7 @@
             const blobUrl = URL.createObjectURL(file);
             const tempVid = document.createElement('video');
             tempVid.preload = 'metadata';
-            tempVid.onloadedmetadata = function() {
+            tempVid.onloadedmetadata = async function() {
                 if (tempVid.duration > CLOUD_CONFIG.maxDurationSeconds + 0.5) {
                     URL.revokeObjectURL(blobUrl);
                     status.style.color = "#f87171";
@@ -2578,6 +2760,7 @@
                     label.innerText = "✅ " + file.name + " (" + Math.round(tempVid.duration) + "s)";
                     status.style.color = "#4ade80";
                     status.innerText = "स्टोरी वीडियो तैयार है!";
+                    pendingStoryThumbDataUrl = await captureVideoThumbnail(file);
                 }
             };
             tempVid.onerror = function() {
@@ -2609,6 +2792,11 @@
             const storyId = "story-" + Date.now();
             const createdAt = Date.now();
 
+            let thumbDataUrl = pendingStoryThumbDataUrl || "";
+            if (videoFileToSave && !thumbDataUrl) {
+                thumbDataUrl = await captureVideoThumbnail(videoFileToSave);
+            }
+
             let remoteVideoUrl = "";
             if (videoFileToSave) {
                 try {
@@ -2624,12 +2812,14 @@
             const storyObj = {
                 id: storyId,
                 user: loggedInUser,
-                label: loggedInUser.replace(/^@/, "") || "स्टोरी",
+                label: loggedInUser.replace(/^@/, "") || "Story",
                 blob: videoFileToSave,
                 hasBlob: Boolean(videoFileToSave),
                 remoteVideoUrl: remoteVideoUrl,
                 videoUrl: remoteVideoUrl,
+                thumbDataUrl: thumbDataUrl,
                 text: captionToSave,
+                isDefault: false,
                 createdAt: createdAt
             };
 
@@ -2639,6 +2829,7 @@
                 label: storyObj.label,
                 blob: videoFileToSave,
                 remoteVideoUrl: remoteVideoUrl,
+                thumbDataUrl: thumbDataUrl,
                 text: captionToSave,
                 createdAt: createdAt
             });
@@ -2649,6 +2840,7 @@
 
             pendingStoryVideoFile = null;
             pendingStoryVideoURL = null;
+            pendingStoryThumbDataUrl = "";
             document.getElementById('storyVideoInput').value = "";
             if (btn) btn.disabled = false;
 
@@ -2667,9 +2859,11 @@
                     label: userName,
                     videoUrl: "",
                     remoteVideoUrl: "",
+                    thumbDataUrl: "",
                     blob: null,
                     hasBlob: false,
                     text: text || "",
+                    isDefault: false,
                     createdAt: Date.now()
                 });
                 persistStoriesMetadata();
@@ -2689,9 +2883,11 @@
                     label: userName,
                     videoUrl: videoSrc && !videoSrc.startsWith("blob:") ? videoSrc : "",
                     remoteVideoUrl: videoSrc && !videoSrc.startsWith("blob:") ? videoSrc : "",
+                    thumbDataUrl: "",
                     blob: null,
                     hasBlob: false,
                     text: caption || "",
+                    isDefault: false,
                     createdAt: Date.now()
                 });
                 persistStoriesMetadata();
@@ -2702,11 +2898,22 @@
 
         function closeStory() {
             clearInterval(storyTimer);
+            activeStoryPlaybackSession++;
             activeStoryIndex = -1;
             const vidEl = document.getElementById('storyModalVideo');
+            const posterEl = document.getElementById('storyModalPoster');
             vidEl.pause();
+            vidEl.onloadedmetadata = null;
+            vidEl.onloadeddata = null;
+            vidEl.oncanplay = null;
+            vidEl.onended = null;
+            vidEl.onerror = null;
             vidEl.removeAttribute('src');
             vidEl.load();
+            if (posterEl) {
+                posterEl.removeAttribute('src');
+                posterEl.style.display = 'none';
+            }
             revokeActiveStoryObjectUrl();
             const innerBar = document.getElementById('heartInnerProgressBar');
             if (innerBar) innerBar.style.width = "0%";
@@ -2817,6 +3024,7 @@
                 userPlaceholder: "यूज़रनेम (जैसे @verender_rawat)",
                 passPlaceholder: "पासवर्ड दर्ज करें",
                 loginBtn: "लॉगिन करें",
+                yourStory: "Your story",
                 addStory: "+ स्टोरी",
                 gamePlayText: "खेलें!",
                 adOpen: "Open",
@@ -2855,6 +3063,7 @@
                 userPlaceholder: "Username (e.g. @verender_rawat)",
                 passPlaceholder: "Enter password",
                 loginBtn: "Log In",
+                yourStory: "Your story",
                 addStory: "+ Story",
                 gamePlayText: "Play Now!",
                 adOpen: "Open",
@@ -2893,6 +3102,7 @@
                 userPlaceholder: "Username (e.g. @verender_rawat)",
                 passPlaceholder: "Enter password",
                 loginBtn: "Log In",
+                yourStory: "Your story",
                 addStory: "+ Story",
                 gamePlayText: "Play Now!",
                 adOpen: "Open",
@@ -2931,6 +3141,7 @@
                 userPlaceholder: "Username (e.g. @verender_rawat)",
                 passPlaceholder: "Enter password",
                 loginBtn: "Log In",
+                yourStory: "Your story",
                 addStory: "+ Story",
                 gamePlayText: "Play Now!",
                 adOpen: "Open",
@@ -2969,6 +3180,7 @@
                 userPlaceholder: "اسم المستخدم (مثال @verender_rawat)",
                 passPlaceholder: "أدخل كلمة المرور",
                 loginBtn: "تسجيل الدخول",
+                yourStory: "قصتك",
                 addStory: "+ قصة",
                 gamePlayText: "العب الآن!",
                 adOpen: "فتح",
@@ -3007,6 +3219,7 @@
                 userPlaceholder: "ইউজারনেম (@verender_rawat)",
                 passPlaceholder: "পাসওয়ার্ড লিখুন",
                 loginBtn: "লগইন করুন",
+                yourStory: "Your story",
                 addStory: "+ স্টোরি",
                 gamePlayText: "খেলুন!",
                 adOpen: "Open",
@@ -3045,6 +3258,7 @@
                 userPlaceholder: "యూజర్‌నేమ్ (@verender_rawat)",
                 passPlaceholder: "పాస్‌వర్డ్ నమోదు చేయండి",
                 loginBtn: "లాగిన్",
+                yourStory: "Your story",
                 addStory: "+ స్టోరీ",
                 gamePlayText: "ఆడండి!",
                 adOpen: "Open",
@@ -3083,6 +3297,7 @@
                 userPlaceholder: "यूजरनेम (@verender_rawat)",
                 passPlaceholder: "पासवर्ड टाका",
                 loginBtn: "लॉगिन करा",
+                yourStory: "Your story",
                 addStory: "+ स्टोरी",
                 gamePlayText: "खेळा!",
                 adOpen: "Open",
@@ -3121,6 +3336,7 @@
                 userPlaceholder: "பயனர்பெயர் (@verender_rawat)",
                 passPlaceholder: "கடவுச்சொல்லை உள்ளிடவும்",
                 loginBtn: "உள்நுழைக",
+                yourStory: "Your story",
                 addStory: "+ ஸ்டோரி",
                 gamePlayText: "விளையாடுங்கள்!",
                 adOpen: "Open",
@@ -3159,6 +3375,7 @@
                 userPlaceholder: "યુઝરનેમ (@verender_rawat)",
                 passPlaceholder: "પાસવર્ડ દાખલ કરો",
                 loginBtn: "લૉગિન કરો",
+                yourStory: "Your story",
                 addStory: "+ સ્ટોરી",
                 gamePlayText: "રમો!",
                 adOpen: "Open",
@@ -3197,6 +3414,7 @@
                 userPlaceholder: "یوزرنیم (@verender_rawat)",
                 passPlaceholder: "پاس ورڈ درج کریں",
                 loginBtn: "لاگ ان کریں",
+                yourStory: "Your story",
                 addStory: "+ اسٹوری",
                 gamePlayText: "کھیلیں!",
                 adOpen: "Open",
@@ -3235,6 +3453,7 @@
                 userPlaceholder: "ಬಳಕೆದಾರಹೆಸರು (@verender_rawat)",
                 passPlaceholder: "ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ",
                 loginBtn: "ಲಾಗಿನ್",
+                yourStory: "Your story",
                 addStory: "+ ಸ್ಟೋರಿ",
                 gamePlayText: "ಆಡಿ!",
                 adOpen: "Open",
@@ -3273,6 +3492,7 @@
                 userPlaceholder: "യൂസർനെയിം (@verender_rawat)",
                 passPlaceholder: "പാസ്‌വേഡ് നൽകുക",
                 loginBtn: "ലോഗിൻ",
+                yourStory: "Your story",
                 addStory: "+ സ്റ്റോറി",
                 gamePlayText: "കളിക്കാം!",
                 adOpen: "Open",
@@ -3311,6 +3531,7 @@
                 userPlaceholder: "ਯੂਜ਼ਰਨੇਮ (@verender_rawat)",
                 passPlaceholder: "ਪਾਸਵਰਡ ਦਰਜ ਕਰੋ",
                 loginBtn: "ਲੌਗਇਨ ਕਰੋ",
+                yourStory: "Your story",
                 addStory: "+ ਸਟੋਰੀ",
                 gamePlayText: "ਖੇਡੋ!",
                 adOpen: "Open",
@@ -3349,6 +3570,7 @@
                 userPlaceholder: "ୟୁଜରନେମ୍ (@verender_rawat)",
                 passPlaceholder: "ପାସୱାର୍ଡ ଦିଅନ୍ତୁ",
                 loginBtn: "ଲଗଇନ୍ କରନ୍ତୁ",
+                yourStory: "Your story",
                 addStory: "+ ଷ୍ଟୋରୀ",
                 gamePlayText: "ଖେଳନ୍ତୁ!",
                 adOpen: "Open",
@@ -3387,6 +3609,7 @@
                 userPlaceholder: "ইউজাৰনেম (@verender_rawat)",
                 passPlaceholder: "পাছৱৰ্ড দিয়ক",
                 loginBtn: "লগইন কৰক",
+                yourStory: "Your story",
                 addStory: "+ ষ্ট'ৰী",
                 gamePlayText: "খেলক!",
                 adOpen: "Open",
@@ -3425,6 +3648,7 @@
                 userPlaceholder: "یوزرنیم (@verender_rawat)",
                 passPlaceholder: "پاس ورڈ دٔرج کٔریو",
                 loginBtn: "لاگ اِن",
+                yourStory: "Your story",
                 addStory: "+ سٹوری",
                 gamePlayText: "کھیٚلیو!",
                 adOpen: "Open",
