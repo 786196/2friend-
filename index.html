@@ -793,11 +793,11 @@
 
             <div class="ad-slot-banner">
                 <div><span class="ad-badge">AD</span> <strong>Ludo & Cricket Arena</strong> - <span data-key="gamePlayText">खेलें!</span></div>
-                <span style="color:#fff; text-decoration:underline; cursor:pointer;" onclick="alert('विज्ञापन खुला')" data-key="adOpen">Open</span>
+                <span style="color:#fff; text-decoration:underline; cursor:pointer;" onclick="handleGamingAdClick()" data-key="adOpen">Open</span>
             </div>
 
             <div class="reels-feed" id="reelsFeedContainer">
-                <div class="reel-slide">
+                <div class="reel-slide" data-reel-id="reel-1">
                     <span class="quality-tag">480p • Cloud4R2 CDN</span>
                     <video id="vid-1" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" loop playsinline webkit-playsinline preload="metadata" onclick="handleReelTap('vid-1', 'ctrl-1', 'spk-1')" controlsList="nodownload" disablePictureInPicture oncontextmenu="return false;"></video>
                     <div class="center-controls-overlay" id="ctrl-1" style="display:none;">
@@ -807,19 +807,19 @@
                     <div class="reel-bottom-info">
                         <div class="reel-user">
                             <span id="reelAuthorName">@verender_rawat</span>
-                            <button class="follow-chip" onclick="toggleFollow(this)" data-key="followBtn">Follow</button>
+                            <button class="follow-chip" onclick="toggleFollow(this, '@verender_rawat')" data-key="followBtn">Follow</button>
                         </div>
                         <div class="reel-desc">2friend ऐप पर आपका स्वागत है! 480p क्वालिटी, तेज़ लोडिंग और क्लाउड डेटाबेस सिंक। #2friend #India</div>
                         <div class="reel-music">🎵 Original Audio (Copyright-Free)</div>
                     </div>
                     <div class="reel-side-actions">
                         <div class="side-btn-wrap">
-                            <button class="side-btn" onclick="toggleLike(this, 'like-1')">♥</button>
+                            <button class="side-btn" onclick="toggleLike(this, 'like-1', 'reel-1')">♥</button>
                             <span class="side-count" id="like-1">124</span>
                         </div>
                         <div class="side-btn-wrap">
-                            <button class="side-btn" onclick="openComments()">💬</button>
-                            <span class="side-count">18</span>
+                            <button class="side-btn" onclick="openComments('reel-1')">💬</button>
+                            <span class="side-count" id="comment-count-1">18</span>
                         </div>
                         <div class="side-btn-wrap">
                             <button class="side-btn" onclick="shareCurrentReel()">➤</button>
@@ -909,7 +909,7 @@
                     <div class="stat-box"><strong>5,000+</strong><span data-key="followersLabel">Followers</span></div>
                     <div class="stat-box"><strong id="langCountStat">17</strong><span data-key="langsLabel">Languages</span></div>
                 </div>
-                <div class="profile-ad-box">
+                <div class="profile-ad-box" onclick="handleGamingAdClick()" style="cursor:pointer;">
                     <span class="ad-badge">AD</span> <strong>Gaming Ads Mediation Active</strong> (AdMob / AppLovin)
                 </div>
                 <div style="width:100%; margin-top:14px; background:#121212; padding:12px; border-radius:10px; border:1px solid #262626; font-size:12px;">
@@ -976,6 +976,7 @@
 
     <script>
         const API_BASE = "https://still-star-01fc.sanchirawat786.workers.dev";
+        const CHAT_PARTNER = "2friend_support";
 
         async function getConfig() {
           const res = await fetch(`${API_BASE}/api/config`);
@@ -997,6 +998,19 @@
           return await res.json();
         }
 
+        async function fetchChatMessages(userA, userB) {
+          const params = new URLSearchParams({
+            user1: userA || "@verender_rawat",
+            user2: userB || CHAT_PARTNER
+          });
+          const res = await fetch(`${API_BASE}/api/chat?${params.toString()}`);
+          if (!res.ok) throw new Error(`Chat fetch error: ${res.status}`);
+          const data = await res.json();
+          if (Array.isArray(data)) return data;
+          if (Array.isArray(data.messages)) return data.messages;
+          return [];
+        }
+
         async function uploadVideo(file) {
           if (!file) throw new Error("No video file selected");
 
@@ -1010,6 +1024,102 @@
 
           if (!res.ok) throw new Error(`Upload error: ${res.status}`);
           return await res.json();
+        }
+
+        /* --- D1 / R2 फ़ीड लोडिंग व सिंक फ़ंक्शंस --- */
+        async function fetchServerFeedReels() {
+          const res = await fetch(`${API_BASE}/api/feed`);
+          if (!res.ok) throw new Error(`Feed error: ${res.status}`);
+          const data = await res.json();
+          if (Array.isArray(data)) return data;
+          if (Array.isArray(data.reels)) return data.reels;
+          if (Array.isArray(data.videos)) return data.videos;
+          if (Array.isArray(data.items)) return data.items;
+          return [];
+        }
+
+        async function syncFeedFromD1AndR2() {
+          try {
+            const reels = await fetchServerFeedReels();
+            if (!Array.isArray(reels) || reels.length === 0) return;
+
+            reels.forEach((item) => {
+              const videoUrl = item.url || item.videoUrl || item.video_url || item.r2Url;
+              if (!videoUrl || typeof videoUrl !== "string") return;
+
+              const reelId = String(item.id || item.reelId || videoUrl);
+              if (loadedRemoteReelIds.has(reelId)) return;
+              loadedRemoteReelIds.add(reelId);
+
+              const author = item.author || item.username || item.user || "@verender_rawat";
+              const caption = item.caption || item.description || "2friend Reel #2friend";
+              const likes = Number(item.likes ?? item.likeCount ?? 0);
+              const comments = Number(item.commentsCount ?? item.commentCount ?? 0);
+
+              appendVideoSlideToFeed(videoUrl, caption, author, false, {
+                reelId,
+                likes,
+                comments,
+                badgeText: "480p • R2/D1"
+              });
+            });
+          } catch (err) {
+            console.log("Server feed sync fallback:", err);
+          }
+        }
+
+        async function fetchReelComments(reelId) {
+          const res = await fetch(`${API_BASE}/api/comments?reelId=${encodeURIComponent(reelId)}`);
+          if (!res.ok) throw new Error(`Comments fetch error: ${res.status}`);
+          const data = await res.json();
+          if (Array.isArray(data)) return data;
+          if (Array.isArray(data.comments)) return data.comments;
+          return [];
+        }
+
+        async function saveReelComment(reelId, author, text) {
+          const res = await fetch(`${API_BASE}/api/comments`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ reelId, author, text })
+          });
+          if (!res.ok) throw new Error(`Comment save error: ${res.status}`);
+          return await res.json();
+        }
+
+        async function syncLikeToServer(reelId, liked, totalCount) {
+          try {
+            await fetch(`${API_BASE}/api/like`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ reelId, user: loggedInUser, liked, likes: totalCount })
+            });
+          } catch (err) {
+            console.log("Like sync fallback:", err);
+          }
+        }
+
+        async function syncFollowToServer(targetUser, following) {
+          try {
+            await fetch(`${API_BASE}/api/follow`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ follower: loggedInUser, targetUser, following })
+            });
+          } catch (err) {
+            console.log("Follow sync fallback:", err);
+          }
+        }
+
+        function handleGamingAdClick() {
+          try {
+            fetch(`${API_BASE}/api/ad-event`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ user: loggedInUser, adType: "gaming_banner", action: "click" })
+            }).catch(() => {});
+          } catch (e) {}
+          alert("🎮 Gaming Ad Slot Active — Ludo & Cricket Arena");
         }
 
         const CLOUD_CONFIG = {
@@ -1026,6 +1136,10 @@
         let storyTimer = null;
         let pushPromptRequested = false;
         let userPrefersMuted = false;
+        let currentActiveReelId = "reel-1";
+        let currentCommentCountEl = document.getElementById("comment-count-1");
+        const loadedRemoteReelIds = new Set(["reel-1"]);
+        const renderedChatKeys = new Set();
 
         /* --- IndexedDB लोकल परमानेंट स्टोरेज --- */
         const DB_NAME = "2friend_video_store";
@@ -1093,17 +1207,23 @@
             });
         }
 
-        function appendVideoSlideToFeed(videoSrc, caption, author, prepend = true) {
+        function appendVideoSlideToFeed(videoSrc, caption, author, prepend = true, options = {}) {
             videoCounter++;
             const newVidId = 'vid-' + videoCounter;
             const newCtrlId = 'ctrl-' + videoCounter;
             const newSpkId = 'spk-' + videoCounter;
             const newLikeId = 'like-' + videoCounter;
+            const newCommentCountId = 'comment-count-' + videoCounter;
+            const reelId = options.reelId || ('reel-' + videoCounter);
+            const initialLikes = Number.isFinite(options.likes) ? options.likes : 1;
+            const initialComments = Number.isFinite(options.comments) ? options.comments : 0;
+            const badgeText = options.badgeText || "480p • R2 CDN";
 
             const newSlide = document.createElement('div');
             newSlide.className = 'reel-slide';
+            newSlide.dataset.reelId = reelId;
             newSlide.innerHTML = `
-                <span class="quality-tag">480p • R2 CDN</span>
+                <span class="quality-tag">${badgeText}</span>
                 <video id="${newVidId}" src="${videoSrc}" loop playsinline webkit-playsinline preload="metadata" onclick="handleReelTap('${newVidId}', '${newCtrlId}', '${newSpkId}')" controlsList="nodownload" disablePictureInPicture oncontextmenu="return false;"></video>
                 <div class="center-controls-overlay" id="${newCtrlId}" style="display:none;">
                     <button class="center-speaker-btn" id="${newSpkId}" onclick="event.stopPropagation(); toggleSpeakerOnly('${newVidId}', '${newSpkId}')" aria-label="Sound">🔊</button>
@@ -1112,19 +1232,19 @@
                 <div class="reel-bottom-info">
                     <div class="reel-user">
                         <span>${author}</span>
-                        <span style="font-size:10px; color:#4ade80;">(Synced)</span>
+                        <button class="follow-chip" onclick="toggleFollow(this, '${author}')" data-key="followBtn">${(translations[document.getElementById('languageSelect')?.value] || translations.hi).followBtn}</button>
                     </div>
                     <div class="reel-desc"></div>
                     <div class="reel-music">🎵 Original Audio - 2friend</div>
                 </div>
                 <div class="reel-side-actions">
                     <div class="side-btn-wrap">
-                        <button class="side-btn" onclick="toggleLike(this, '${newLikeId}')">♥</button>
-                        <span class="side-count" id="${newLikeId}">1</span>
+                        <button class="side-btn" onclick="toggleLike(this, '${newLikeId}', '${reelId}')">♥</button>
+                        <span class="side-count" id="${newLikeId}">${initialLikes}</span>
                     </div>
                     <div class="side-btn-wrap">
-                        <button class="side-btn" onclick="openComments()">💬</button>
-                        <span class="side-count">0</span>
+                        <button class="side-btn" onclick="openComments('${reelId}', '${newCommentCountId}')">💬</button>
+                        <span class="side-count" id="${newCommentCountId}">${initialComments}</span>
                     </div>
                     <div class="side-btn-wrap">
                         <button class="side-btn" onclick="shareCurrentReel()">➤</button>
@@ -1210,6 +1330,10 @@
                 }
             });
 
+            if (bestSlide && bestSlide.dataset.reelId) {
+                currentActiveReelId = bestSlide.dataset.reelId;
+            }
+
             const activeVid = bestSlide.querySelector('video');
             if (activeVid) {
                 pauseAndMuteOtherVideos(activeVid.id);
@@ -1257,6 +1381,8 @@
                 });
             }
 
+            await syncFeedFromD1AndR2();
+
             const feed = document.getElementById('reelsFeedContainer');
             if (feed) {
                 feed.addEventListener('scroll', () => {
@@ -1288,7 +1414,7 @@
             }
         }
 
-        function handleLogin() {
+        async function handleLogin() {
             const uInput = document.getElementById('loginUsername').value.trim();
             if (uInput !== "") {
                 loggedInUser = uInput.startsWith('@') ? uInput : '@' + uInput;
@@ -1301,6 +1427,7 @@
             userPrefersMuted = false;
             const feed = document.getElementById('reelsFeedContainer');
             if (feed) feed.scrollTop = 0;
+            await syncFeedFromD1AndR2();
             syncFeedPlaybackOnScroll();
 
             if (window.OneSignalDeferred) {
@@ -1316,6 +1443,10 @@
             
             document.getElementById('view-' + tabId).classList.add('active');
             if (btnElement) btnElement.classList.add('active');
+
+            if (tabId === 'chat') {
+                loadChatHistoryFromServer();
+            }
 
             if (tabId === 'notifications') {
                 const badge = document.getElementById('notifCountBadge');
@@ -1333,6 +1464,7 @@
                     v.muted = true;
                 });
             } else {
+                syncFeedFromD1AndR2();
                 syncFeedPlaybackOnScroll();
             }
         }
@@ -1386,30 +1518,39 @@
             spk.innerText = video.muted ? "🔇" : "🔊";
         }
 
-        function toggleFollow(btn) {
+        function toggleFollow(btn, targetUser = "@verender_rawat") {
             if (!btn) return;
+            let isFollowing = false;
             if (btn.dataset.following === "true") {
                 btn.dataset.following = "false";
                 btn.innerText = "Follow";
                 btn.style.background = "#ff2a6d";
+                isFollowing = false;
             } else {
                 btn.dataset.following = "true";
                 btn.innerText = "Following ✓";
                 btn.style.background = "#333";
+                isFollowing = true;
             }
+            syncFollowToServer(targetUser, isFollowing);
         }
 
-        function toggleLike(btn, countId) {
+        function toggleLike(btn, countId, reelId = "reel-1") {
             const countEl = document.getElementById(countId);
             if (!countEl) return;
             let count = parseInt(countEl.innerText, 10) || 0;
+            let liked = false;
             if (btn.classList.contains('liked')) {
                 btn.classList.remove('liked');
-                countEl.innerText = Math.max(0, count - 1);
+                count = Math.max(0, count - 1);
+                liked = false;
             } else {
                 btn.classList.add('liked');
-                countEl.innerText = count + 1;
+                count = count + 1;
+                liked = true;
             }
+            countEl.innerText = count;
+            syncLikeToServer(reelId, liked, count);
         }
 
         function shareCurrentReel() {
@@ -1501,10 +1642,14 @@
             feedback.innerText = "Cloudflare R2 पर अपलोड हो रहा है...";
 
             let remoteUrl = null;
+            let remoteId = null;
             try {
                 const uploadResult = await uploadVideo(fileToPersist);
                 if (uploadResult && typeof uploadResult.url === "string" && uploadResult.url.trim() !== "") {
                     remoteUrl = uploadResult.url.trim();
+                }
+                if (uploadResult && (uploadResult.id || uploadResult.reelId)) {
+                    remoteId = String(uploadResult.id || uploadResult.reelId);
                 }
             } catch (err) {
                 console.log("Worker upload fallback to local:", err);
@@ -1513,7 +1658,10 @@
             await saveVideoToLocalDB(fileToPersist, caption, loggedInUser);
 
             const feedVideoSrc = remoteUrl || videoSrcToAdd;
-            const newVidId = appendVideoSlideToFeed(feedVideoSrc, caption, loggedInUser, true);
+            const newVidId = appendVideoSlideToFeed(feedVideoSrc, caption, loggedInUser, true, {
+                reelId: remoteId || undefined,
+                badgeText: remoteUrl ? "480p • R2/D1" : "480p • Local"
+            });
             pauseAndMuteOtherVideos(newVidId);
 
             const feed = document.getElementById('reelsFeedContainer');
@@ -1693,40 +1841,100 @@
             syncFeedPlaybackOnScroll();
         }
 
+        function appendChatBubble(text, isSent) {
+            const clean = typeof text === "string" ? text.trim() : "";
+            if (!clean) return;
+            const key = `${isSent ? "S" : "R"}:${clean}`;
+            if (renderedChatKeys.has(key)) return;
+            renderedChatKeys.add(key);
+
+            const box = document.getElementById('chatHistory');
+            if (!box) return;
+            const div = document.createElement('div');
+            div.className = 'msg-bubble ' + (isSent ? 'msg-sent' : 'msg-received');
+            div.textContent = clean;
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        async function loadChatHistoryFromServer() {
+            try {
+                const msgs = await fetchChatMessages(loggedInUser, CHAT_PARTNER);
+                msgs.forEach((m) => {
+                    const txt = m.text || m.message || "";
+                    const sender = m.sender || "";
+                    const isSent = sender === loggedInUser;
+                    appendChatBubble(txt, isSent);
+                });
+            } catch (err) {
+                console.log("Chat history sync fallback:", err);
+            }
+        }
+
         async function sendChatMsg() {
             const input = document.getElementById('chatTextInput');
             const msg = input.value.trim();
             if (!msg) return;
-            const box = document.getElementById('chatHistory');
-            const div = document.createElement('div');
-            div.className = 'msg-bubble msg-sent';
-            div.textContent = msg;
-            box.appendChild(div);
+            appendChatBubble(msg, true);
             input.value = '';
-            box.scrollTop = box.scrollHeight;
 
             try {
-                await sendChatMessage(loggedInUser, "2friend_support", msg);
+                await sendChatMessage(loggedInUser, CHAT_PARTNER, msg);
             } catch (err) {
                 console.log("Chat API sync fallback:", err);
             }
         }
 
-        function openComments() { document.getElementById('commentSheet').classList.add('open'); }
+        function appendCommentRow(author, text) {
+            const list = document.getElementById('commentsList');
+            if (!list) return;
+            const item = document.createElement('div');
+            const strongEl = document.createElement('strong');
+            strongEl.textContent = `${author}: `;
+            item.appendChild(strongEl);
+            item.appendChild(document.createTextNode(text));
+            list.appendChild(item);
+            list.scrollTop = list.scrollHeight;
+        }
+
+        async function openComments(reelId = "reel-1", countElId = "comment-count-1") {
+            currentActiveReelId = reelId || "reel-1";
+            currentCommentCountEl = document.getElementById(countElId) || null;
+            document.getElementById('commentSheet').classList.add('open');
+
+            try {
+                const serverComments = await fetchReelComments(currentActiveReelId);
+                if (Array.isArray(serverComments) && serverComments.length > 0) {
+                    const list = document.getElementById('commentsList');
+                    list.innerHTML = "";
+                    serverComments.forEach((c) => {
+                        appendCommentRow(c.author || c.user || "@user", c.text || c.comment || "");
+                    });
+                }
+            } catch (err) {
+                console.log("Comments fetch fallback:", err);
+            }
+        }
+
         function closeComments() { document.getElementById('commentSheet').classList.remove('open'); }
-        function postComment() {
+
+        async function postComment() {
             const input = document.getElementById('commentInput');
             const text = input.value.trim();
             if (!text) return;
-            const list = document.getElementById('commentsList');
-            const item = document.createElement('div');
-            const author = document.createElement('strong');
-            author.textContent = `${loggedInUser}: `;
-            item.appendChild(author);
-            item.appendChild(document.createTextNode(text));
-            list.appendChild(item);
+            appendCommentRow(loggedInUser, text);
             input.value = '';
-            list.scrollTop = list.scrollHeight;
+
+            if (currentCommentCountEl) {
+                const cur = parseInt(currentCommentCountEl.innerText, 10) || 0;
+                currentCommentCountEl.innerText = cur + 1;
+            }
+
+            try {
+                await saveReelComment(currentActiveReelId, loggedInUser, text);
+            } catch (err) {
+                console.log("Comment save fallback:", err);
+            }
         }
 
         /* --- भाषाओं का डेटाबेस (भारतीय भाषाएं + USA, UK/Britain, Dubai/Arabic) --- */
