@@ -44,7 +44,7 @@
       overflow: hidden;
     }
 
-    /* लॉगिन स्क्रीन ओवरले */
+    /* लॉगिन और साइन-अप स्क्रीन ओवरले */
     #auth-screen {
       position: fixed;
       inset: 0;
@@ -61,35 +61,58 @@
       background: #141414;
       border: 1px solid #282828;
       border-radius: 16px;
-      padding: 28px 20px;
+      padding: 24px 20px;
       text-align: center;
     }
     .auth-logo-img {
-      width: 84px;
-      height: 84px;
+      width: 78px;
+      height: 78px;
       border-radius: 20px;
       object-fit: cover;
-      margin: 0 auto 10px;
+      margin: 0 auto 8px;
       display: block;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
     }
     .auth-logo {
-      font-size: 32px;
+      font-size: 30px;
       font-weight: 900;
       background: linear-gradient(45deg, #ff9933, #ff2a6d, #00d2ff);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
+    }
+    .auth-tabs {
+      display: flex;
+      background: #1d1d1d;
+      border-radius: 10px;
+      padding: 3px;
+      margin-bottom: 14px;
+      border: 1px solid #2d2d2d;
+    }
+    .auth-tab-btn {
+      flex: 1;
+      background: none;
+      border: none;
+      color: #9ca3af;
+      padding: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .auth-tab-btn.active {
+      background: #2c2c2c;
+      color: #fff;
     }
     .auth-input {
       width: 100%;
       background: #1e1e1e;
       border: 1px solid #333;
       color: #fff;
-      padding: 12px 14px;
+      padding: 11px 14px;
       border-radius: 10px;
       font-size: 14px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       outline: none;
     }
     .auth-btn {
@@ -102,7 +125,13 @@
       font-size: 15px;
       font-weight: bold;
       cursor: pointer;
-      margin-top: 6px;
+      margin-top: 4px;
+    }
+    .auth-error {
+      font-size: 12px;
+      color: #f87171;
+      margin-bottom: 8px;
+      min-height: 16px;
     }
 
     /* हेडर बार */
@@ -484,18 +513,18 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       z-index: 10;
     }
     .side-btn-wrap { display: flex; flex-direction: column; align-items: center; gap: 2px; }
     .side-btn {
-      width: 42px;
-      height: 42px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      background: rgba(25, 25, 25, 0.75);
-      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(25, 25, 25, 0.78);
+      border: 1px solid rgba(255,255,255,0.18);
       color: #fff;
-      font-size: 18px;
+      font-size: 17px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -504,7 +533,7 @@
     }
     .side-btn.liked { color: #ff2a6d; border-color: #ff2a6d; }
     .side-btn.bookmarked { color: #facc15; border-color: #facc15; background: rgba(250, 204, 21, 0.18); }
-    .side-count { font-size: 11px; font-weight: 600; }
+    .side-count { font-size: 10.5px; font-weight: 600; }
 
     /* वीडियो के नीचे टाइम और सीक/प्रोग्रेस लाइन */
     .reel-timeline-wrap {
@@ -637,7 +666,18 @@
       color: #aaa;
       display: flex;
       justify-content: space-between;
+      align-items: center;
       flex-shrink: 0;
+    }
+    .chat-safety-btn {
+      background: #261414;
+      border: 1px solid #7f1d1d;
+      color: #fca5a5;
+      font-size: 10.5px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
     }
     .chat-box-area {
       flex: 1;
@@ -892,8 +932,46 @@
       justify-content: space-between;
       align-items: center;
     }
+    .account-safety-box {
+      width: 100%;
+      margin-top: 14px;
+      background: #121212;
+      border: 1px solid #262626;
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .safety-btn-row {
+      display: flex;
+      gap: 8px;
+    }
+    .logout-btn {
+      flex: 1;
+      background: #1f2937;
+      color: #e5e7eb;
+      border: 1px solid #374151;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .delete-account-btn {
+      flex: 1;
+      background: rgba(127, 29, 29, 0.35);
+      color: #fca5a5;
+      border: 1px solid #991b1b;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
     .policy-links {
-      margin-top: 15px;
+      margin-top: 14px;
+      margin-bottom: 16px;
       font-size: 12px;
       text-align: center;
       color: #888;
@@ -1130,14 +1208,47 @@
       cursor: pointer;
     }
 
-    .story-creator-modal {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 250;
-      display: none; justify-content: center; align-items: center; padding: 16px;
+    /* स्टोरी डालने का मोडल */
+    .story-creator-modal,
+    .generic-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.88);
+      z-index: 260;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
     }
-    .story-creator-modal.open { display: flex; }
-    .story-creator-card {
-      width: 100%; max-width: 360px; background: #161616; border: 1px solid #333;
-      border-radius: 16px; padding: 20px;
+    .story-creator-modal.open,
+    .generic-modal-overlay.open {
+      display: flex;
+    }
+    .story-creator-card,
+    .generic-modal-card {
+      width: 100%;
+      max-width: 380px;
+      max-height: 82dvh;
+      overflow-y: auto;
+      background: #161616;
+      border: 1px solid #333;
+      border-radius: 16px;
+      padding: 20px;
+    }
+    .report-option-btn {
+      width: 100%;
+      text-align: left;
+      background: #202020;
+      border: 1px solid #333;
+      color: #f3f4f6;
+      padding: 11px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+    .report-option-btn:hover {
+      border-color: #ff2a6d;
     }
     .comment-sheet {
       position: fixed; bottom: 0; left: 0; right: 0; height: 52%;
@@ -1149,15 +1260,24 @@
 </head>
 <body oncontextmenu="return false;">
 
-  <!-- लॉगिन स्क्रीन -->
+  <!-- लॉगिन व नया अकाउंट (Sign Up) स्क्रीन -->
   <div id="auth-screen">
     <div class="auth-card">
       <img src="logo.png" alt="2friend Logo" class="auth-logo-img" onerror="this.style.display='none'">
       <div class="auth-logo">2friend</div>
-      <p style="color: #aaa; font-size: 13px; margin-bottom: 20px;" data-key="loginSub">अपने क्रिएटर अकाउंट से लॉगिन करें</p>
-      <input type="text" id="loginUsername" class="auth-input" placeholder="यूज़रनेम (जैसे @verender_rawat)" data-key-placeholder="userPlaceholder">
-      <input type="password" id="loginPassword" class="auth-input" placeholder="पासवर्ड दर्ज करें" data-key-placeholder="passPlaceholder">
-      <button class="auth-btn" onclick="handleLogin()" data-key="loginBtn">लॉगिन करें</button>
+      <p style="color: #aaa; font-size: 12.5px; margin-bottom: 14px;" data-key="loginSub">अपने क्रिएटर अकाउंट से लॉगिन करें</p>
+
+      <div class="auth-tabs">
+        <button id="tabSignInBtn" class="auth-tab-btn active" onclick="switchAuthMode('login')" data-key="signInTab">लॉगिन (Sign In)</button>
+        <button id="tabSignUpBtn" class="auth-tab-btn" onclick="switchAuthMode('signup')" data-key="signUpTab">नया अकाउंट (Sign Up)</button>
+      </div>
+
+      <input type="text" id="loginUsername" class="auth-input" placeholder="यूज़रनेम या मोबाइल नंबर दर्ज करें" data-key-placeholder="userPlaceholder">
+      <input type="password" id="loginPassword" class="auth-input" placeholder="पासवर्ड दर्ज करें (कम से कम 4 अक्षर)" data-key-placeholder="passPlaceholder">
+      <input type="password" id="confirmPasswordInput" class="auth-input" placeholder="पासवर्ड दोबारा दर्ज करें" style="display:none;">
+      <div id="authErrorMsg" class="auth-error"></div>
+
+      <button id="authSubmitBtn" class="auth-btn" onclick="handleAuthSubmit()" data-key="loginBtn">लॉगिन करें</button>
     </div>
   </div>
 
@@ -1224,7 +1344,7 @@
       </div>
 
       <div class="reels-feed" id="reelsFeedContainer">
-        <div class="reel-slide" data-reel-id="reel-1">
+        <div class="reel-slide" data-reel-id="reel-1" data-author="2friend founder">
           <span class="quality-tag">720p/1080p • R2 CDN (90%+ Hit)</span>
           <video id="vid-1" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" loop playsinline webkit-playsinline preload="auto" onclick="handleReelTap('vid-1', 'ctrl-1', 'spk-1')" controlsList="nodownload" disablePictureInPicture oncontextmenu="return false;"></video>
           <div class="center-controls-overlay" id="ctrl-1" style="display:none;">
@@ -1255,6 +1375,10 @@
             <div class="side-btn-wrap">
               <button class="side-btn" onclick="shareCurrentReel()">➤</button>
               <span class="side-count" data-key="shareLabel">Share</span>
+            </div>
+            <div class="side-btn-wrap">
+              <button class="side-btn" onclick="openSafetyMenu('reel-1', '2friend founder')" title="Report / Block">⋮</button>
+              <span class="side-count" data-key="reportLabel">Report</span>
             </div>
           </div>
           <!-- वीडियो के नीचे टाइम और प्रोग्रेस लाइन -->
@@ -1300,7 +1424,7 @@
       <div class="chat-container">
         <div class="chat-header-info">
           <span data-key="chatHeaderLeft">💬 1-to-1 टेक्स्ट चैट (सुरक्षित)</span>
-          <span data-key="chatHeaderRight">फोटो/फाइल बंद</span>
+          <button class="chat-safety-btn" onclick="openSafetyMenu('chat', '2friend_support')" data-key="chatSafetyBtn">🛡️ Report / Block</button>
         </div>
         <div class="chat-box-area" id="chatHistory">
           <div class="msg-bubble msg-received">नमस्ते! 2friend चैट बॉक्स में आपका स्वागत है।</div>
@@ -1389,13 +1513,66 @@
           <div style="color:#4ade80; margin-top:2px;">● Cloudflare D1 (2friend-db): Synced</div>
           <div style="color:#4ade80; margin-top:2px;">● OneSignal Push: Active</div>
         </div>
+
+        <!-- अकाउंट सुरक्षा: लॉगआउट और अकाउंट डिलीट (Play Store नियम) -->
+        <div class="account-safety-box">
+          <div style="font-weight:bold; font-size:12px; color:#d1d5db;" data-key="accountSafetyTitle">🔐 अकाउंट सेटिंग्स और सुरक्षा:</div>
+          <div class="safety-btn-row">
+            <button class="logout-btn" onclick="handleLogout()" data-key="logoutBtn">लॉगआउट (Log Out)</button>
+            <button class="delete-account-btn" onclick="openDeleteAccountModal()" data-key="deleteAccountBtn">Delete Account</button>
+          </div>
+        </div>
+
         <div class="policy-links">
-          <a href="#" onclick="alert('Google Privacy Policy: User data is protected.')">Privacy Policy</a> | 
-          <a href="#" onclick="alert('Google Terms of Service: 1-minute limits apply.')">Terms of Service</a>
+          <a href="#" onclick="event.preventDefault(); openPolicyModal('privacy')">Privacy Policy</a> | 
+          <a href="#" onclick="event.preventDefault(); openPolicyModal('terms')">Terms of Service</a>
         </div>
       </div>
     </div>
 
+  </div>
+
+  <!-- रिपोर्ट और ब्लॉक मोडल (User Safety) -->
+  <div class="generic-modal-overlay" id="safetyModal" onclick="closeSafetyMenu()">
+    <div class="generic-modal-card" onclick="event.stopPropagation()">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <strong style="font-size:16px; color:#fca5a5;">🛡️ Report / Block</strong>
+        <button onclick="closeSafetyMenu()" style="background:none; border:none; color:#fff; font-size:18px; cursor:pointer;">✕</button>
+      </div>
+      <p id="safetyTargetInfo" style="font-size:12px; color:#9ca3af; margin-bottom:12px;">इस कंटेंट या यूज़र के बारे में समस्या चुनें:</p>
+      <button class="report-option-btn" onclick="submitSafetyAction('spam')">🚫 स्पैम या भ्रामक जानकारी (Spam / Misleading)</button>
+      <button class="report-option-btn" onclick="submitSafetyAction('inappropriate')">⚠️ अनुचित या आपत्तिजनक कंटेंट (Inappropriate Content)</button>
+      <button class="report-option-btn" onclick="submitSafetyAction('harassment')">🛑 उत्पीड़न या गाली-गलौज (Harassment / Abuse)</button>
+      <button class="report-option-btn" style="border-color:#991b1b; color:#fca5a5;" onclick="submitSafetyAction('block_user')">⛔ इस यूज़र को ब्लॉक करें (Block User)</button>
+    </div>
+  </div>
+
+  <!-- Delete Account कन्फर्मेशन मोडल -->
+  <div class="generic-modal-overlay" id="deleteAccountModal" onclick="closeDeleteAccountModal()">
+    <div class="generic-modal-card" onclick="event.stopPropagation()">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <strong style="font-size:16px; color:#f87171;">⚠️ Delete Account</strong>
+        <button onclick="closeDeleteAccountModal()" style="background:none; border:none; color:#fff; font-size:18px; cursor:pointer;">✕</button>
+      </div>
+      <p style="font-size:12.5px; color:#d1d5db; line-height:1.45; margin-bottom:14px;">
+        क्या आप वाकई अपना <strong>2friend</strong> अकाउंट और उससे जुड़ा लोकल व क्लाउड डेटा स्थायी रूप से डिलीट करना चाहते हैं? यह प्रक्रिया वापस नहीं ली जा सकती।
+      </p>
+      <div style="display:flex; gap:10px;">
+        <button onclick="closeDeleteAccountModal()" style="flex:1; background:#262626; color:#fff; border:none; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">रद्द करें</button>
+        <button onclick="confirmDeleteAccount()" style="flex:1; background:#dc2626; color:#fff; border:none; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">हाँ, डिलीट करें</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Privacy Policy और Terms मोडल -->
+  <div class="generic-modal-overlay" id="policyModal" onclick="closePolicyModal()">
+    <div class="generic-modal-card" onclick="event.stopPropagation()">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <strong id="policyModalTitle" style="font-size:16px; color:#4ade80;">Privacy Policy</strong>
+        <button onclick="closePolicyModal()" style="background:none; border:none; color:#fff; font-size:18px; cursor:pointer;">✕</button>
+      </div>
+      <div id="policyModalBody" style="font-size:12.5px; color:#d1d5db; line-height:1.55;"></div>
+    </div>
   </div>
 
   <!-- स्टोरी डालने का बॉक्स -->
@@ -1417,7 +1594,7 @@
     </div>
   </div>
 
-  <!-- स्टोरी व्यूअर (फोटो/वीडियो पूरा दिखाने के लिए) -->
+  <!-- स्टोरी व्यूअर -->
   <div class="story-modal" id="storyModal" onclick="closeStory()">
     <div class="story-viewer-frame" onclick="event.stopPropagation(); toggleStoryPlayPause()">
       <div class="story-progress-row" id="storyProgressRow"></div>
@@ -1472,6 +1649,13 @@
     const STORY_TTL_MS = 24 * 60 * 60 * 1000;
     const FOUNDER_DISPLAY_NAME = "2friend founder";
     const MAX_PRELOAD_VIDEOS = 2;
+    const AUTH_SESSION_KEY = "2friend_auth_session_v1";
+    const LOCAL_ACCOUNTS_KEY = "2friend_registered_users_v1";
+    const BLOCKED_USERS_KEY = "2friend_blocked_users_v1";
+    const REPORTED_REELS_KEY = "2friend_reported_reels_v1";
+
+    let authMode = "login";
+    let safetyTarget = { reelId: "", author: "" };
 
     function resolvePublicDisplayName(rawName) {
       const val = String(rawName || "").trim();
@@ -1493,6 +1677,308 @@
         return FOUNDER_DISPLAY_NAME;
       }
       return val;
+    }
+
+    /* --- असली लॉगिन व साइन-अप लॉजिक --- */
+    function switchAuthMode(mode) {
+      authMode = mode === "signup" ? "signup" : "login";
+      const confirmInput = document.getElementById("confirmPasswordInput");
+      const errEl = document.getElementById("authErrorMsg");
+      const btnIn = document.getElementById("tabSignInBtn");
+      const btnUp = document.getElementById("tabSignUpBtn");
+      const submitBtn = document.getElementById("authSubmitBtn");
+
+      if (errEl) errEl.textContent = "";
+      if (authMode === "signup") {
+        if (confirmInput) confirmInput.style.display = "block";
+        if (btnIn) btnIn.classList.remove("active");
+        if (btnUp) btnUp.classList.add("active");
+        if (submitBtn) submitBtn.textContent = "नया अकाउंट बनाएं";
+      } else {
+        if (confirmInput) confirmInput.style.display = "none";
+        if (btnIn) btnIn.classList.add("active");
+        if (btnUp) btnUp.classList.remove("active");
+        if (submitBtn) submitBtn.textContent = "लॉगिन करें";
+      }
+    }
+
+    function getRegisteredUsersMap() {
+      try {
+        const raw = localStorage.getItem(LOCAL_ACCOUNTS_KEY);
+        const parsed = raw ? JSON.parse(raw) : {};
+        return (parsed && typeof parsed === "object") ? parsed : {};
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function saveRegisteredUserLocal(usernameKey, password, publicName) {
+      try {
+        const users = getRegisteredUsersMap();
+        users[usernameKey] = { password, publicName, updatedAt: Date.now() };
+        localStorage.setItem(LOCAL_ACCOUNTS_KEY, JSON.stringify(users));
+      } catch (e) {}
+    }
+
+    async function handleAuthSubmit() {
+      const uRaw = document.getElementById("loginUsername").value.trim();
+      const pass = document.getElementById("loginPassword").value.trim();
+      const confirmPass = document.getElementById("confirmPasswordInput").value.trim();
+      const errEl = document.getElementById("authErrorMsg");
+      const submitBtn = document.getElementById("authSubmitBtn");
+
+      if (errEl) errEl.textContent = "";
+
+      if (!uRaw) {
+        if (errEl) errEl.textContent = "कृपया यूज़रनेम या मोबाइल नंबर दर्ज करें।";
+        return;
+      }
+      if (!pass || pass.length < 4) {
+        if (errEl) errEl.textContent = "कृपया कम से कम 4 अक्षरों का पासवर्ड दर्ज करें।";
+        return;
+      }
+
+      const normKey = uRaw.toLowerCase();
+      const publicName = resolvePublicDisplayName(uRaw);
+      const usersMap = getRegisteredUsersMap();
+
+      if (authMode === "signup") {
+        if (pass !== confirmPass) {
+          if (errEl) errEl.textContent = "दोनों पासवर्ड एक जैसे नहीं हैं।";
+          return;
+        }
+        if (usersMap[normKey]) {
+          if (errEl) errEl.textContent = "यह यूज़रनेम पहले से बना हुआ है, कृपया लॉगिन करें।";
+          return;
+        }
+        if (submitBtn) submitBtn.disabled = true;
+        try {
+          await fetch(`${API_BASE}/api/auth/signup`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: uRaw, password: pass, publicName })
+          });
+        } catch (e) {}
+        saveRegisteredUserLocal(normKey, pass, publicName);
+        if (submitBtn) submitBtn.disabled = false;
+      } else {
+        if (usersMap[normKey] && usersMap[normKey].password !== pass) {
+          if (errEl) errEl.textContent = "गलत पासवर्ड! कृपया सही पासवर्ड दर्ज करें।";
+          return;
+        }
+        if (submitBtn) submitBtn.disabled = true;
+        try {
+          const res = await fetch(`${API_BASE}/api/auth/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: uRaw, password: pass })
+          });
+          if (res.status === 401) {
+            if (errEl) errEl.textContent = "गलत यूज़रनेम या पासवर्ड।";
+            if (submitBtn) submitBtn.disabled = false;
+            return;
+          }
+        } catch (e) {}
+        if (!usersMap[normKey]) {
+          saveRegisteredUserLocal(normKey, pass, publicName);
+        }
+        if (submitBtn) submitBtn.disabled = false;
+      }
+
+      try {
+        localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify({
+          username: uRaw,
+          publicName,
+          loggedInAt: Date.now()
+        }));
+      } catch (e) {}
+
+      await completeLoginSession(publicName);
+    }
+
+    async function completeLoginSession(publicName) {
+      loggedInUser = resolvePublicDisplayName(publicName || FOUNDER_DISPLAY_NAME);
+      document.getElementById("displayUser").innerText = loggedInUser;
+      document.getElementById("reelAuthorName").innerText = loggedInUser;
+      document.getElementById("profileUsername").innerText = loggedInUser;
+      document.getElementById("auth-screen").style.display = "none";
+
+      renderStoriesBar();
+      userPrefersMuted = false;
+      const feed = document.getElementById("reelsFeedContainer");
+      if (feed) feed.scrollTop = 0;
+      await syncFeedFromD1AndR2();
+      applyBlockedAndReportedFilters();
+      syncFeedPlaybackOnScroll();
+
+      if (window.OneSignalDeferred) {
+        window.OneSignalDeferred.push(async function(OneSignal) {
+          await checkAndSyncPushStatus(OneSignal);
+        });
+      }
+    }
+
+    function handleLogout() {
+      pauseAllVideosAndMute();
+      try {
+        localStorage.removeItem(AUTH_SESSION_KEY);
+      } catch (e) {}
+      document.getElementById("loginPassword").value = "";
+      document.getElementById("confirmPasswordInput").value = "";
+      document.getElementById("authErrorMsg").textContent = "";
+      switchAuthMode("login");
+      document.getElementById("auth-screen").style.display = "flex";
+    }
+
+    /* --- रिपोर्ट व ब्लॉक (User Safety) --- */
+    function getBlockedUsersSet() {
+      try {
+        const arr = JSON.parse(localStorage.getItem(BLOCKED_USERS_KEY) || "[]");
+        return new Set(Array.isArray(arr) ? arr : []);
+      } catch (e) {
+        return new Set();
+      }
+    }
+
+    function getReportedReelsSet() {
+      try {
+        const arr = JSON.parse(localStorage.getItem(REPORTED_REELS_KEY) || "[]");
+        return new Set(Array.isArray(arr) ? arr : []);
+      } catch (e) {
+        return new Set();
+      }
+    }
+
+    function applyBlockedAndReportedFilters() {
+      const blocked = getBlockedUsersSet();
+      const reported = getReportedReelsSet();
+      document.querySelectorAll("#reelsFeedContainer .reel-slide").forEach(slide => {
+        const rId = String(slide.dataset.reelId || "");
+        const author = String(slide.dataset.author || "");
+        if (reported.has(rId) || (author && blocked.has(author))) {
+          slide.remove();
+        }
+      });
+    }
+
+    function openSafetyMenu(reelId, author) {
+      safetyTarget = { reelId: String(reelId || ""), author: String(author || "") };
+      const infoEl = document.getElementById("safetyTargetInfo");
+      if (infoEl) {
+        infoEl.textContent = `यूज़र: ${safetyTarget.author || "User"} — उचित विकल्प चुनें:`;
+      }
+      document.getElementById("safetyModal").classList.add("open");
+    }
+
+    function closeSafetyMenu() {
+      document.getElementById("safetyModal").classList.remove("open");
+    }
+
+    async function submitSafetyAction(reason) {
+      const { reelId, author } = safetyTarget;
+      closeSafetyMenu();
+
+      if (reason === "block_user" && author) {
+        if (author === loggedInUser) {
+          alert("आप अपने खुद के अकाउंट को ब्लॉक नहीं कर सकते।");
+          return;
+        }
+        const blocked = getBlockedUsersSet();
+        blocked.add(author);
+        try {
+          localStorage.setItem(BLOCKED_USERS_KEY, JSON.stringify(Array.from(blocked)));
+        } catch (e) {}
+        applyBlockedAndReportedFilters();
+        syncFeedPlaybackOnScroll();
+        alert(`⛔ ${author} को ब्लॉक कर दिया गया है। अब इनके वीडियो और संदेश नहीं दिखेंगे।`);
+      } else {
+        if (reelId && reelId !== "chat") {
+          const reported = getReportedReelsSet();
+          reported.add(reelId);
+          try {
+            localStorage.setItem(REPORTED_REELS_KEY, JSON.stringify(Array.from(reported)));
+          } catch (e) {}
+          applyBlockedAndReportedFilters();
+          syncFeedPlaybackOnScroll();
+        }
+        alert("✅ आपकी रिपोर्ट दर्ज कर ली गई है। हमारी टीम इसकी समीक्षा करेगी।");
+      }
+
+      try {
+        await fetch(`${API_BASE}/api/report`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            reporter: loggedInUser,
+            reelId,
+            targetUser: author,
+            reason
+          })
+        });
+      } catch (e) {}
+    }
+
+    /* --- Delete Account व Privacy Policy / Terms --- */
+    function openDeleteAccountModal() {
+      document.getElementById("deleteAccountModal").classList.add("open");
+    }
+
+    function closeDeleteAccountModal() {
+      document.getElementById("deleteAccountModal").classList.remove("open");
+    }
+
+    async function confirmDeleteAccount() {
+      closeDeleteAccountModal();
+      pauseAllVideosAndMute();
+
+      try {
+        await fetch(`${API_BASE}/api/auth/delete-account`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user: loggedInUser })
+        });
+      } catch (e) {}
+
+      try {
+        localStorage.removeItem(AUTH_SESSION_KEY);
+        localStorage.removeItem(BOOKMARKS_STORAGE_KEY);
+        localStorage.removeItem(STORIES_META_KEY);
+        localStorage.removeItem(SEEN_STORIES_KEY);
+        localStorage.removeItem(BLOCKED_USERS_KEY);
+        localStorage.removeItem(REPORTED_REELS_KEY);
+      } catch (e) {}
+
+      try {
+        indexedDB.deleteDatabase(DB_NAME);
+      } catch (e) {}
+
+      alert("🗑️ आपका अकाउंट और लोकल डेटा स्थायी रूप से डिलीट कर दिया गया है।");
+      location.reload();
+    }
+
+    function openPolicyModal(type) {
+      const titleEl = document.getElementById("policyModalTitle");
+      const bodyEl = document.getElementById("policyModalBody");
+      if (type === "terms") {
+        titleEl.textContent = "Terms of Service — 2friend";
+        bodyEl.innerHTML = `
+          <p style="margin-bottom:8px;"><strong>1. कंटेंट नियम:</strong> 2friend पर केवल 60 सेकंड तक के मौलिक और कॉपीराइट-मुक्त वीडियो व स्टोरी ही अपलोड करें।</p>
+          <p style="margin-bottom:8px;"><strong>2. सुरक्षित व्यवहार:</strong> किसी भी प्रकार की हिंसा, नफरत, स्पैम या अश्लील सामग्री सख्त वर्जित है। उल्लंघन करने पर अकाउंट ब्लॉक किया जा सकता है।</p>
+          <p><strong>3. 1-to-1 चैट:</strong> चैट सुविधा केवल सुरक्षित टेक्स्ट संवाद के लिए है।</p>
+        `;
+      } else {
+        titleEl.textContent = "Privacy Policy — 2friend";
+        bodyEl.innerHTML = `
+          <p style="margin-bottom:8px;"><strong>1. डेटा संग्रह:</strong> 2friend केवल आपकी प्रोफाइल पहचान, अपलोड किए गए वीडियो, टेक्स्ट चैट और नोटिफिकेशन टोकन सुरक्षित रूप से स्टोर करता है।</p>
+          <p style="margin-bottom:8px;"><strong>2. डेटा सुरक्षा:</strong> आपका मीडिया डेटा Cloudflare R2 और D1 डेटाबेस पर एन्क्रिप्टेड रूप से सुरक्षित रहता है। हम आपका व्यक्तिगत डेटा किसी तीसरे पक्ष को नहीं बेचते।</p>
+          <p><strong>3. डेटा हटाने का अधिकार:</strong> आप अपनी प्रोफाइल में जाकर कभी भी <strong>Delete Account</strong> बटन द्वारा अपना पूरा डेटा स्थायी रूप से हटा सकते हैं।</p>
+        `;
+      }
+      document.getElementById("policyModal").classList.add("open");
+    }
+
+    function closePolicyModal() {
+      document.getElementById("policyModal").classList.remove("open");
     }
 
     async function getConfig() {
@@ -1564,15 +2050,20 @@
         const reels = await fetchServerFeedReels();
         if (!Array.isArray(reels) || reels.length === 0) return;
 
+        const blocked = getBlockedUsersSet();
+        const reported = getReportedReelsSet();
+
         reels.forEach((item) => {
           const videoUrl = item.url || item.videoUrl || item.video_url || item.r2Url;
           if (!videoUrl || typeof videoUrl !== "string") return;
 
           const reelId = String(item.id || item.reelId || videoUrl);
+          const author = resolvePublicDisplayName(item.author || item.username || item.user || FOUNDER_DISPLAY_NAME);
+
+          if (reported.has(reelId) || blocked.has(author)) return;
           if (loadedRemoteReelIds.has(reelId)) return;
           loadedRemoteReelIds.add(reelId);
 
-          const author = resolvePublicDisplayName(item.author || item.username || item.user || FOUNDER_DISPLAY_NAME);
           const caption = item.caption || item.description || "2friend Reel #2friend";
           const likes = Number(item.likes ?? item.likeCount ?? 0);
           const comments = Number(item.commentsCount ?? item.commentCount ?? 0);
@@ -2642,6 +3133,7 @@
       const newSlide = document.createElement('div');
       newSlide.className = 'reel-slide';
       newSlide.dataset.reelId = reelId;
+      newSlide.dataset.author = publicAuthor;
       newSlide.innerHTML = `
         <span class="quality-tag">${badgeText}</span>
         <video id="${newVidId}" src="${videoSrc}" loop playsinline webkit-playsinline preload="metadata" onclick="handleReelTap('${newVidId}', '${newCtrlId}', '${newSpkId}')" controlsList="nodownload" disablePictureInPicture oncontextmenu="return false;"></video>
@@ -2673,6 +3165,10 @@
           <div class="side-btn-wrap">
             <button class="side-btn" onclick="shareCurrentReel()">➤</button>
             <span class="side-count" data-key="shareLabel">${dict.shareLabel}</span>
+          </div>
+          <div class="side-btn-wrap">
+            <button class="side-btn" onclick="openSafetyMenu('${reelId}', '${publicAuthor}')" title="Report / Block">⋮</button>
+            <span class="side-count" data-key="reportLabel">${dict.reportLabel || 'Report'}</span>
           </div>
         </div>
         <div class="reel-timeline-wrap" onclick="event.stopPropagation()">
@@ -2873,6 +3369,7 @@
       }
 
       await syncFeedFromD1AndR2();
+      applyBlockedAndReportedFilters();
 
       const feed = document.getElementById('reelsFeedContainer');
       if (feed) {
@@ -2881,6 +3378,17 @@
           feed._scrollTimer = setTimeout(syncFeedPlaybackOnScroll, 60);
         }, { passive: true });
       }
+
+      /* यदि यूज़र पहले से लॉगिन है तो सीधे होम स्क्रीन खोलें */
+      try {
+        const savedSessionRaw = localStorage.getItem(AUTH_SESSION_KEY);
+        if (savedSessionRaw) {
+          const sessionObj = JSON.parse(savedSessionRaw);
+          if (sessionObj && sessionObj.publicName) {
+            await completeLoginSession(sessionObj.publicName);
+          }
+        }
+      } catch (e) {}
     });
 
     async function checkAndSyncPushStatus(oneSignalInstance) {
@@ -2906,29 +3414,6 @@
         }
       } catch (err) {
         console.log("Push status sync info:", err);
-      }
-    }
-
-    async function handleLogin() {
-      const uInput = document.getElementById('loginUsername').value.trim();
-      loggedInUser = resolvePublicDisplayName(uInput || FOUNDER_DISPLAY_NAME);
-
-      document.getElementById('displayUser').innerText = loggedInUser;
-      document.getElementById('reelAuthorName').innerText = loggedInUser;
-      document.getElementById('profileUsername').innerText = loggedInUser;
-      document.getElementById('auth-screen').style.display = 'none';
-
-      renderStoriesBar();
-      userPrefersMuted = false;
-      const feed = document.getElementById('reelsFeedContainer');
-      if (feed) feed.scrollTop = 0;
-      await syncFeedFromD1AndR2();
-      syncFeedPlaybackOnScroll();
-
-      if (window.OneSignalDeferred) {
-        window.OneSignalDeferred.push(async function(OneSignal) {
-          await checkAndSyncPushStatus(OneSignal);
-        });
       }
     }
 
@@ -2962,6 +3447,7 @@
       } else {
         renderStoriesBar();
         syncFeedFromD1AndR2();
+        applyBlockedAndReportedFilters();
         syncFeedPlaybackOnScroll();
       }
     }
@@ -3441,8 +3927,10 @@
     const translations = {
       hi: {
         loginSub: "अपने क्रिएटर अकाउंट से लॉगिन करें",
-        userPlaceholder: "यूज़रनेम दर्ज करें",
-        passPlaceholder: "पासवर्ड दर्ज करें",
+        signInTab: "लॉगिन (Sign In)",
+        signUpTab: "नया अकाउंट (Sign Up)",
+        userPlaceholder: "यूज़रनेम या मोबाइल नंबर दर्ज करें",
+        passPlaceholder: "पासवर्ड दर्ज करें (कम से कम 4 अक्षर)",
         loginBtn: "लॉगिन करें",
         yourStory: "Your story",
         addStory: "+ स्टोरी",
@@ -3451,6 +3939,7 @@
         followBtn: "Follow",
         saveLabel: "Save",
         shareLabel: "Share",
+        reportLabel: "Report",
         uploadTitle: "नया वीडियो अपलोड करें",
         maxDuration: "अधिकतम समय:",
         maxDurationVal: "1 मिनट (60 सेकंड)",
@@ -3461,7 +3950,7 @@
         captionPlaceholder: "वीडियो का कैप्शन लिखें (#hashtags)...",
         publishBtn: "Cloudflare R2 पर सेव करें",
         chatHeaderLeft: "💬 1-to-1 टेक्स्ट चैट (सुरक्षित)",
-        chatHeaderRight: "फोटो/फाइल बंद",
+        chatSafetyBtn: "🛡️ Report / Block",
         chatPlaceholder: "यहाँ संदेश टाइप करें...",
         sendBtn: "भेजें",
         notifTitle: "Notifications",
@@ -3474,6 +3963,9 @@
         followersLabel: "Followers",
         langsLabel: "Languages",
         cloudStatusTitle: "⚙️ क्लाउड स्टोरेज और कैश स्टेटस:",
+        accountSafetyTitle: "🔐 अकाउंट सेटिंग्स और सुरक्षा:",
+        logoutBtn: "लॉगआउट (Log Out)",
+        deleteAccountBtn: "Delete Account",
         storyModalTitle: "नई स्टोरी डालें (24 घंटे के लिए)",
         storyPickVideo: "स्टोरी के लिए वीडियो चुनें (वैकल्पिक)",
         storyHint: "अधिकतम 60 सेकंड • 24 घंटे बाद अपने आप हट जाएगी",
@@ -3485,8 +3977,10 @@
       },
       en: {
         loginSub: "Sign in with your creator account",
-        userPlaceholder: "Enter username",
-        passPlaceholder: "Enter password",
+        signInTab: "Sign In",
+        signUpTab: "Sign Up",
+        userPlaceholder: "Enter username or mobile",
+        passPlaceholder: "Enter password (min 4 chars)",
         loginBtn: "Log In",
         yourStory: "Your story",
         addStory: "+ Story",
@@ -3495,6 +3989,7 @@
         followBtn: "Follow",
         saveLabel: "Save",
         shareLabel: "Share",
+        reportLabel: "Report",
         uploadTitle: "Upload New Video",
         maxDuration: "Max Duration:",
         maxDurationVal: "1 Minute (60 Seconds)",
@@ -3505,7 +4000,7 @@
         captionPlaceholder: "Write video caption (#hashtags)...",
         publishBtn: "Save to Cloudflare R2",
         chatHeaderLeft: "💬 1-to-1 Text Chat (Safe)",
-        chatHeaderRight: "No Photos/Files",
+        chatSafetyBtn: "🛡️ Report / Block",
         chatPlaceholder: "Type a message here...",
         sendBtn: "Send",
         notifTitle: "Notifications",
@@ -3518,6 +4013,9 @@
         followersLabel: "Followers",
         langsLabel: "Languages",
         cloudStatusTitle: "⚙️ Cloud Storage & Cache Status:",
+        accountSafetyTitle: "🔐 Account Settings & Safety:",
+        logoutBtn: "Log Out",
+        deleteAccountBtn: "Delete Account",
         storyModalTitle: "Post New Story (24 Hours)",
         storyPickVideo: "Choose Story Video (Optional)",
         storyHint: "Max 60 seconds • Disappears after 24 hours",
