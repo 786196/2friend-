@@ -228,7 +228,7 @@
       display: flex;
     }
 
-    /* गोलाकार स्टोरी बार (Facebook / Instagram जैसी सिंपल गोलाकार स्टोरी) */
+    /* गोलाकार स्टोरी बार */
     .stories-bar {
       display: flex;
       align-items: flex-start;
@@ -531,7 +531,7 @@
     }
     .reel-seek-bar {
       width: 100%;
-      height: 14px;
+      height: 16px;
       display: flex;
       align-items: center;
       cursor: pointer;
@@ -904,7 +904,7 @@
       margin: 0 8px;
     }
 
-    /* सिंपल Facebook / Instagram जैसा फुल-स्क्रीन स्टोरी व्यूअर (बिना दिल/हार्ट आइकॉन के) */
+    /* फुल-स्क्रीन स्टोरी व्यूअर (बिना फोटो/वीडियो काटे पूरा दिखाने के लिए object-fit: contain) */
     .story-modal {
       position: fixed;
       inset: 0;
@@ -923,7 +923,7 @@
       width: 100%;
       max-width: 460px;
       height: 100%;
-      background: linear-gradient(160deg, #111827 0%, #1e293b 55%, #0f172a 100%);
+      background: #000;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -1028,7 +1028,8 @@
       inset: 0;
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
+      background: #000;
       display: none;
       z-index: 1;
     }
@@ -1038,7 +1039,7 @@
       inset: 0;
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
       display: none;
       z-index: 2;
       background: #000;
@@ -1215,7 +1216,6 @@
 
     <!-- 1. होम स्क्रीन -->
     <div id="view-home" class="screen-view active">
-      <!-- गोलाकार स्टोरी बार (Facebook / Instagram जैसा) -->
       <div class="stories-bar" id="storiesBarContainer"></div>
 
       <div class="ad-slot-banner">
@@ -1263,7 +1263,7 @@
               <span id="time-cur-vid-1">00:00</span>
               <span id="time-dur-vid-1">00:00</span>
             </div>
-            <div class="reel-seek-bar" id="seek-bar-vid-1" onclick="seekVideoFromBar(event, 'vid-1')">
+            <div class="reel-seek-bar" id="seek-bar-vid-1" onclick="seekVideoFromBar(event, 'vid-1')" ontouchstart="seekVideoFromBar(event, 'vid-1')" ontouchmove="seekVideoFromBar(event, 'vid-1')">
               <div class="reel-seek-track">
                 <div class="reel-seek-fill" id="seek-fill-vid-1">
                   <div class="reel-seek-thumb"></div>
@@ -1344,14 +1344,13 @@
       </div>
     </div>
 
-    <!-- 5. प्रोफाइल स्क्रीन (केवल 2friend founder पहचान + नोटिफिकेशन बटन + बुकमार्क वीडियो) -->
+    <!-- 5. प्रोफाइल स्क्रीन -->
     <div id="view-profile" class="screen-view">
       <div class="profile-wrapper">
         <div class="profile-pic">2F</div>
         <h3 id="profileUsername" style="font-size: 19px; font-weight: 800;">2friend founder</h3>
         <div class="founder-badge-pill">✓ Official Founder • 2friend</div>
 
-        <!-- प्रोफाइल पर नोटिफिकेशन बटन और बुकमार्क बटन -->
         <div class="profile-action-row">
           <button id="profileNotifToggleBtn" class="profile-notif-btn" onclick="triggerEnableNotificationsFromProfile()">
             <span>🔔</span>
@@ -1373,7 +1372,6 @@
           <span class="ad-badge">AD</span> <strong>AppLovin MAX Mediation Active</strong> (Google / Unity / Meta)
         </div>
 
-        <!-- सेव किए गए (Bookmarked) वीडियो की लिस्ट -->
         <div class="bookmark-section-box" id="profileBookmarksSection">
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <span style="font-weight:bold; font-size:13px; color:#facc15;" data-key="savedVideosTitle">🔖 बुकमार्क किए गए वीडियो (Saved Videos)</span>
@@ -1419,7 +1417,7 @@
     </div>
   </div>
 
-  <!-- सिंपल Facebook / Instagram जैसा स्टोरी व्यूअर (बिना हार्ट आइकॉन के, 24 घंटे ऑटो-एक्सपायर) -->
+  <!-- स्टोरी व्यूअर (फोटो/वीडियो पूरा दिखाने के लिए) -->
   <div class="story-modal" id="storyModal" onclick="closeStory()">
     <div class="story-viewer-frame" onclick="event.stopPropagation(); toggleStoryPlayPause()">
       <div class="story-progress-row" id="storyProgressRow"></div>
@@ -1475,7 +1473,6 @@
     const FOUNDER_DISPLAY_NAME = "2friend founder";
     const MAX_PRELOAD_VIDEOS = 2;
 
-    /* वीरेंद्र रावत की आईडी को हमेशा '2friend founder' के रूप में दिखाना */
     function resolvePublicDisplayName(rawName) {
       const val = String(rawName || "").trim();
       if (!val) return FOUNDER_DISPLAY_NAME;
@@ -1531,7 +1528,6 @@
       return [];
     }
 
-    /* Cloudflare R2 अपलोड (90%+ Cache Hit Rate के लिए Cache-Control हेडर्स के साथ) */
     async function uploadVideo(file) {
       if (!file) throw new Error("No video file selected");
 
@@ -1673,7 +1669,6 @@
     const loadedRemoteReelIds = new Set(["reel-1"]);
     const renderedChatKeys = new Set();
 
-    /* --- वीडियो बुकमार्क स्टेट (LocalStorage + Server Sync) --- */
     const BOOKMARKS_STORAGE_KEY = "2friend_bookmarked_videos_v1";
     let bookmarkedVideosMap = new Map();
 
@@ -1813,7 +1808,7 @@
       if (sec) sec.scrollIntoView({ behavior: "smooth" });
     }
 
-    /* --- वीडियो के नीचे टाइम (00:00 / 00:45) और सीक/प्रोग्रेस लाइन --- */
+    /* --- वीडियो के नीचे टाइम और सीक/प्रोग्रेस लाइन --- */
     function formatVideoTime(sec) {
       if (!isFinite(sec) || sec < 0) return "00:00";
       const totalSec = Math.floor(sec);
@@ -1823,9 +1818,7 @@
     }
 
     function bindVideoTimelineControls(video) {
-      if (!video || video.dataset.timelineBound === "true") return;
-      video.dataset.timelineBound = "true";
-
+      if (!video) return;
       const vidId = video.id;
       const curEl = document.getElementById("time-cur-" + vidId);
       const durEl = document.getElementById("time-dur-" + vidId);
@@ -1842,25 +1835,61 @@
         }
       };
 
-      video.addEventListener("loadedmetadata", updateTimelineUI);
-      video.addEventListener("durationchange", updateTimelineUI);
-      video.addEventListener("timeupdate", updateTimelineUI);
-      video.addEventListener("seeked", updateTimelineUI);
+      if (video.dataset.timelineBound !== "true") {
+        video.dataset.timelineBound = "true";
+        video.addEventListener("loadedmetadata", updateTimelineUI);
+        video.addEventListener("loadeddata", updateTimelineUI);
+        video.addEventListener("durationchange", updateTimelineUI);
+        video.addEventListener("timeupdate", updateTimelineUI);
+        video.addEventListener("playing", updateTimelineUI);
+        video.addEventListener("seeked", updateTimelineUI);
+      }
       updateTimelineUI();
     }
 
+    setInterval(() => {
+      document.querySelectorAll("#reelsFeedContainer video").forEach(video => {
+        const vidId = video.id;
+        const curEl = document.getElementById("time-cur-" + vidId);
+        const durEl = document.getElementById("time-dur-" + vidId);
+        const fillEl = document.getElementById("seek-fill-" + vidId);
+        const dur = isFinite(video.duration) && video.duration > 0 ? video.duration : 0;
+        const cur = isFinite(video.currentTime) ? video.currentTime : 0;
+        if (curEl) curEl.textContent = formatVideoTime(cur);
+        if (durEl && dur > 0) durEl.textContent = formatVideoTime(dur);
+        if (fillEl) {
+          const pct = dur > 0 ? Math.min(100, Math.max(0, (cur / dur) * 100)) : 0;
+          fillEl.style.width = pct + "%";
+        }
+      });
+    }, 250);
+
     function seekVideoFromBar(event, videoId) {
+      if (event) event.stopPropagation();
       const video = document.getElementById(videoId);
       const bar = document.getElementById("seek-bar-" + videoId);
-      if (!video || !bar || !isFinite(video.duration) || video.duration <= 0) return;
+      if (!video || !bar) return;
+
+      if (video.readyState === 0) {
+        video.load();
+      }
+      if (!isFinite(video.duration) || video.duration <= 0) return;
 
       const rect = bar.getBoundingClientRect();
-      const clientX = event.touches ? event.touches[0].clientX : event.clientX;
+      const touchPoint = (event.touches && event.touches[0]) || (event.changedTouches && event.changedTouches[0]);
+      const clientX = touchPoint ? touchPoint.clientX : event.clientX;
+      if (typeof clientX !== "number") return;
+
       const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
-      video.currentTime = ratio * video.duration;
+      const targetTime = ratio * video.duration;
+      video.currentTime = targetTime;
+
+      const curEl = document.getElementById("time-cur-" + videoId);
+      const fillEl = document.getElementById("seek-fill-" + videoId);
+      if (curEl) curEl.textContent = formatVideoTime(targetTime);
+      if (fillEl) fillEl.style.width = (ratio * 100) + "%";
     }
 
-    /* 90%–99% CDN कैश हिट रेट बनाए रखने के लिए अधिकतम 2 आगामी वीडियो ही प्रीलोड करना */
     function enforceMaxTwoVideoPreload() {
       const slides = Array.from(document.querySelectorAll("#reelsFeedContainer .reel-slide"));
       if (slides.length === 0) return;
@@ -1881,7 +1910,6 @@
       });
     }
 
-    /* सभी रील्स व स्टोरी वीडियो को तुरंत ऑटो-पॉज़ और म्यूट करना */
     function pauseAllVideosAndMute(exceptVideoId = null) {
       document.querySelectorAll("video").forEach(v => {
         if (exceptVideoId && v.id === exceptVideoId) return;
@@ -1901,7 +1929,6 @@
       }
     }
 
-    /* वीडियो फ़ाइल या URL से गोल स्टोरी आइकॉन व पोस्टर के लिए फोटो थंबनेल निकालना */
     function captureVideoThumbnail(videoSource) {
       return new Promise((resolve) => {
         if (!videoSource) {
@@ -1957,18 +1984,16 @@
 
         vid.onseeked = () => {
           try {
-            const w = vid.videoWidth || 240;
-            const h = vid.videoHeight || 240;
-            const size = 240;
+            const w = vid.videoWidth || 360;
+            const h = vid.videoHeight || 640;
+            const maxDim = 480;
+            const scale = Math.min(1, maxDim / Math.max(w, h));
             const canvas = document.createElement("canvas");
-            canvas.width = size;
-            canvas.height = size;
+            canvas.width = Math.round(w * scale);
+            canvas.height = Math.round(h * scale);
             const ctx = canvas.getContext("2d");
-            const scale = Math.max(size / w, size / h);
-            const dw = w * scale;
-            const dh = h * scale;
-            ctx.drawImage(vid, (size - dw) / 2, (size - dh) / 2, dw, dh);
-            const out = canvas.toDataURL("image/jpeg", 0.78);
+            ctx.drawImage(vid, 0, 0, canvas.width, canvas.height);
+            const out = canvas.toDataURL("image/jpeg", 0.82);
             finish(out);
           } catch (e) {
             finish("");
@@ -1980,7 +2005,6 @@
       });
     }
 
-    /* --- IndexedDB (रील्स + 24 घंटे स्टोरी स्टोरेज) --- */
     const DB_NAME = "2friend_video_store";
     const STORE_NAME = "uploaded_reels";
     const STORY_STORE_NAME = "saved_stories";
@@ -2077,7 +2101,6 @@
       }
     }
 
-    /* --- स्टोरी स्टेट व 24 घंटे परसिस्टेंस (Facebook / Instagram स्टाइल) --- */
     const STORIES_META_KEY = "2friend_circle_stories_meta_v4";
     const SEEN_STORIES_KEY = "2friend_seen_stories_v4";
 
@@ -2283,11 +2306,9 @@
       persistStoriesMetadata();
       renderStoriesBar();
 
-      /* हर 1 मिनट में 24 घंटे से पुरानी स्टोरीज़ स्वतः हटाएं */
       setInterval(pruneExpiredStoriesAutomatically, 60 * 1000);
     }
 
-    /* गोलाकार स्टोरी बार रेंडर करना */
     function renderStoriesBar() {
       const bar = document.getElementById("storiesBarContainer");
       if (!bar) return;
@@ -2299,7 +2320,6 @@
 
       bar.innerHTML = "";
 
-      /* पहला गोला: Your story (+ आइकॉन के साथ) */
       const ownStory = storiesList.find(s => resolvePublicDisplayName(s.user) === loggedInUser && !s.isDefault);
       const yourItem = document.createElement("div");
       yourItem.className = "circle-story-item your-story-item";
@@ -2348,7 +2368,6 @@
       yourItem.appendChild(yourLbl);
       bar.appendChild(yourItem);
 
-      /* सभी 24-घंटे वाली स्टोरीज़ */
       storiesList.forEach((story, idx) => {
         const isSeen = seenStoryIds.has(story.id);
         const item = document.createElement("div");
@@ -2661,7 +2680,7 @@
             <span id="time-cur-${newVidId}">00:00</span>
             <span id="time-dur-${newVidId}">00:00</span>
           </div>
-          <div class="reel-seek-bar" id="seek-bar-${newVidId}" onclick="seekVideoFromBar(event, '${newVidId}')">
+          <div class="reel-seek-bar" id="seek-bar-${newVidId}" onclick="seekVideoFromBar(event, '${newVidId}')" ontouchstart="seekVideoFromBar(event, '${newVidId}')" ontouchmove="seekVideoFromBar(event, '${newVidId}')">
             <div class="reel-seek-track">
               <div class="reel-seek-fill" id="seek-fill-${newVidId}">
                 <div class="reel-seek-thumb"></div>
@@ -2776,7 +2795,6 @@
       }
     }
 
-    /* प्रोफाइल से Push Notification चालू करने का बटन */
     async function triggerEnableNotificationsFromProfile() {
       const btn = document.getElementById("profileNotifToggleBtn");
       const lbl = document.getElementById("profileNotifBtnLabel");
@@ -3420,7 +3438,6 @@
       }
     }
 
-    /* --- भाषाओं का डेटाबेस --- */
     const translations = {
       hi: {
         loginSub: "अपने क्रिएटर अकाउंट से लॉगिन करें",
@@ -3536,4 +3553,4 @@
     }
   </script>
 </body>
-</html>
+  </html>
