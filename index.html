@@ -310,7 +310,7 @@
       width: 100%;
       height: 100%;
       border-radius: 50%;
-      background: #171717;
+      background: linear-gradient(135deg, #1f2937, #111827);
       border: 2.5px solid #0b0b0b;
       overflow: hidden;
       position: relative;
@@ -324,6 +324,19 @@
       height: 100%;
       object-fit: cover;
       display: block;
+    }
+    .circle-story-video-badge {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(145deg, #ff2a6d, #ff9933);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 16px;
+      gap: 2px;
     }
     .circle-story-text-thumb {
       width: 100%;
@@ -347,7 +360,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 22px;
+      font-size: 20px;
       font-weight: 800;
       color: #fff;
     }
@@ -466,23 +479,12 @@
       cursor: pointer;
       padding-left: 4px;
     }
-    .quality-tag {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: rgba(0, 0, 0, 0.6);
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 10px;
-      color: #4ade80;
-      border: 1px solid rgba(74, 222, 128, 0.3);
-      z-index: 10;
-    }
+    /* नीचे टाइमिंग (00:15) और ऑडियो लाइन के बीच साफ़ जगह */
     .reel-bottom-info {
       position: absolute;
-      bottom: 34px;
+      bottom: 48px;
       left: 12px;
-      right: 70px;
+      right: 72px;
       z-index: 10;
       text-shadow: 0 1px 4px rgba(0,0,0,0.9);
     }
@@ -508,7 +510,7 @@
     .reel-music { font-size: 11px; color: #ccc; margin-top: 4px; }
     .reel-side-actions {
       position: absolute;
-      bottom: 36px;
+      bottom: 48px;
       right: 10px;
       display: flex;
       flex-direction: column;
@@ -543,10 +545,10 @@
       right: 0;
       z-index: 20;
       padding: 6px 12px 8px;
-      background: linear-gradient(to top, rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0));
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.92), rgba(0, 0, 0, 0));
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 3px;
     }
     .reel-time-row {
       display: flex;
@@ -982,7 +984,7 @@
       margin: 0 8px;
     }
 
-    /* फुल-स्क्रीन स्टोरी व्यूअर (बिना फोटो/वीडियो काटे पूरा दिखाने के लिए object-fit: contain) */
+    /* फुल-स्क्रीन स्टोरी व्यूअर (फोटो व वीडियो दोनों के लिए बिना काटे पूरा दृश्य) */
     .story-modal {
       position: fixed;
       inset: 0;
@@ -1345,7 +1347,6 @@
 
       <div class="reels-feed" id="reelsFeedContainer">
         <div class="reel-slide" data-reel-id="reel-1" data-author="2friend founder">
-          <span class="quality-tag">720p/1080p • R2 CDN (90%+ Hit)</span>
           <video id="vid-1" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" loop playsinline webkit-playsinline preload="auto" onclick="handleReelTap('vid-1', 'ctrl-1', 'spk-1')" controlsList="nodownload" disablePictureInPicture oncontextmenu="return false;"></video>
           <div class="center-controls-overlay" id="ctrl-1" style="display:none;">
             <button class="center-speaker-btn" id="spk-1" onclick="event.stopPropagation(); toggleSpeakerOnly('vid-1', 'spk-1')" aria-label="Sound">🔊</button>
@@ -1575,18 +1576,18 @@
     </div>
   </div>
 
-  <!-- स्टोरी डालने का बॉक्स -->
+  <!-- स्टोरी डालने का बॉक्स (वीडियो या फोटो + संदेश) -->
   <div class="story-creator-modal" id="storyCreatorModal">
     <div class="story-creator-card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
         <strong style="font-size:16px;" data-key="storyModalTitle">नई स्टोरी डालें (24 घंटे के लिए)</strong>
         <button onclick="closeStoryCreator()" style="background:none; border:none; color:#fff; font-size:18px;">✕</button>
       </div>
-      <div class="drop-zone" style="padding:16px 10px; margin-bottom:10px;" onclick="document.getElementById('storyVideoInput').click()">
-        <div style="font-size:26px; margin-bottom:4px;">🎥</div>
-        <div id="storyVideoFileName" style="font-size:13px; font-weight:bold;" data-key="storyPickVideo">स्टोरी के लिए वीडियो चुनें (वैकल्पिक)</div>
-        <div style="font-size:10px; color:#888;" data-key="storyHint">अधिकतम 60 सेकंड • 24 घंटे बाद अपने आप हट जाएगी</div>
-        <input type="file" id="storyVideoInput" accept="video/*" style="display:none;" onchange="handleStoryVideoSelect(this)">
+      <div class="drop-zone" style="padding:16px 10px; margin-bottom:10px;" onclick="document.getElementById('storyMediaInput').click()">
+        <div style="font-size:26px; margin-bottom:4px;">📸🎬</div>
+        <div id="storyVideoFileName" style="font-size:13px; font-weight:bold;" data-key="storyPickVideo">स्टोरी के लिए फोटो या वीडियो चुनें</div>
+        <div style="font-size:10px; color:#888;" data-key="storyHint">फोटो या अधिकतम 60 सेकंड का वीडियो • 24 घंटे बाद स्वतः हट जाएगी</div>
+        <input type="file" id="storyMediaInput" accept="video/*,image/*" style="display:none;" onchange="handleStoryMediaSelect(this)">
       </div>
       <input type="text" id="storyCaptionInput" class="caption-input" placeholder="या स्टोरी का संदेश लिखें..." data-key-placeholder="storyMsgPlaceholder">
       <div id="storyCreatorStatus" style="font-size:11px; color:#4ade80; margin-bottom:10px; text-align:center;"></div>
@@ -1594,7 +1595,7 @@
     </div>
   </div>
 
-  <!-- स्टोरी व्यूअर -->
+  <!-- स्टोरी व्यूअर (फोटो व वीडियो दोनों के लिए) -->
   <div class="story-modal" id="storyModal" onclick="closeStory()">
     <div class="story-viewer-frame" onclick="event.stopPropagation(); toggleStoryPlayPause()">
       <div class="story-progress-row" id="storyProgressRow"></div>
@@ -2071,8 +2072,7 @@
           appendVideoSlideToFeed(videoUrl, caption, author, false, {
             reelId,
             likes,
-            comments,
-            badgeText: "720p/1080p • R2 CDN (90%+ Hit)"
+            comments
           });
         });
         enforceMaxTwoVideoPreload();
@@ -2145,9 +2145,9 @@
     let loggedInUser = FOUNDER_DISPLAY_NAME;
     let pendingVideoFile = null;
     let pendingVideoURL = null;
-    let pendingStoryVideoFile = null;
-    let pendingStoryVideoURL = null;
-    let pendingStoryThumbDataUrl = "";
+    let pendingStoryMediaFile = null;
+    let pendingStoryMediaType = ""; // "video" | "image" | ""
+    let pendingStoryImageDataUrl = "";
     let videoCounter = 1;
     let storyTimer = null;
     let activeStoryIndex = -1;
@@ -2420,79 +2420,35 @@
       }
     }
 
-    function captureVideoThumbnail(videoSource) {
+    /* फोटो को हल्का और साफ़ DataURL में बदलना ताकि गोल घेरे में कभी कालापन न आए */
+    function readImageFileAsCompressedDataUrl(file) {
       return new Promise((resolve) => {
-        if (!videoSource) {
+        if (!file) {
           resolve("");
           return;
         }
-        let tempObjUrl = "";
-        let srcUrl = "";
-        if (videoSource instanceof Blob) {
-          tempObjUrl = URL.createObjectURL(videoSource);
-          srcUrl = tempObjUrl;
-        } else if (typeof videoSource === "string") {
-          srcUrl = videoSource;
-        } else {
-          resolve("");
-          return;
-        }
-
-        const vid = document.createElement("video");
-        vid.muted = true;
-        vid.playsInline = true;
-        vid.preload = "metadata";
-        if (!srcUrl.startsWith("blob:") && !srcUrl.startsWith("data:")) {
-          vid.crossOrigin = "anonymous";
-        }
-
-        let settled = false;
-        const finish = (dataUrl) => {
-          if (settled) return;
-          settled = true;
-          clearTimeout(timer);
-          try {
-            vid.pause();
-            vid.removeAttribute("src");
-            vid.load();
-          } catch (e) {}
-          if (tempObjUrl) {
-            try { URL.revokeObjectURL(tempObjUrl); } catch (e) {}
-          }
-          resolve(dataUrl || "");
+        const reader = new FileReader();
+        reader.onload = () => {
+          const img = new Image();
+          img.onload = () => {
+            try {
+              const maxDim = 900;
+              const scale = Math.min(1, maxDim / Math.max(img.width || 1, img.height || 1));
+              const canvas = document.createElement("canvas");
+              canvas.width = Math.max(1, Math.round((img.width || 400) * scale));
+              canvas.height = Math.max(1, Math.round((img.height || 400) * scale));
+              const ctx = canvas.getContext("2d");
+              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+              resolve(canvas.toDataURL("image/jpeg", 0.85));
+            } catch (e) {
+              resolve(typeof reader.result === "string" ? reader.result : "");
+            }
+          };
+          img.onerror = () => resolve(typeof reader.result === "string" ? reader.result : "");
+          img.src = reader.result;
         };
-
-        const timer = setTimeout(() => finish(""), 4500);
-
-        vid.onloadedmetadata = () => {
-          try {
-            const seekTarget = isFinite(vid.duration) && vid.duration > 0.3 ? Math.min(0.25, vid.duration / 3) : 0;
-            vid.currentTime = seekTarget;
-          } catch (e) {
-            finish("");
-          }
-        };
-
-        vid.onseeked = () => {
-          try {
-            const w = vid.videoWidth || 360;
-            const h = vid.videoHeight || 640;
-            const maxDim = 480;
-            const scale = Math.min(1, maxDim / Math.max(w, h));
-            const canvas = document.createElement("canvas");
-            canvas.width = Math.round(w * scale);
-            canvas.height = Math.round(h * scale);
-            const ctx = canvas.getContext("2d");
-            ctx.drawImage(vid, 0, 0, canvas.width, canvas.height);
-            const out = canvas.toDataURL("image/jpeg", 0.82);
-            finish(out);
-          } catch (e) {
-            finish("");
-          }
-        };
-
-        vid.onerror = () => finish("");
-        vid.src = srcUrl;
+        reader.onerror = () => resolve("");
+        reader.readAsDataURL(file);
       });
     }
 
@@ -2592,16 +2548,17 @@
       }
     }
 
-    const STORIES_META_KEY = "2friend_circle_stories_meta_v4";
-    const SEEN_STORIES_KEY = "2friend_seen_stories_v4";
+    const STORIES_META_KEY = "2friend_circle_stories_meta_v5";
+    const SEEN_STORIES_KEY = "2friend_seen_stories_v5";
 
     const DEFAULT_STORIES = [
       {
         id: "story-founder",
         user: FOUNDER_DISPLAY_NAME,
         label: FOUNDER_DISPLAY_NAME,
+        mediaType: "video",
         videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-        thumbDataUrl: "",
+        imageDataUrl: "",
         text: "2friend • 24h Story",
         isDefault: true,
         createdAt: Date.now() - 2 * 60 * 60 * 1000
@@ -2610,8 +2567,9 @@
         id: "story-delhi",
         user: "@delhi_creators",
         label: "delhi_creators",
+        mediaType: "text",
         videoUrl: "",
-        thumbDataUrl: "",
+        imageDataUrl: "",
         text: "1 मिनट की शानदार 720p/1080p स्टोरीज़ और रील्स!",
         isDefault: true,
         createdAt: Date.now() - 4 * 60 * 60 * 1000
@@ -2661,9 +2619,10 @@
             id: s.id,
             user: resolvePublicDisplayName(s.user),
             label: resolvePublicDisplayName(s.label),
+            mediaType: s.mediaType || (s.imageDataUrl ? "image" : (s.blob || s.remoteVideoUrl || s.videoUrl ? "video" : "text")),
             videoUrl: s.remoteVideoUrl || (!s.hasBlob && s.videoUrl && !s.videoUrl.startsWith("blob:") ? s.videoUrl : ""),
             remoteVideoUrl: s.remoteVideoUrl || "",
-            thumbDataUrl: s.thumbDataUrl || "",
+            imageDataUrl: s.imageDataUrl || "",
             hasBlob: Boolean(s.hasBlob || s.blob),
             text: s.text || "",
             isDefault: Boolean(s.isDefault),
@@ -2676,7 +2635,7 @@
     function createFreshStoryPlaybackUrl(story) {
       revokeActiveStoryObjectUrl();
       if (!story) return "";
-      if (story.blob instanceof Blob) {
+      if (story.blob instanceof Blob && story.mediaType === "video") {
         const freshUrl = URL.createObjectURL(story.blob);
         activeStoryObjectUrl = freshUrl;
         return freshUrl;
@@ -2734,17 +2693,23 @@
           const dbRec = dbMap.get(m.id);
           const blob = (dbRec && dbRec.blob instanceof Blob) ? dbRec.blob : null;
           const remoteUrl = (dbRec && dbRec.remoteVideoUrl) || m.remoteVideoUrl || (m.videoUrl && !m.videoUrl.startsWith("blob:") ? m.videoUrl : "");
-          const thumbDataUrl = (dbRec && dbRec.thumbDataUrl) || m.thumbDataUrl || "";
+          const imageDataUrl = (dbRec && dbRec.imageDataUrl) || m.imageDataUrl || "";
           const pubUser = resolvePublicDisplayName((dbRec && dbRec.user) || m.user || FOUNDER_DISPLAY_NAME);
+          const detectedType = (dbRec && dbRec.mediaType) || m.mediaType || (imageDataUrl ? "image" : ((blob || remoteUrl) ? "video" : "text"));
+
+          /* यदि वीडियो स्टोरी का कोई स्रोत उपलब्ध नहीं है (पुराना एक्सपायर्ड लिंक), तो खाली काला गोला न बनाएं */
+          if (detectedType === "video" && !blob && !remoteUrl && !m.isDefault) return;
+
           mergedMap.set(m.id, {
             id: m.id,
             user: pubUser,
             label: pubUser,
+            mediaType: detectedType,
             blob: blob,
-            hasBlob: Boolean(blob || m.hasBlob),
+            hasBlob: Boolean(blob),
             remoteVideoUrl: remoteUrl,
             videoUrl: remoteUrl,
-            thumbDataUrl: thumbDataUrl,
+            imageDataUrl: imageDataUrl,
             text: (dbRec && typeof dbRec.text === "string") ? dbRec.text : (m.text || ""),
             isDefault: Boolean(m.isDefault),
             createdAt: (dbRec && dbRec.createdAt) || m.createdAt || Date.now()
@@ -2756,16 +2721,22 @@
         if (mergedMap.has(id)) return;
         const blob = rec.blob instanceof Blob ? rec.blob : null;
         const remoteUrl = rec.remoteVideoUrl || "";
+        const imageDataUrl = rec.imageDataUrl || "";
         const pubUser = resolvePublicDisplayName(rec.user || FOUNDER_DISPLAY_NAME);
+        const detectedType = rec.mediaType || (imageDataUrl ? "image" : ((blob || remoteUrl) ? "video" : "text"));
+
+        if (detectedType === "video" && !blob && !remoteUrl) return;
+
         mergedMap.set(id, {
           id: rec.id,
           user: pubUser,
           label: pubUser,
+          mediaType: detectedType,
           blob: blob,
           hasBlob: Boolean(blob),
           remoteVideoUrl: remoteUrl,
           videoUrl: remoteUrl,
-          thumbDataUrl: rec.thumbDataUrl || "",
+          imageDataUrl: imageDataUrl,
           text: rec.text || "",
           isDefault: false,
           createdAt: rec.createdAt || Date.now()
@@ -2784,16 +2755,6 @@
       });
 
       storiesList = Array.from(mergedMap.values()).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-
-      for (const s of storiesList) {
-        if (!s.thumbDataUrl && (s.blob instanceof Blob || s.remoteVideoUrl || s.videoUrl)) {
-          const generatedThumb = await captureVideoThumbnail(s.blob || s.remoteVideoUrl || s.videoUrl);
-          if (generatedThumb) {
-            s.thumbDataUrl = generatedThumb;
-          }
-        }
-      }
-
       persistStoriesMetadata();
       renderStoriesBar();
 
@@ -2825,11 +2786,16 @@
       const yourInner = document.createElement("div");
       yourInner.className = "circle-story-inner";
 
-      if (ownStory && ownStory.thumbDataUrl) {
+      if (ownStory && ownStory.imageDataUrl) {
         const img = document.createElement("img");
-        img.src = ownStory.thumbDataUrl;
+        img.src = ownStory.imageDataUrl;
         img.alt = yourStoryLabel;
         yourInner.appendChild(img);
+      } else if (ownStory && ownStory.mediaType === "video") {
+        const vidBadge = document.createElement("div");
+        vidBadge.className = "circle-story-video-badge";
+        vidBadge.innerHTML = `<span>▶</span><span style="font-size:9px;">STORY</span>`;
+        yourInner.appendChild(vidBadge);
       } else {
         const logoImg = document.createElement("img");
         logoImg.src = "logo.png";
@@ -2873,11 +2839,16 @@
 
         const pubName = resolvePublicDisplayName(story.label || story.user || "Story");
 
-        if (story.thumbDataUrl) {
+        if (story.imageDataUrl) {
           const img = document.createElement("img");
-          img.src = story.thumbDataUrl;
+          img.src = story.imageDataUrl;
           img.alt = pubName;
           inner.appendChild(img);
+        } else if (story.mediaType === "video" || story.blob || story.remoteVideoUrl || story.videoUrl) {
+          const vidBadge = document.createElement("div");
+          vidBadge.className = "circle-story-video-badge";
+          vidBadge.innerHTML = `<span>▶</span><span style="font-size:8.5px; letter-spacing:0.4px;">VIDEO</span>`;
+          inner.appendChild(vidBadge);
         } else if (story.text) {
           const txtThumb = document.createElement("div");
           txtThumb.className = "circle-story-text-thumb";
@@ -2967,8 +2938,8 @@
       vidEl.onerror = null;
 
       if (posterEl) {
-        if (story.thumbDataUrl) {
-          posterEl.src = story.thumbDataUrl;
+        if (story.imageDataUrl) {
+          posterEl.src = story.imageDataUrl;
           posterEl.style.display = "block";
         } else {
           posterEl.removeAttribute("src");
@@ -2981,7 +2952,7 @@
       let durationMs = 5000;
       const playableUrl = createFreshStoryPlaybackUrl(story);
 
-      if (playableUrl) {
+      if (playableUrl && story.mediaType !== "image") {
         vidEl.style.display = "block";
         vidEl.loop = false;
         vidEl.muted = false;
@@ -3035,7 +3006,7 @@
         vidEl.onerror = () => {
           if (sessionId !== activeStoryPlaybackSession) return;
           vidEl.style.display = "none";
-          if (!story.thumbDataUrl) {
+          if (!story.imageDataUrl) {
             txtEl.style.display = "block";
             txtEl.textContent = story.text || "2friend Story";
           }
@@ -3047,7 +3018,7 @@
         vidEl.removeAttribute("src");
         vidEl.load();
         vidEl.style.display = "none";
-        txtEl.style.display = "block";
+        txtEl.style.display = story.text ? "block" : "none";
         txtEl.textContent = story.text || "";
         startStorySegmentTimer(index, durationMs, sessionId);
       }
@@ -3125,7 +3096,6 @@
       const reelId = options.reelId || ('reel-' + videoCounter);
       const initialLikes = Number.isFinite(options.likes) ? options.likes : 1;
       const initialComments = Number.isFinite(options.comments) ? options.comments : 0;
-      const badgeText = options.badgeText || "720p/1080p • R2 CDN (90%+ Hit)";
       const publicAuthor = resolvePublicDisplayName(author);
       const isBookmarked = bookmarkedVideosMap.has(String(reelId));
       const dict = translations[document.getElementById('languageSelect')?.value] || translations.hi;
@@ -3135,7 +3105,6 @@
       newSlide.dataset.reelId = reelId;
       newSlide.dataset.author = publicAuthor;
       newSlide.innerHTML = `
-        <span class="quality-tag">${badgeText}</span>
         <video id="${newVidId}" src="${videoSrc}" loop playsinline webkit-playsinline preload="metadata" onclick="handleReelTap('${newVidId}', '${newCtrlId}', '${newSpkId}')" controlsList="nodownload" disablePictureInPicture oncontextmenu="return false;"></video>
         <div class="center-controls-overlay" id="${newCtrlId}" style="display:none;">
           <button class="center-speaker-btn" id="${newSpkId}" onclick="event.stopPropagation(); toggleSpeakerOnly('${newVidId}', '${newSpkId}')" aria-label="Sound">🔊</button>
@@ -3642,8 +3611,7 @@
 
       const feedVideoSrc = remoteUrl || videoSrcToAdd;
       const newVidId = appendVideoSlideToFeed(feedVideoSrc, caption, loggedInUser, true, {
-        reelId: remoteId || undefined,
-        badgeText: remoteUrl ? "720p/1080p • R2 CDN (90%+ Hit)" : "720p/1080p • Local"
+        reelId: remoteId || undefined
       });
       pauseAndMuteOtherVideos(newVidId);
 
@@ -3667,14 +3635,15 @@
 
     function openStoryCreator() {
       pauseAllVideosAndMute();
-      pendingStoryVideoFile = null;
-      pendingStoryVideoURL = null;
-      pendingStoryThumbDataUrl = "";
+      pendingStoryMediaFile = null;
+      pendingStoryMediaType = "";
+      pendingStoryImageDataUrl = "";
       const btn = document.getElementById('storyShareBtnEl');
       if (btn) btn.disabled = false;
       document.getElementById('storyVideoFileName').innerText = (translations[document.getElementById('languageSelect')?.value] || translations.hi).storyPickVideo;
       document.getElementById('storyCaptionInput').value = "";
       document.getElementById('storyCreatorStatus').innerText = "";
+      document.getElementById('storyMediaInput').value = "";
       document.getElementById('storyCreatorModal').classList.add('open');
     }
 
@@ -3685,17 +3654,36 @@
       }
     }
 
-    function handleStoryVideoSelect(input) {
+    async function handleStoryMediaSelect(input) {
       const file = input.files && input.files[0];
       const status = document.getElementById('storyCreatorStatus');
       const label = document.getElementById('storyVideoFileName');
-      pendingStoryVideoFile = null;
-      pendingStoryVideoURL = null;
-      pendingStoryThumbDataUrl = "";
+      pendingStoryMediaFile = null;
+      pendingStoryMediaType = "";
+      pendingStoryImageDataUrl = "";
 
       if (!file) {
         label.innerText = (translations[document.getElementById('languageSelect')?.value] || translations.hi).storyPickVideo;
         status.innerText = "";
+        return;
+      }
+
+      if (file.type && file.type.startsWith("image/")) {
+        status.style.color = "#facc15";
+        status.innerText = "फोटो तैयार की जा रही है...";
+        const dataUrl = await readImageFileAsCompressedDataUrl(file);
+        if (!dataUrl) {
+          status.style.color = "#f87171";
+          status.innerText = "❌ यह फोटो लोड नहीं हो सकी।";
+          input.value = "";
+          return;
+        }
+        pendingStoryMediaFile = file;
+        pendingStoryMediaType = "image";
+        pendingStoryImageDataUrl = dataUrl;
+        label.innerText = "✅ फोटो: " + file.name;
+        status.style.color = "#4ade80";
+        status.innerText = "फोटो स्टोरी तैयार है! (24 घंटे बाद स्वतः हट जाएगी)";
         return;
       }
 
@@ -3705,19 +3693,19 @@
       const blobUrl = URL.createObjectURL(file);
       const tempVid = document.createElement('video');
       tempVid.preload = 'metadata';
-      tempVid.onloadedmetadata = async function() {
-        if (tempVid.duration > CLOUD_CONFIG.maxDurationSeconds + 0.5) {
-          URL.revokeObjectURL(blobUrl);
+      tempVid.onloadedmetadata = function() {
+        const dur = tempVid.duration;
+        URL.revokeObjectURL(blobUrl);
+        if (dur > CLOUD_CONFIG.maxDurationSeconds + 0.5) {
           status.style.color = "#f87171";
           status.innerText = "❌ स्टोरी वीडियो अधिकतम 60 सेकंड का ही हो सकता है!";
           input.value = "";
         } else {
-          pendingStoryVideoFile = file;
-          pendingStoryVideoURL = blobUrl;
-          label.innerText = "✅ " + file.name + " (" + Math.round(tempVid.duration) + "s)";
+          pendingStoryMediaFile = file;
+          pendingStoryMediaType = "video";
+          label.innerText = "✅ वीडियो: " + file.name + " (" + Math.round(dur) + "s)";
           status.style.color = "#4ade80";
           status.innerText = "स्टोरी वीडियो तैयार है! (24 घंटे बाद स्वतः हट जाएगी)";
-          pendingStoryThumbDataUrl = await captureVideoThumbnail(file);
         }
       };
       tempVid.onerror = function() {
@@ -3731,8 +3719,8 @@
 
     async function publishNewStory() {
       const txt = document.getElementById('storyCaptionInput').value.trim();
-      if (!pendingStoryVideoFile && !pendingStoryVideoURL && !txt) {
-        alert("कृपया स्टोरी के लिए कोई वीडियो चुनें या संदेश लिखें।");
+      if (!pendingStoryMediaFile && !pendingStoryImageDataUrl && !txt) {
+        alert("कृपया स्टोरी के लिए कोई फोटो/वीडियो चुनें या संदेश लिखें।");
         return;
       }
 
@@ -3744,20 +3732,17 @@
         status.innerText = "स्टोरी सेव हो रही है...";
       }
 
-      const videoFileToSave = pendingStoryVideoFile || null;
+      const mediaFileToSave = pendingStoryMediaFile || null;
+      const mediaType = pendingStoryMediaType || (txt ? "text" : "");
+      const imageDataUrl = pendingStoryImageDataUrl || "";
       const captionToSave = txt || "";
       const storyId = "story-" + Date.now();
       const createdAt = Date.now();
 
-      let thumbDataUrl = pendingStoryThumbDataUrl || "";
-      if (videoFileToSave && !thumbDataUrl) {
-        thumbDataUrl = await captureVideoThumbnail(videoFileToSave);
-      }
-
       let remoteVideoUrl = "";
-      if (videoFileToSave) {
+      if (mediaFileToSave && mediaType === "video") {
         try {
-          const upRes = await uploadVideo(videoFileToSave);
+          const upRes = await uploadVideo(mediaFileToSave);
           if (upRes && typeof upRes.url === "string" && upRes.url.trim() !== "") {
             remoteVideoUrl = upRes.url.trim();
           }
@@ -3770,11 +3755,12 @@
         id: storyId,
         user: loggedInUser,
         label: loggedInUser,
-        blob: videoFileToSave,
-        hasBlob: Boolean(videoFileToSave),
+        mediaType: mediaType,
+        blob: mediaType === "video" ? mediaFileToSave : null,
+        hasBlob: Boolean(mediaType === "video" && mediaFileToSave),
         remoteVideoUrl: remoteVideoUrl,
         videoUrl: remoteVideoUrl,
-        thumbDataUrl: thumbDataUrl,
+        imageDataUrl: imageDataUrl,
         text: captionToSave,
         isDefault: false,
         createdAt: createdAt
@@ -3784,9 +3770,10 @@
         id: storyId,
         user: storyObj.user,
         label: storyObj.label,
-        blob: videoFileToSave,
+        mediaType: mediaType,
+        blob: mediaType === "video" ? mediaFileToSave : null,
         remoteVideoUrl: remoteVideoUrl,
-        thumbDataUrl: thumbDataUrl,
+        imageDataUrl: imageDataUrl,
         text: captionToSave,
         createdAt: createdAt
       });
@@ -3795,10 +3782,10 @@
       persistStoriesMetadata();
       renderStoriesBar();
 
-      pendingStoryVideoFile = null;
-      pendingStoryVideoURL = null;
-      pendingStoryThumbDataUrl = "";
-      document.getElementById('storyVideoInput').value = "";
+      pendingStoryMediaFile = null;
+      pendingStoryMediaType = "";
+      pendingStoryImageDataUrl = "";
+      document.getElementById('storyMediaInput').value = "";
       if (btn) btn.disabled = false;
 
       document.getElementById('storyCreatorModal').classList.remove('open');
@@ -3967,8 +3954,8 @@
         logoutBtn: "लॉगआउट (Log Out)",
         deleteAccountBtn: "Delete Account",
         storyModalTitle: "नई स्टोरी डालें (24 घंटे के लिए)",
-        storyPickVideo: "स्टोरी के लिए वीडियो चुनें (वैकल्पिक)",
-        storyHint: "अधिकतम 60 सेकंड • 24 घंटे बाद अपने आप हट जाएगी",
+        storyPickVideo: "स्टोरी के लिए फोटो या वीडियो चुनें",
+        storyHint: "फोटो या अधिकतम 60 सेकंड का वीडियो • 24 घंटे बाद स्वतः हट जाएगी",
         storyMsgPlaceholder: "या स्टोरी का संदेश लिखें...",
         storyShareBtn: "स्टोरी शेयर करें",
         commentsTitle: "Comments (क्लाउड डेटाबेस सिंक)",
@@ -4017,8 +4004,8 @@
         logoutBtn: "Log Out",
         deleteAccountBtn: "Delete Account",
         storyModalTitle: "Post New Story (24 Hours)",
-        storyPickVideo: "Choose Story Video (Optional)",
-        storyHint: "Max 60 seconds • Disappears after 24 hours",
+        storyPickVideo: "Choose Photo or Video for Story",
+        storyHint: "Photo or max 60s video • Disappears after 24 hours",
         storyMsgPlaceholder: "Or write a story message...",
         storyShareBtn: "Share Story",
         commentsTitle: "Comments (Cloud Database Sync)",
