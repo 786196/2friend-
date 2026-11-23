@@ -1,1545 +1,563 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>2friend - India's Own Social Video App</title>
-  <link rel="icon" type="image/png" href="logo.png">
-  <link rel="apple-touch-icon" href="logo.png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>2friend</title>
+  <link rel="icon" type="image/png" href="logo.png" />
+
+  <!-- Google Identity Services (OAuth 2.0) -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <!-- OneSignal Web SDK v16 -->
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
   <script>
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     OneSignalDeferred.push(async function(OneSignal) {
-      try {
-        await OneSignal.init({
-          appId: "72e22f54-652f-4d74-9ae3-fdd2cf750a2f",
-        });
-        await checkAndSyncPushStatus(OneSignal);
-      } catch (err) {
-        console.log("OneSignal init error:", err);
-      }
+      await OneSignal.init({
+        appId: "b3bb91a2-74d7-4f63-be22-b44457799bd8",
+        safari_web_id: "web.onesignal.auto.360d445d-6ae6-491d-a02d-a4999dc3a4c7",
+        notifyButton: {
+          enable: false
+        },
+        serviceWorkerParam: { scope: "/2friend-/" },
+        serviceWorkerPath: "2friend-/OneSignalSDKWorker.js"
+      });
     });
   </script>
+
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      -webkit-user-select: none;
-      user-select: none;
-      -webkit-touch-callout: none;
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background-color: #000; color: #fff; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
+    video { -webkit-touch-callout: none; user-select: none; }
+
+    /* ऊपर का हेडर और 14+ भारतीय व अंतरराष्ट्रीय भाषाएं */
+    .top-bar {
+      height: 50px; background: #0d0d0d; border-bottom: 1px solid #222;
+      display: flex; align-items: center; justify-content: space-between; padding: 0 12px; z-index: 20;
     }
-    input, textarea, select {
-      -webkit-user-select: text;
-      user-select: text;
-    }
-    body {
-      background-color: #000;
-      color: #fff;
-      height: 100dvh;
-      width: 100vw;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
+    .brand-title { font-size: 20px; font-weight: 800; color: #ff2a6d; letter-spacing: 0.5px; }
+    .lang-box select {
+      background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 5px 8px;
+      border-radius: 6px; font-size: 12px; outline: none; max-width: 155px;
     }
 
-    /* लॉगिन और साइन-अप स्क्रीन ओवरले */
-    #auth-screen {
-      position: fixed;
-      inset: 0;
-      background: #0b0b0b;
-      z-index: 1000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-      overflow-y: auto;
-    }
-    .auth-card {
-      width: 100%;
-      max-width: 360px;
-      background: #141414;
-      border: 1px solid #282828;
-      border-radius: 16px;
-      padding: 24px 20px;
-      text-align: center;
-    }
-    .auth-logo-img {
-      width: 78px;
-      height: 78px;
-      border-radius: 20px;
-      object-fit: cover;
-      margin: 0 auto 8px;
-      display: block;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
-    }
-    .auth-logo {
-      font-size: 30px;
-      font-weight: 900;
-      background: linear-gradient(45deg, #ff9933, #ff2a6d, #00d2ff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 6px;
-    }
-    .google-login-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-    .auth-divider {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: #6b7280;
-      font-size: 11px;
-      margin: 10px 0 12px;
-    }
-    .auth-divider::before,
-    .auth-divider::after {
-      content: "";
-      flex: 1;
-      height: 1px;
-      background: #2a2a2a;
-    }
-    .auth-tabs {
-      display: flex;
-      background: #1d1d1d;
-      border-radius: 10px;
-      padding: 3px;
-      margin-bottom: 14px;
-      border: 1px solid #2d2d2d;
-    }
-    .auth-tab-btn {
-      flex: 1;
-      background: none;
-      border: none;
-      color: #9ca3af;
-      padding: 8px;
-      font-size: 13px;
-      font-weight: 700;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    .auth-tab-btn.active {
-      background: #2c2c2c;
-      color: #fff;
-    }
-    .auth-input {
-      width: 100%;
-      background: #1e1e1e;
-      border: 1px solid #333;
-      color: #fff;
-      padding: 11px 14px;
-      border-radius: 10px;
-      font-size: 14px;
-      margin-bottom: 10px;
-      outline: none;
-    }
-    .auth-btn {
-      width: 100%;
-      background: linear-gradient(45deg, #ff2a6d, #ff9933);
-      color: #fff;
-      border: none;
-      padding: 12px;
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 4px;
-    }
-    .auth-error {
-      font-size: 12px;
-      color: #f87171;
-      margin-bottom: 8px;
-      min-height: 16px;
-    }
+    /* मुख्य स्क्रीन कंटेनर */
+    .main-container { flex: 1; position: relative; overflow: hidden; }
+    .screen-view { display: none; width: 100%; height: 100%; overflow-y: auto; }
+    .screen-view.active { display: block; }
 
-    /* हेडर बार */
-    header {
-      height: 50px;
-      background: #111;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 16px;
-      border-bottom: 1px solid #262626;
-      z-index: 50;
-      flex-shrink: 0;
-    }
-    .brand-wrap {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .header-logo-img {
-      width: 30px;
-      height: 30px;
-      border-radius: 8px;
-      object-fit: cover;
-      display: block;
-    }
-    .brand-logo {
-      font-size: 22px;
-      font-weight: 800;
-      background: linear-gradient(45deg, #ff9933, #ff2a6d, #00d2ff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .lang-dropdown {
-      background: #1e1e1e;
-      color: #fff;
-      border: 1px solid #333;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 12px;
-      outline: none;
-      max-width: 130px;
-    }
+    /* होम फीड (रील्स + स्टोरीज़) */
+    #view-home { overflow: hidden; display: none; flex-direction: column; }
+    #view-home.active { display: flex; }
 
-    /* नेविगेशन बार */
-    nav {
-      height: 50px;
-      background: #0f0f0f;
-      border-bottom: 1px solid #262626;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      flex-shrink: 0;
-      z-index: 60;
-    }
-    .nav-tab {
-      background: none;
-      border: none;
-      color: #777;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 48px;
-      height: 40px;
-      cursor: pointer;
-      position: relative;
-      transition: color 0.2s, transform 0.15s;
-    }
-    .nav-tab.active {
-      color: #fff;
-      transform: scale(1.08);
-    }
-    .nav-tab.active.notif-tab {
-      color: #1877f2;
-    }
-    .nav-tab svg {
-      width: 24px;
-      height: 24px;
-      stroke: currentColor;
-      fill: none;
-      stroke-width: 2;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-    .nav-tab.active svg.fill-active {
-      fill: currentColor;
-    }
-    .notif-badge {
-      position: absolute;
-      top: 4px;
-      right: 6px;
-      background: #ff2a6d;
-      color: #fff;
-      font-size: 9px;
-      font-weight: bold;
-      padding: 1px 4px;
-      border-radius: 10px;
-      line-height: 1.1;
-    }
-
-    /* मुख्य स्क्रीन क्षेत्र */
-    .app-body {
-      flex: 1;
-      position: relative;
-      overflow: hidden;
-      background: #000;
-      display: flex;
-      flex-direction: column;
-    }
-    .screen-view {
-      position: absolute;
-      inset: 0;
-      display: none;
-      flex-direction: column;
-      background: #000;
-    }
-    .screen-view.active {
-      display: flex;
-    }
-
-    /* गोलाकार स्टोरी बार */
+    /* गोल 24-घंटे स्टोरी बार (Facebook / Instagram जैसा सिंपल गोल लुक) */
     .stories-bar {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 10px 12px 8px;
-      background: #0b0b0b;
-      border-bottom: 1px solid #222;
-      overflow-x: auto;
-      flex-shrink: 0;
-      scrollbar-width: none;
-      position: sticky;
-      top: 0;
-      z-index: 25;
+      display: flex; gap: 12px; padding: 10px 12px 8px; background: #080808;
+      border-bottom: 1px solid #1c1c1c; overflow-x: auto; align-items: flex-start;
+      scrollbar-width: none; -ms-overflow-style: none; flex-shrink: 0;
     }
     .stories-bar::-webkit-scrollbar { display: none; }
 
     .circle-story-item {
-      width: 74px;
-      flex-shrink: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 5px;
-      cursor: pointer;
-      transition: transform 0.14s ease;
+      flex-shrink: 0; width: 68px; display: flex; flex-direction: column; align-items: center;
+      gap: 5px; cursor: pointer; user-select: none;
     }
-    .circle-story-item:active {
-      transform: scale(0.95);
-    }
-
     .circle-story-ring {
-      width: 68px;
-      height: 68px;
-      border-radius: 50%;
-      padding: 2.5px;
-      position: relative;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      position: relative; width: 64px; height: 64px; border-radius: 50%; padding: 2.5px;
       background: linear-gradient(45deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5);
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.15s ease;
     }
-    .circle-story-item.your-story-item .circle-story-ring {
-      background: #2b2b2b;
-    }
-    .circle-story-item.seen-story .circle-story-ring {
-      background: #3a3a3a;
-    }
+    .circle-story-item:active .circle-story-ring { transform: scale(0.95); }
+    .circle-story-item.seen-story .circle-story-ring { background: #3a3a3a; }
+    .circle-story-item.your-story-item .circle-story-ring { background: #262626; }
 
     .circle-story-inner {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #1f2937, #111827);
-      border: 2.5px solid #0b0b0b;
-      overflow: hidden;
-      position: relative;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      width: 100%; height: 100%; border-radius: 50%; background: #141414;
+      border: 2px solid #080808; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
     }
-    .circle-story-inner img,
-    .circle-story-inner video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
+    .circle-story-inner img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .circle-story-initial { font-size: 16px; font-weight: 800; color: #fff; }
     .circle-story-video-badge {
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(145deg, #ff2a6d, #ff9933);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      color: #fff;
-      font-weight: 800;
-      font-size: 16px;
-      gap: 2px;
+      width: 100%; height: 100%; background: linear-gradient(135deg, #1f1f2e, #2b1426);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      color: #fff; font-size: 13px; font-weight: 800;
     }
     .circle-story-text-thumb {
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(145deg, #1e293b, #0f172a 55%, #1d4ed8);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 6px;
-      text-align: center;
-      font-size: 9px;
-      font-weight: 700;
-      color: #fff;
-      line-height: 1.15;
-      overflow: hidden;
+      width: 100%; height: 100%; background: linear-gradient(135deg, #1e1b4b, #3b0764);
+      padding: 6px; display: flex; align-items: center; justify-content: center;
+      text-align: center; font-size: 9px; font-weight: 700; color: #f3f4f6; line-height: 1.15;
     }
-    .circle-story-initial {
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, #ff9933, #ff2a6d);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 20px;
-      font-weight: 800;
-      color: #fff;
-    }
-
     .circle-story-plus-badge {
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      background: #1877f2;
-      border: 2px solid #0b0b0b;
-      color: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 3;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.65);
+      position: absolute; right: 0; bottom: 0; width: 20px; height: 20px; border-radius: 50%;
+      background: #0095f6; border: 2px solid #080808; color: #fff;
+      display: flex; align-items: center; justify-content: center; z-index: 3;
     }
-
     .circle-story-label {
-      width: 100%;
-      text-align: center;
-      font-size: 11px;
-      font-weight: 500;
-      color: #f1f1f1;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      width: 68px; font-size: 11px; color: #e5e7eb; text-align: center;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500;
     }
-    .circle-story-item.seen-story .circle-story-label {
-      color: #9a9a9a;
-    }
+    .circle-story-item.seen-story .circle-story-label { color: #8e8e8e; }
 
-    /* विज्ञापन बैनर */
-    .ad-slot-banner {
-      background: linear-gradient(90deg, #1a1a2e, #16213e);
-      border-bottom: 1px solid #2a2a4a;
-      padding: 5px 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 11px;
-      color: #a0c4ff;
-      flex-shrink: 0;
+    /* गेमिंग एड बैनर */
+    .gaming-ad-banner {
+      background: linear-gradient(90deg, #161032, #2b1055);
+      border-bottom: 1px solid #3c1e70; padding: 6px 12px;
+      display: flex; align-items: center; justify-content: space-between; font-size: 11px; flex-shrink: 0;
     }
-    .ad-badge {
-      background: #ff9900;
-      color: #000;
-      font-weight: bold;
-      padding: 1px 4px;
-      border-radius: 3px;
-      font-size: 9px;
-      margin-right: 4px;
-    }
+    .ad-tag { background: #f59e0b; color: #000; font-weight: 800; padding: 1px 5px; border-radius: 3px; font-size: 9px; margin-right: 6px; }
+    .ad-cta { background: #10b981; color: #fff; border: none; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; cursor: pointer; }
 
-    /* रील्स फीड */
-    .reels-feed {
-      flex: 1;
-      overflow-y: scroll;
-      scroll-snap-type: y mandatory;
-      scrollbar-width: none;
-    }
-    .reels-feed::-webkit-scrollbar { display: none; }
+    /* वर्टिकल रील्स स्क्रॉल फीड */
+    .reels-feed { flex: 1; overflow-y: scroll; scroll-snap-type: y mandatory; position: relative; }
     .reel-slide {
-      width: 100%;
-      height: 100%;
-      scroll-snap-align: start;
-      scroll-snap-stop: always;
-      position: relative;
-      background: #000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      width: 100%; height: 100%; scroll-snap-align: start; position: relative;
+      background: #000; display: flex; align-items: center; justify-content: center;
     }
-    .reel-slide video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      background: #000;
-      cursor: pointer;
-    }
+    .reel-slide video { width: 100%; height: 100%; object-fit: cover; cursor: pointer; background: #000; }
+
+    /* वीडियो पॉज़ होने पर बीच में दिखने वाला बटन */
     .center-controls-overlay {
-      position: absolute;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 14px;
-      z-index: 15;
-      pointer-events: auto;
-    }
-    .center-speaker-btn {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: rgba(0, 0, 0, 0.65);
-      border: 1.5px solid rgba(255, 255, 255, 0.7);
-      color: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      display: flex; align-items: center; gap: 18px; z-index: 15; pointer-events: auto;
     }
     .center-play-btn {
-      width: 68px;
-      height: 68px;
-      border-radius: 50%;
-      background: rgba(0, 0, 0, 0.65);
-      border: 2px solid rgba(255, 255, 255, 0.9);
-      color: #fff;
-      font-size: 26px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      padding-left: 4px;
+      width: 58px; height: 58px; border-radius: 50%;
+      background: rgba(0,0,0,0.65); color: #fff; font-size: 24px;
+      display: flex; align-items: center; justify-content: center;
+      border: 2px solid rgba(255,255,255,0.85); cursor: pointer;
     }
+    .center-speaker-btn {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: rgba(0,0,0,0.65); color: #fff; font-size: 18px;
+      display: flex; align-items: center; justify-content: center;
+      border: 1.5px solid rgba(255,255,255,0.75); cursor: pointer;
+    }
+
+    /* रील के ऊपर जानकारी और साइड बटन */
     .reel-bottom-info {
-      position: absolute;
-      bottom: 48px;
-      left: 12px;
-      right: 72px;
-      z-index: 10;
-      text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+      position: absolute; bottom: 44px; left: 12px; right: 72px; z-index: 10; pointer-events: auto;
     }
-    .reel-user {
-      font-weight: 700;
-      font-size: 15px;
-      margin-bottom: 4px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+    .reel-user { font-weight: bold; font-size: 14px; display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
     .follow-chip {
-      background: #ff2a6d;
-      color: #fff;
-      border: none;
-      padding: 2px 8px;
-      border-radius: 10px;
-      font-size: 10px;
-      font-weight: bold;
-      cursor: pointer;
+      background: #ff2a6d; color: #fff; border: none; padding: 3px 10px;
+      border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer;
     }
-    .reel-desc { font-size: 13px; color: #f1f1f1; line-height: 1.3; }
-    .reel-music { font-size: 11px; color: #ccc; margin-top: 4px; }
+    .reel-desc { font-size: 12px; color: #eee; line-height: 1.3; margin-bottom: 5px; }
+    .reel-music { font-size: 11px; color: #ccc; }
+
+    /* वीडियो के ठीक नीचे टाइम और पतली सीक/प्रोग्रेस लाइन */
+    .reel-timeline-wrap {
+      position: absolute; bottom: 0; left: 0; right: 0; z-index: 18;
+      padding: 6px 10px 6px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.88));
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .reel-time-row {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 10.5px; font-weight: 700; color: #f3f4f6;
+      font-variant-numeric: tabular-nums;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.9);
+      pointer-events: none;
+    }
+    .reel-seek-bar {
+      width: 100%; height: 14px; display: flex; align-items: center;
+      cursor: pointer; touch-action: none;
+    }
+    .reel-seek-track {
+      width: 100%; height: 3px; background: rgba(255,255,255,0.32);
+      border-radius: 3px; position: relative; overflow: visible;
+    }
+    .reel-seek-fill {
+      height: 100%; width: 0%; background: #ff2a6d; border-radius: 3px;
+      position: relative; transition: width 0.08s linear;
+    }
+    .reel-seek-thumb {
+      position: absolute; right: -5px; top: 50%; transform: translateY(-50%);
+      width: 10px; height: 10px; border-radius: 50%; background: #fff;
+      box-shadow: 0 0 4px rgba(0,0,0,0.85);
+    }
+
     .reel-side-actions {
-      position: absolute;
-      bottom: 48px;
-      right: 10px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      z-index: 10;
+      position: absolute; bottom: 48px; right: 10px; display: flex; flex-direction: column;
+      gap: 11px; align-items: center; z-index: 10;
     }
     .side-btn-wrap { display: flex; flex-direction: column; align-items: center; gap: 2px; }
     .side-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: rgba(25, 25, 25, 0.78);
-      border: 1px solid rgba(255,255,255,0.18);
-      color: #fff;
-      font-size: 17px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      transition: transform 0.15s, color 0.15s, border-color 0.15s;
+      width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.16);
+      border: none; color: #fff; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer;
     }
-    .side-btn.liked { color: #ff2a6d; border-color: #ff2a6d; }
-    .side-btn.bookmarked { color: #facc15; border-color: #facc15; background: rgba(250, 204, 21, 0.18); }
-    .side-count { font-size: 10.5px; font-weight: 600; }
+    .side-btn.liked { color: #ff2a6d; background: rgba(255,42,109,0.22); }
+    .side-btn.bookmarked { color: #facc15; background: rgba(250,204,21,0.22); }
+    .side-count { font-size: 11px; font-weight: bold; }
 
-    /* वीडियो के नीचे टाइम और सीक/प्रोग्रेस लाइन */
-    .reel-timeline-wrap {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 20;
-      padding: 6px 12px 8px;
-      background: linear-gradient(to top, rgba(0, 0, 0, 0.92), rgba(0, 0, 0, 0));
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
+    /* वीडियो अपलोड स्क्रीन */
+    .upload-box { padding: 18px; max-width: 450px; margin: 0 auto; }
+    .upload-card { background: #121212; border: 1px solid #2a2a2a; border-radius: 12px; padding: 16px; }
+    .rule-badge {
+      background: #1b2838; border: 1px solid #2a475e; color: #66c0f4;
+      padding: 8px; border-radius: 8px; font-size: 12px; margin-bottom: 12px; line-height: 1.4;
     }
-    .reel-time-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 11px;
-      font-weight: 600;
-      color: #e5e7eb;
-      font-variant-numeric: tabular-nums;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+    .file-drop-area {
+      border: 2px dashed #444; border-radius: 10px; padding: 24px 12px; text-align: center;
+      margin-bottom: 12px; cursor: pointer; background: #181818;
     }
-    .reel-seek-bar {
-      width: 100%;
-      height: 16px;
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      touch-action: none;
+    .input-dark {
+      width: 100%; background: #1d1d1d; border: 1px solid #333; color: #fff;
+      padding: 10px; border-radius: 8px; margin-bottom: 12px; font-size: 13px;
     }
-    .reel-seek-track {
-      width: 100%;
-      height: 3.5px;
-      background: rgba(255, 255, 255, 0.3);
-      border-radius: 3px;
-      position: relative;
-      overflow: visible;
+    .btn-primary {
+      width: 100%; background: #ff2a6d; color: #fff; border: none; padding: 12px;
+      border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer;
     }
-    .reel-seek-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #ff2a6d, #ff9933);
-      border-radius: 3px;
-      position: relative;
-    }
-    .reel-seek-thumb {
-      position: absolute;
-      right: -5px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 11px;
-      height: 11px;
-      border-radius: 50%;
-      background: #fff;
-      box-shadow: 0 0 6px rgba(0, 0, 0, 0.8);
-    }
+    .btn-primary:disabled { background: #555; cursor: not-allowed; }
 
-    /* अपलोड स्क्रीन */
-    .create-wrapper {
-      flex: 1;
-      padding: 16px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    /* चैट स्क्रीन (सिर्फ टेक्स्ट मैसेज - 1-to-1) */
+    .chat-container { display: flex; flex-direction: column; height: 100%; }
+    .chat-header {
+      padding: 10px 14px; background: #121212; border-bottom: 1px solid #222;
+      font-size: 13px; font-weight: bold; display: flex; justify-content: space-between; align-items: center;
     }
-    .rule-card {
-      background: #141414;
-      border: 1px solid #2a2a2a;
-      border-radius: 10px;
-      padding: 12px;
-      width: 100%;
-      max-width: 400px;
-      margin-bottom: 14px;
-      font-size: 12px;
-      color: #ccc;
-    }
-    .rule-card strong { color: #4ade80; }
-    .drop-zone {
-      width: 100%;
-      max-width: 400px;
-      border: 2px dashed #444;
-      border-radius: 14px;
-      padding: 24px 14px;
-      text-align: center;
-      background: #111;
-      cursor: pointer;
-      margin-bottom: 14px;
-    }
-    .caption-input {
-      width: 100%;
-      max-width: 400px;
-      background: #1a1a1a;
-      border: 1px solid #333;
-      color: #fff;
-      padding: 10px;
-      border-radius: 8px;
-      font-size: 13px;
-      margin-bottom: 12px;
-      outline: none;
-    }
-    .primary-btn {
-      width: 100%;
-      max-width: 400px;
-      background: linear-gradient(45deg, #ff2a6d, #ff9933);
-      color: #fff;
-      border: none;
-      padding: 12px;
-      border-radius: 8px;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .primary-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    /* चैट स्क्रीन */
-    .chat-container {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      background: #000;
-    }
-    .chat-header-info {
-      padding: 8px 14px;
-      background: #141414;
-      border-bottom: 1px solid #262626;
-      font-size: 11px;
-      color: #aaa;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-shrink: 0;
-    }
-    .chat-safety-btn {
-      background: #261414;
-      border: 1px solid #7f1d1d;
-      color: #fca5a5;
-      font-size: 10.5px;
-      padding: 3px 8px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-    .chat-box-area {
-      flex: 1;
-      padding: 14px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .msg-bubble {
-      max-width: 78%;
-      padding: 9px 12px;
-      border-radius: 14px;
-      font-size: 13px;
-      line-height: 1.3;
-      word-wrap: break-word;
-    }
-    .msg-received { background: #222; align-self: flex-start; }
-    .msg-sent { background: #0084ff; align-self: flex-end; }
-    
+    .chat-messages { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+    .msg-bubble { max-width: 75%; padding: 8px 12px; border-radius: 14px; font-size: 13px; line-height: 1.35; }
+    .msg-received { background: #1f1f1f; align-self: flex-start; border-bottom-left-radius: 3px; }
+    .msg-sent { background: #ff2a6d; align-self: flex-end; border-bottom-right-radius: 3px; }
     .chat-footer {
-      background: #141414;
-      border-top: 1px solid #262626;
-      display: flex;
-      gap: 8px;
-      padding: 10px 14px;
-      flex-shrink: 0;
+      padding: 8px 10px; background: #121212; border-top: 1px solid #222; display: flex; gap: 8px;
     }
     .chat-footer input {
-      flex: 1;
-      background: #222;
-      border: 1px solid #4ade80;
-      color: #fff;
-      padding: 10px 14px;
-      border-radius: 20px;
-      font-size: 14px;
-      outline: none;
+      flex: 1; background: #1e1e1e; border: 1px solid #333; color: #fff;
+      padding: 9px 12px; border-radius: 20px; font-size: 13px; outline: none;
     }
     .chat-footer button {
-      background: #0084ff;
-      color: #fff;
-      border: none;
-      padding: 0 18px;
-      border-radius: 20px;
-      font-weight: bold;
-      cursor: pointer;
+      background: #ff2a6d; color: #fff; border: none; padding: 0 16px; border-radius: 20px; font-weight: bold; cursor: pointer;
     }
 
     /* नोटिफिकेशन स्क्रीन */
-    .notif-wrapper {
-      flex: 1;
-      overflow-y: auto;
-      background: #000;
-    }
-    .notif-top-bar {
-      padding: 14px 16px;
-      border-bottom: 1px solid #1e1e1e;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #080808;
-    }
-    .notif-section-title {
-      padding: 10px 16px 6px;
-      font-size: 13px;
-      font-weight: 700;
-      color: #aaa;
-      letter-spacing: 0.2px;
-    }
     .notif-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
-      border-bottom: 1px solid #161616;
-      background: #0b121c;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .notif-item.read {
-      background: #000;
-    }
-    .notif-avatar-wrap {
-      position: relative;
-      flex-shrink: 0;
-    }
-    .notif-avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: linear-gradient(45deg, #1877f2, #00d2ff);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-weight: bold;
-      font-size: 17px;
-      color: #fff;
-    }
-    .notif-mini-badge {
-      position: absolute;
-      right: -2px;
-      bottom: -2px;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: #1877f2;
-      border: 2px solid #000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 10px;
-      color: #fff;
-    }
-    .notif-content {
-      flex: 1;
-      min-width: 0;
-    }
-    .notif-text {
-      font-size: 13.5px;
-      line-height: 1.38;
-      color: #f1f1f1;
-    }
-    .notif-time {
-      font-size: 11.5px;
-      color: #8b949e;
-      margin-top: 3px;
-    }
-    .notif-item:not(.read) .notif-time {
-      color: #4ea1ff;
-      font-weight: 600;
+      padding: 12px 14px; border-bottom: 1px solid #1e1e1e; display: flex;
+      justify-content: space-between; align-items: center; font-size: 13px;
     }
 
     /* प्रोफाइल स्क्रीन */
-    .profile-wrapper {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    .profile-header { padding: 18px 14px 12px; text-align: center; border-bottom: 1px solid #222; }
+    .profile-avatar {
+      width: 68px; height: 68px; border-radius: 50%; background: linear-gradient(45deg, #ff2a6d, #ff7b00);
+      margin: 0 auto 8px; display: flex; align-items: center; justify-content: center;
+      font-size: 24px; font-weight: bold; color: #fff; overflow: hidden;
     }
-    .profile-pic {
-      width: 76px;
-      height: 76px;
-      border-radius: 50%;
-      background: linear-gradient(45deg, #ff9933, #ff2a6d);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 28px;
-      font-weight: bold;
-      margin-bottom: 10px;
-      border: 2px solid #ff9933;
-    }
-    .founder-badge-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      background: rgba(255, 153, 51, 0.14);
-      border: 1px solid rgba(255, 153, 51, 0.5);
-      color: #ffb74d;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 3px 10px;
-      border-radius: 999px;
-      margin-top: 5px;
+    .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .founder-badge {
+      display: inline-block; background: rgba(245, 158, 11, 0.16); border: 1px solid rgba(245, 158, 11, 0.5);
+      color: #fbbf24; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 14px;
+      margin-top: 4px;
     }
     .profile-action-row {
-      display: flex;
-      gap: 10px;
-      width: 100%;
-      max-width: 380px;
-      margin-top: 12px;
+      display: flex; gap: 10px; justify-content: center; margin-top: 12px;
     }
-    .profile-notif-btn {
-      flex: 1;
-      background: #1877f2;
-      color: #fff;
-      border: none;
-      padding: 10px 14px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 700;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
+    .profile-pill-btn {
+      flex: 1; max-width: 165px; background: #1a1a1a; border: 1px solid #333; color: #fff;
+      padding: 9px 10px; border-radius: 10px; font-size: 12px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;
     }
-    .profile-notif-btn.enabled {
-      background: #166534;
-      border: 1px solid #4ade80;
+    .profile-pill-btn.enabled {
+      background: rgba(16, 185, 129, 0.18); border-color: #10b981; color: #34d399;
     }
-    .profile-bookmark-btn {
-      flex: 1;
-      background: #1f1f1f;
-      color: #facc15;
-      border: 1px solid #3f3f46;
-      padding: 10px 14px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 700;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
+    .profile-stats { display: flex; justify-content: center; gap: 28px; margin-top: 14px; font-size: 13px; }
+    .bookmarks-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 10px;
     }
-    .stats-row { display: flex; gap: 24px; margin: 14px 0; text-align: center; }
-    .stat-box strong { display: block; font-size: 16px; }
-    .stat-box span { font-size: 11px; color: #888; }
+    .bookmark-card {
+      background: #181818; border: 1px solid #2b2b2b; border-radius: 8px; padding: 8px;
+      display: flex; flex-direction: column; gap: 5px; cursor: pointer;
+    }
+    .bookmark-card-title {
+      font-size: 11.5px; font-weight: 700; color: #fff;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .bookmark-card-sub {
+      font-size: 10px; color: #9ca3af; display: flex; justify-content: space-between; align-items: center;
+    }
 
     /* फाउंडर टॉप 6 स्क्रीन-टाइम इनाम पैनल */
     .founder-rewards-box {
-      width: 100%;
-      margin-top: 10px;
-      background: linear-gradient(145deg, #16161c, #111827);
-      border: 1px solid #ff9933;
-      border-radius: 12px;
-      padding: 12px;
-    }
-    .founder-rewards-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-    .reward-clear-all-btn {
-      background: rgba(220, 38, 38, 0.25);
-      border: 1px solid #dc2626;
-      color: #fca5a5;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 4px 8px;
-      border-radius: 6px;
-      cursor: pointer;
+      margin: 12px; background: linear-gradient(145deg, #181224, #121212);
+      border: 1px solid rgba(251, 191, 36, 0.45); border-radius: 12px; padding: 12px;
     }
     .reward-user-card {
-      background: #0d1117;
-      border: 1px solid #262c36;
-      border-radius: 10px;
-      padding: 10px;
-      margin-top: 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+      background: #19191f; border: 1px solid #2e2e38; border-radius: 9px;
+      padding: 9px; margin-top: 8px; display: flex; flex-direction: column; gap: 7px;
     }
     .reward-user-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 12.5px;
+      display: flex; justify-content: space-between; align-items: center; font-size: 12px;
     }
     .reward-amount-row {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
+      display: flex; gap: 5px; flex-wrap: wrap;
     }
     .amt-chip-btn {
-      flex: 1;
-      min-width: 48px;
-      background: #1f2937;
-      border: 1px solid #374151;
-      color: #e5e7eb;
-      padding: 5px 6px;
-      border-radius: 6px;
-      font-size: 11.5px;
-      font-weight: 700;
-      cursor: pointer;
+      background: #23232d; border: 1px solid #3c3c4a; color: #e5e7eb;
+      padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer;
     }
     .amt-chip-btn.selected {
-      background: #ff9933;
-      color: #000;
-      border-color: #ffb74d;
+      background: #f59e0b; border-color: #fbbf24; color: #000;
     }
     .reward-action-row {
-      display: flex;
-      gap: 8px;
+      display: flex; gap: 7px;
     }
     .reward-approve-btn {
-      flex: 2;
-      background: #16a34a;
-      color: #fff;
-      border: none;
-      padding: 7px 10px;
-      border-radius: 7px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
+      flex: 1; background: #10b981; border: none; color: #fff; padding: 6px 8px;
+      border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer;
     }
     .reward-approve-btn.approved {
-      background: #14532d;
-      border: 1px solid #4ade80;
-      color: #86efac;
+      background: #065f46; color: #6ee7b7;
     }
     .reward-del-btn {
-      flex: 1;
-      background: rgba(127, 29, 29, 0.45);
-      color: #fca5a5;
-      border: 1px solid #991b1b;
-      padding: 7px 10px;
-      border-radius: 7px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
+      background: rgba(239, 68, 68, 0.16); border: 1px solid rgba(239, 68, 68, 0.5);
+      color: #f87171; padding: 6px 10px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer;
     }
 
-    .profile-ad-box {
-      width: 100%; background: #181818; border: 1px solid #2e2e2e;
-      border-radius: 8px; padding: 10px; margin-top: 12px; text-align: center; font-size: 11px; color: #bbb;
+    /* नीचे का नेविगेशन बार */
+    .bottom-nav {
+      height: 54px; background: #0d0d0d; border-top: 1px solid #222;
+      display: flex; justify-content: space-around; align-items: center; z-index: 20;
     }
-    .bookmark-section-box {
-      width: 100%;
-      margin-top: 14px;
-      background: #111;
-      border: 1px solid #262626;
-      border-radius: 10px;
-      padding: 12px;
+    .nav-tab {
+      background: none; border: none; color: #888; font-size: 19px;
+      display: flex; flex-direction: column; align-items: center; cursor: pointer; position: relative;
+      padding: 6px 14px;
     }
-    .bookmark-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-      margin-top: 8px;
+    .nav-tab.active { color: #fff; }
+    .nav-badge {
+      position: absolute; top: 2px; right: 6px; background: #ff2a6d; color: #fff;
+      font-size: 9px; padding: 1px 4px; border-radius: 8px; font-weight: bold;
     }
-    .bookmark-card {
-      background: #1a1a1a;
-      border: 1px solid #2e2e2e;
-      border-radius: 8px;
-      padding: 8px;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+
+    /* लॉगिन व साइन-अप स्क्रीन */
+    #auth-screen {
+      position: fixed; inset: 0; background: #000; z-index: 100;
+      display: flex; align-items: center; justify-content: center; padding: 20px; overflow-y: auto;
     }
-    .bookmark-card-title {
-      font-size: 12px;
-      font-weight: 700;
-      color: #fff;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    .auth-card { width: 100%; max-width: 340px; background: #121212; padding: 22px; border-radius: 14px; border: 1px solid #2a2a2a; text-align: center; }
+    .auth-tabs {
+      display: flex; background: #1b1b1b; border-radius: 8px; padding: 3px; margin-bottom: 12px;
     }
-    .bookmark-card-sub {
-      font-size: 10.5px;
-      color: #9ca3af;
-      display: flex;
+    .auth-tab-btn {
+      flex: 1; background: none; border: none; color: #9ca3af; padding: 7px; font-size: 12px;
+      font-weight: 700; border-radius: 6px; cursor: pointer;
+    }
+    .auth-tab-btn.active { background: #ff2a6d; color: #fff; }
+    .auth-error { color: #f87171; font-size: 11.5px; margin-bottom: 8px; min-height: 16px; }
+    .google-oauth-wrap {
+      display: flex; justify-content: center; align-items: center; margin-top: 10px;
+    }
+
+    /* स्टोरी व्यूअर व अन्य मोडल */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 90;
+      display: none; flex-direction: column; align-items: center; justify-content: center; padding: 16px;
+    }
+    .modal-overlay.open { display: flex; }
+    #storyModal { padding: 0; background: #000; }
+
+    .story-full-viewer {
+      position: relative; width: 100%; max-width: 440px; height: 100%;
+      background: #111; overflow: hidden; display: flex; flex-direction: column;
       justify-content: space-between;
-      align-items: center;
     }
-    .account-safety-box {
-      width: 100%;
-      margin-top: 14px;
-      background: #121212;
-      border: 1px solid #262626;
-      border-radius: 10px;
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+    .story-top-chrome {
+      position: relative; z-index: 25; padding: 10px 12px 0;
+      background: linear-gradient(rgba(0,0,0,0.72), transparent);
     }
-    .safety-btn-row {
-      display: flex;
-      gap: 8px;
-    }
-    .logout-btn {
-      flex: 1;
-      background: #1f2937;
-      color: #e5e7eb;
-      border: 1px solid #374151;
-      padding: 9px 12px;
-      border-radius: 8px;
-      font-size: 12.5px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .delete-account-btn {
-      flex: 1;
-      background: rgba(127, 29, 29, 0.35);
-      color: #fca5a5;
-      border: 1px solid #991b1b;
-      padding: 9px 12px;
-      border-radius: 8px;
-      font-size: 12.5px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .policy-links {
-      margin-top: 14px;
-      margin-bottom: 16px;
-      font-size: 12px;
-      text-align: center;
-      color: #888;
-    }
-    .policy-links a {
-      color: #4ade80;
-      text-decoration: none;
-      margin: 0 8px;
-    }
-
-    /* फुल-स्क्रीन स्टोरी व्यूअर */
-    .story-modal {
-      position: fixed;
-      inset: 0;
-      background: #000;
-      z-index: 200;
-      display: none;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-    }
-    .story-modal.open { display: flex; }
-
-    .story-viewer-frame {
-      position: relative;
-      width: 100%;
-      max-width: 460px;
-      height: 100%;
-      background: #000;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-    }
-
-    .story-progress-row {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      right: 10px;
-      display: flex;
-      gap: 4px;
-      z-index: 220;
-    }
+    .story-progress-row { display: flex; gap: 4px; margin-bottom: 10px; }
     .story-progress-seg {
-      flex: 1;
-      height: 2.5px;
-      background: rgba(255, 255, 255, 0.3);
-      border-radius: 2px;
-      overflow: hidden;
+      flex: 1; height: 2.5px; background: rgba(255,255,255,0.35);
+      border-radius: 3px; overflow: hidden;
     }
-    .story-progress-fill {
-      height: 100%;
-      background: #fff;
-      width: 0%;
+    .story-progress-fill { height: 100%; width: 0%; background: #fff; }
+    .story-header-row {
+      display: flex; align-items: center; justify-content: space-between;
     }
-
-    .story-top-header {
-      position: absolute;
-      top: 22px;
-      left: 12px;
-      right: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 225;
-      gap: 8px;
+    .story-user-meta { display: flex; align-items: center; gap: 8px; }
+    .story-user-badge {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: linear-gradient(45deg, #feda75, #d62976, #4f5bd5);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 12px; color: #fff;
     }
-    .story-user-group {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      min-width: 0;
+    .story-close-btn {
+      background: none; border: none; color: #fff; font-size: 24px;
+      line-height: 1; cursor: pointer; padding: 4px 8px;
     }
-    .story-user-avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: linear-gradient(45deg, #ff9933, #ff2a6d);
-      border: 1.5px solid #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 14px;
-      font-weight: 800;
-      color: #fff;
-      flex-shrink: 0;
-      overflow: hidden;
-    }
-    .story-user-meta {
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-    }
-    .story-user-name {
-      font-size: 13.5px;
-      font-weight: 700;
-      color: #fff;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
-    }
-    .story-time-ago {
-      font-size: 11px;
-      color: rgba(255, 255, 255, 0.78);
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
-    }
-    .story-header-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .story-close-top-btn {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      background: rgba(0, 0, 0, 0.55);
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      color: #fff;
-      font-size: 17px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-    }
-
-    .story-poster-img {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      background: #000;
-      display: none;
-      z-index: 1;
-    }
-
     .story-media-video {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      display: none;
-      z-index: 2;
-      background: #000;
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; z-index: 5; background: #000;
     }
-
+    .story-poster-img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; z-index: 4; display: none; background: #000;
+    }
     .story-scrim-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(
-        to bottom,
-        rgba(0, 0, 0, 0.52) 0%,
-        rgba(0, 0, 0, 0.05) 35%,
-        rgba(0, 0, 0, 0.05) 68%,
-        rgba(0, 0, 0, 0.72) 100%
-      );
-      z-index: 3;
-      pointer-events: none;
+      position: absolute; inset: 0; z-index: 10; pointer-events: none;
+      background: linear-gradient(rgba(0,0,0,0.28) 0%, transparent 25%, transparent 72%, rgba(0,0,0,0.72) 100%);
     }
-
     .story-center-text {
-      position: relative;
-      z-index: 8;
-      padding: 14px 24px;
-      text-align: center;
-      font-size: 21px;
-      font-weight: 800;
-      color: #fff;
-      line-height: 1.32;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.95);
-      max-width: 88%;
-      word-break: break-word;
+      position: relative; z-index: 15; text-align: center; padding: 14px 22px;
+      font-size: 18px; font-weight: 700; color: #fff; line-height: 1.4;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.9); pointer-events: none;
+      margin: auto 0;
     }
-
-    /* स्टोरी में उड़ने वाले दिलों का लेयर और एनिमेशन */
-    .story-hearts-layer {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      overflow: hidden;
-      z-index: 222;
-    }
-    .floating-story-heart {
-      position: absolute;
-      bottom: 68px;
-      right: 64px;
-      font-size: 26px;
-      user-select: none;
-      pointer-events: none;
-      animation: floatHeartUp 1.6s ease-out forwards;
-      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
-    }
-    @keyframes floatHeartUp {
-      0% {
-        opacity: 1;
-        transform: translate(0, 0) scale(0.7);
-      }
-      40% {
-        opacity: 1;
-        transform: translate(var(--drift-x, -12px), -120px) scale(1.15);
-      }
-      100% {
-        opacity: 0;
-        transform: translate(var(--drift-x-end, 14px), -290px) scale(0.95);
-      }
-    }
-
-    .story-bottom-bar {
-      position: absolute;
-      bottom: 16px;
-      left: 12px;
-      right: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      z-index: 225;
-    }
-    .story-reply-btn {
-      flex: 1;
-      background: rgba(20, 20, 20, 0.68);
-      border: 1px solid rgba(255, 255, 255, 0.55);
-      color: #fff;
-      border-radius: 24px;
-      padding: 10px 16px;
-      font-size: 13px;
-      font-weight: 500;
-      text-align: left;
-      cursor: pointer;
-      backdrop-filter: blur(4px);
-    }
-    .story-heart-btn {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      background: rgba(20, 20, 20, 0.72);
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      color: #fff;
-      font-size: 19px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: transform 0.14s ease, color 0.15s ease, border-color 0.15s ease;
-    }
-    .story-heart-btn:active {
-      transform: scale(1.25);
-    }
-    .story-heart-btn.liked {
-      color: #ff2a6d;
-      border-color: #ff2a6d;
-      background: rgba(255, 42, 109, 0.2);
-    }
-    .story-share-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: rgba(20, 20, 20, 0.68);
-      border: 1px solid rgba(255, 255, 255, 0.45);
-      color: #fff;
-      font-size: 17px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
-
     .story-tap-zone-prev {
-      position: absolute;
-      top: 64px;
-      bottom: 68px;
-      left: 0;
-      width: 28%;
-      z-index: 15;
-      cursor: pointer;
+      position: absolute; top: 64px; bottom: 72px; left: 0; width: 32%; z-index: 20;
     }
     .story-tap-zone-next {
-      position: absolute;
-      top: 64px;
-      bottom: 68px;
-      right: 0;
-      width: 28%;
-      z-index: 15;
-      cursor: pointer;
+      position: absolute; top: 64px; bottom: 72px; right: 0; width: 68%; z-index: 20;
+    }
+    .story-bottom-bar {
+      position: relative; z-index: 25; padding: 10px 12px 16px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .story-reply-btn {
+      flex: 1; text-align: left; background: rgba(0,0,0,0.45);
+      border: 1px solid rgba(255,255,255,0.55); color: #fff;
+      padding: 10px 16px; border-radius: 24px; font-size: 13px; cursor: pointer;
+    }
+    .story-heart-btn {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.45);
+      color: #fff; font-size: 20px; display: flex; align-items: center;
+      justify-content: center; cursor: pointer; transition: transform 0.15s ease;
+    }
+    .story-heart-btn:active { transform: scale(1.25); }
+    .story-heart-btn.liked { color: #ff2a6d; border-color: #ff2a6d; background: rgba(255,42,109,0.25); }
+    .story-share-btn {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.45);
+      color: #fff; font-size: 17px; display: flex; align-items: center;
+      justify-content: center; cursor: pointer;
     }
 
-    /* स्टोरी डालने का मोडल */
-    .story-creator-modal,
-    .generic-modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.88);
-      z-index: 260;
-      display: none;
-      justify-content: center;
-      align-items: center;
-      padding: 16px;
+    /* स्टोरी में उड़ने वाले दिलों का एनीमेशन */
+    .story-hearts-layer {
+      position: absolute; inset: 0; pointer-events: none; z-index: 24; overflow: hidden;
     }
-    .story-creator-modal.open,
-    .generic-modal-overlay.open {
-      display: flex;
+    .floating-story-heart {
+      position: absolute; bottom: 74px; right: 64px; font-size: 24px;
+      animation: floatHeartUp 1.6s ease-out forwards;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.6));
     }
-    .story-creator-card,
-    .generic-modal-card {
-      width: 100%;
-      max-width: 380px;
-      max-height: 82dvh;
-      overflow-y: auto;
-      background: #161616;
-      border: 1px solid #333;
-      border-radius: 16px;
-      padding: 20px;
+    @keyframes floatHeartUp {
+      0% { transform: translate(0, 0) scale(0.6); opacity: 1; }
+      40% { transform: translate(var(--drift-x, -14px), -140px) scale(1.15); opacity: 0.95; }
+      100% { transform: translate(var(--drift-x-end, 18px), -340px) scale(0.95); opacity: 0; }
     }
-    .report-option-btn {
-      width: 100%;
-      text-align: left;
-      background: #202020;
-      border: 1px solid #333;
-      color: #f3f4f6;
-      padding: 11px 14px;
-      border-radius: 10px;
-      font-size: 13px;
-      margin-bottom: 8px;
-      cursor: pointer;
+
+    .story-creator-card {
+      width: 100%; max-width: 360px; background: #141414; border: 1px solid #333;
+      border-radius: 14px; padding: 18px;
     }
-    .report-option-btn:hover {
-      border-color: #ff2a6d;
-    }
+
     .comment-sheet {
-      position: fixed; bottom: 0; left: 0; right: 0; height: 52%;
-      background: #161616; border-top-left-radius: 16px; border-top-right-radius: 16px;
-      z-index: 300; display: none; flex-direction: column; border-top: 1px solid #333;
+      position: fixed; bottom: 0; left: 0; right: 0; height: 55vh; background: #141414;
+      border-top-left-radius: 16px; border-top-right-radius: 16px; z-index: 80;
+      display: none; flex-direction: column; border-top: 1px solid #333;
     }
     .comment-sheet.open { display: flex; }
   </style>
 </head>
-<body oncontextmenu="return false;">
+<body>
 
-  <!-- लॉगिन व नया अकाउंट (Sign Up) स्क्रीन -->
+  <!-- लॉगिन व साइन-अप स्क्रीन -->
   <div id="auth-screen">
     <div class="auth-card">
-      <img src="logo.png" alt="2friend Logo" class="auth-logo-img" onerror="this.style.display='none'">
-      <div class="auth-logo">2friend</div>
-      <p style="color: #aaa; font-size: 12.5px; margin-bottom: 14px;" data-key="loginSub">अपने क्रिएटर अकाउंट से लॉगिन करें</p>
+      <div style="font-size:28px; font-weight:900; color:#ff2a6d; margin-bottom:6px;">2friend</div>
+      <p style="font-size:12px; color:#aaa; margin-bottom:14px;" data-key="loginSub">अपने क्रिएटर अकाउंट से लॉगिन करें</p>
 
-      <!-- Google एक-क्लिक लॉगिन -->
-      <div class="google-login-wrap">
-        <div id="g_id_onload"
-             data-client_id="857463414976-qe5jfut213pj6mmjvml1hasmicc255q2.apps.googleusercontent.com"
-             data-context="signin"
-             data-ux_mode="popup"
-             data-callback="handleGoogleCredentialResponse"
-             data-auto_prompt="false">
-        </div>
+      <div class="auth-tabs">
+        <button class="auth-tab-btn active" id="tabSignInBtn" onclick="switchAuthMode('login')" data-key="signInTab">लॉगिन (Sign In)</button>
+        <button class="auth-tab-btn" id="tabSignUpBtn" onclick="switchAuthMode('signup')" data-key="signUpTab">नया अकाउंट (Sign Up)</button>
+      </div>
+
+      <div class="auth-error" id="authErrorMsg"></div>
+
+      <input type="text" id="loginUsername" class="input-dark" placeholder="यूज़रनेम या मोबाइल नंबर दर्ज करें" data-key-placeholder="userPlaceholder" />
+      <input type="password" id="loginPassword" class="input-dark" placeholder="पासवर्ड दर्ज करें (कम से कम 4 अक्षर)" data-key-placeholder="passPlaceholder" />
+      <input type="password" id="confirmPasswordInput" class="input-dark" style="display:none;" placeholder="पासवर्ड दोबारा दर्ज करें" />
+      <button class="btn-primary" id="authSubmitBtn" onclick="handleAuthSubmit()" data-key="loginBtn">लॉगिन करें</button>
+
+      <!-- Google OAuth 2.0 Sign-In बटन -->
+      <div style="margin:12px 0 6px; font-size:11px; color:#888;">— या सीधे Google से लॉगिन करें —</div>
+      <div id="g_id_onload"
+           data-client_id="857463414976-qe5jfut213pj6mmjvml1hasmicc255q2.apps.googleusercontent.com"
+           data-context="signin"
+           data-ux_mode="popup"
+           data-callback="handleGoogleCredentialResponse"
+           data-auto_prompt="false">
+      </div>
+      <div class="google-oauth-wrap">
         <div class="g_id_signin"
              data-type="standard"
              data-shape="pill"
-             data-theme="filled_blue"
+             data-theme="filled_black"
              data-text="signin_with"
              data-size="large"
              data-logo_alignment="left">
         </div>
       </div>
 
-      <div class="auth-divider">या यूज़रनेम / पासवर्ड से</div>
-
-      <div class="auth-tabs">
-        <button id="tabSignInBtn" class="auth-tab-btn active" onclick="switchAuthMode('login')" data-key="signInTab">लॉगिन (Sign In)</button>
-        <button id="tabSignUpBtn" class="auth-tab-btn" onclick="switchAuthMode('signup')" data-key="signUpTab">नया अकाउंट (Sign Up)</button>
+      <div style="margin-top:12px; font-size:11px; color:#888;">
+        <span onclick="openPolicyModal('privacy')" style="color:#66c0f4; cursor:pointer; text-decoration:underline;">Privacy Policy</span>
+        &nbsp;•&nbsp;
+        <span onclick="openPolicyModal('terms')" style="color:#66c0f4; cursor:pointer; text-decoration:underline;">Terms of Service</span>
       </div>
-
-      <input type="text" id="loginUsername" class="auth-input" placeholder="यूज़रनेम या मोबाइल नंबर दर्ज करें" data-key-placeholder="userPlaceholder">
-      <input type="password" id="loginPassword" class="auth-input" placeholder="पासवर्ड दर्ज करें (कम से कम 4 अक्षर)" data-key-placeholder="passPlaceholder">
-      <input type="password" id="confirmPasswordInput" class="auth-input" placeholder="पासवर्ड दोबारा दर्ज करें" style="display:none;">
-      <div id="authErrorMsg" class="auth-error"></div>
-
-      <button id="authSubmitBtn" class="auth-btn" onclick="handleAuthSubmit()" data-key="loginBtn">लॉगिन करें</button>
     </div>
   </div>
 
-  <!-- हेडर -->
-  <header>
-    <div class="brand-wrap">
-      <img src="logo.png" alt="2friend" class="header-logo-img" onerror="this.style.display='none'">
-      <div class="brand-logo">2friend</div>
-    </div>
-    <div class="header-right">
-      <span id="displayUser" style="font-size: 12px; color: #4ade80; font-weight: 700;">2friend founder</span>
-      <select class="lang-dropdown" id="languageSelect" onchange="applyLanguage()">
-        <option value="hi">हिन्दी</option>
-        <option value="en">English</option>
-        <option value="en-US">English (USA)</option>
-        <option value="en-GB">English (UK / Britain)</option>
-        <option value="ar-AE">العربية (Dubai / UAE)</option>
-        <option value="bn">বাংলা</option>
-        <option value="te">తెలుగు</option>
-        <option value="mr">मराठी</option>
-        <option value="ta">தமிழ்</option>
-        <option value="gu">ગુજરાતી</option>
-        <option value="ur">اردو</option>
-        <option value="kn">ಕನ್ನಡ</option>
-        <option value="ml">മലയാളം</option>
-        <option value="pa">ਪੰਜਾਬੀ</option>
-        <option value="or">ଓଡ଼ିଆ</option>
-        <option value="as">অসমীয়া</option>
-        <option value="ks">कश्मीरी</option>
-      </select>
+  <!-- ऊपर का हेडर -->
+  <header class="top-bar">
+    <div class="brand-title">2friend</div>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <span id="displayUser" style="font-size:11px; color:#4ade80; font-weight:bold;">2friend founder</span>
+      <div class="lang-box">
+        <select id="languageSelect" onchange="applyLanguage()" aria-label="Language">
+          <option value="hi">हिन्दी</option>
+          <option value="en">English</option>
+          <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+          <option value="bn">বাংলা (Bengali)</option>
+          <option value="ta">தமிழ் (Tamil)</option>
+          <option value="te">తెలుగు (Telugu)</option>
+          <option value="mr">मराठी (Marathi)</option>
+          <option value="gu">ગુજરાતી (Gujarati)</option>
+          <option value="kn">ಕನ್ನಡ (Kannada)</option>
+          <option value="ml">മലയാളം (Malayalam)</option>
+          <option value="or">ଓଡ଼ିଆ (Odia)</option>
+          <option value="as">অসমীয়া (Assamese)</option>
+          <option value="ur">اردو (Urdu)</option>
+          <option value="sa">संस्कृतम् (Sanskrit)</option>
+          <option value="mai">मैथिली (Maithili)</option>
+          <option value="ks">کٲشُر (Kashmiri)</option>
+          <option value="ar-AE">العربية (UAE)</option>
+        </select>
+      </div>
     </div>
   </header>
 
-  <!-- नेविगेशन बार -->
-  <nav>
-    <button class="nav-tab active" onclick="navigateTab('home', this)" aria-label="Home">
-      <svg class="fill-active" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-    </button>
-    <button class="nav-tab" onclick="navigateTab('create', this)" aria-label="Create">
-      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5" ry="5"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
-    </button>
-    <button class="nav-tab" onclick="navigateTab('chat', this)" aria-label="Chat">
-      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-    </button>
-    <button class="nav-tab notif-tab" onclick="navigateTab('notifications', this)" aria-label="Notifications">
-      <svg class="fill-active" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-      <span class="notif-badge" id="notifCountBadge">2</span>
-    </button>
-    <button class="nav-tab" onclick="navigateTab('profile', this)" aria-label="Profile">
-      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-    </button>
-  </nav>
+  <!-- मुख्य स्क्रीन -->
+  <main class="main-container">
 
-  <!-- मुख्य बॉडी -->
-  <div class="app-body">
-
-    <!-- 1. होम स्क्रीन -->
-    <div id="view-home" class="screen-view active">
+    <!-- 1. होम फीड -->
+    <section id="view-home" class="screen-view active">
+      <!-- गोल 24-घंटे स्टोरी बार -->
       <div class="stories-bar" id="storiesBarContainer"></div>
 
-      <div class="ad-slot-banner">
-        <div><span class="ad-badge">AD</span> <strong>Ludo & Cricket Arena</strong> - <span data-key="gamePlayText">खेलें!</span></div>
-        <span style="color:#fff; text-decoration:underline; cursor:pointer;" onclick="handleGamingAdClick()" data-key="adOpen">Open</span>
+      <!-- गेमिंग एड बैनर -->
+      <div class="gaming-ad-banner">
+        <div><span class="ad-tag">AD</span> <span>Ludo & Cricket Arena - <strong data-key="gamePlayText">खेलें!</strong></span></div>
+        <button class="ad-cta" onclick="handleGamingAdClick()" data-key="adOpen">Open</button>
       </div>
 
+      <!-- वर्टिकल रील्स फीड -->
       <div class="reels-feed" id="reelsFeedContainer">
         <div class="reel-slide" data-reel-id="reel-1" data-author="2friend founder">
           <video id="vid-1" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" loop playsinline webkit-playsinline preload="auto" onclick="handleReelTap('vid-1', 'ctrl-1', 'spk-1')" controlsList="nodownload" disablePictureInPicture oncontextmenu="return false;"></video>
@@ -1552,17 +570,17 @@
               <span id="reelAuthorName">2friend founder</span>
               <button class="follow-chip" onclick="toggleFollow(this, '2friend founder')" data-key="followBtn">Follow</button>
             </div>
-            <div class="reel-desc">2friend ऐप पर आपका स्वागत है! 720p/1080p क्वालिटी, तेज़ लोडिंग और क्लाउड डेटाबेस सिंक। #2friend #India</div>
-            <div class="reel-music">🎵 Original Audio (Copyright-Free)</div>
+            <div class="reel-desc">2friend पर आपका स्वागत है! 720p/1080p • 1 मिनट तक के वीडियो #2friend</div>
+            <div class="reel-music">🎵 Original Audio - 2friend</div>
           </div>
           <div class="reel-side-actions">
             <div class="side-btn-wrap">
               <button class="side-btn" onclick="toggleLike(this, 'like-1', 'reel-1')">♥</button>
-              <span class="side-count" id="like-1">124</span>
+              <span class="side-count" id="like-1">128</span>
             </div>
             <div class="side-btn-wrap">
-              <button class="side-btn" onclick="openComments('reel-1')">💬</button>
-              <span class="side-count" id="comment-count-1">18</span>
+              <button class="side-btn" onclick="openComments('reel-1', 'comment-count-1')">💬</button>
+              <span class="side-count" id="comment-count-1">14</span>
             </div>
             <div class="side-btn-wrap">
               <button class="side-btn" id="bm-btn-reel-1" onclick="toggleBookmark(this, 'reel-1')" title="Bookmark">🔖</button>
@@ -1577,7 +595,7 @@
               <span class="side-count" data-key="reportLabel">Report</span>
             </div>
           </div>
-          <!-- वीडियो के नीचे टाइम और प्रोग्रेस लाइन -->
+          <!-- वीडियो के नीचे टाइम और सीक/प्रोग्रेस लाइन -->
           <div class="reel-timeline-wrap" onclick="event.stopPropagation()">
             <div class="reel-time-row">
               <span id="time-cur-vid-1">00:00</span>
@@ -1593,231 +611,237 @@
           </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- 2. क्रिएट / अपलोड स्क्रीन -->
-    <div id="view-create" class="screen-view">
-      <div class="create-wrapper">
-        <h3 style="margin-bottom: 12px;" data-key="uploadTitle">नया वीडियो अपलोड करें</h3>
-        <div class="rule-card">
-          <div>✅ <strong data-key="maxDuration">अधिकतम समय:</strong> <span data-key="maxDurationVal">1 मिनट (60 सेकंड)</span></div>
-          <div style="margin-top:3px;">✅ <strong data-key="qualityRule">क्वालिटी नियम:</strong> <span data-key="qualityRuleVal">480p / 720p / 1080p (H.264/AAC)</span></div>
+    <!-- 2. वीडियो अपलोड -->
+    <section id="view-upload" class="screen-view">
+      <div class="upload-box">
+        <h3 style="margin-bottom:12px;" data-key="uploadTitle">नया वीडियो अपलोड करें</h3>
+        <div class="upload-card">
+          <div class="rule-badge">
+            • <strong data-key="maxDuration">अधिकतम समय:</strong> <span data-key="maxDurationVal">1 मिनट (60 सेकंड)</span><br>
+            • <strong data-key="qualityRule">क्वालिटी नियम:</strong> <span data-key="qualityRuleVal">480p / 720p / 1080p (H.264/AAC)</span>
+          </div>
+
+          <input type="file" id="videoFileInput" accept="video/mp4,video/webm,video/*" style="display:none;" onchange="validateSelectedVideo(this)">
+          <div class="file-drop-area" onclick="document.getElementById('videoFileInput').click()">
+            <div style="font-size:28px; margin-bottom:6px;">🎬</div>
+            <div id="selectedFileName" style="font-size:13px; font-weight:bold;" data-key="pickVideo">मोबाइल से वीडियो चुनें</div>
+            <div style="font-size:11px; color:#888; margin-top:4px;" data-key="videoHint">MP4 / WebM (मैक्स 60 सेकंड)</div>
+          </div>
+
+          <div id="uploadFeedback" style="font-size:12px; margin-bottom:10px; font-weight:bold;"></div>
+          <input type="text" id="videoCaptionInput" class="input-dark" placeholder="वीडियो का कैप्शन लिखें (#hashtags)..." data-key-placeholder="captionPlaceholder">
+          <button class="btn-primary" id="publishBtn" onclick="publishVideoToFeed()" disabled data-key="publishBtn">Cloudflare R2 पर सेव करें</button>
         </div>
-        <div class="drop-zone" onclick="document.getElementById('videoFileInput').click()">
-          <div style="font-size: 32px; margin-bottom: 6px;">🎬</div>
-          <div id="selectedFileName" style="font-weight: bold; margin-bottom: 2px;" data-key="pickVideo">मोबाइल से वीडियो चुनें</div>
-          <div style="font-size: 11px; color: #888;" data-key="videoHint">MP4 / WebM (मैक्स 60 सेकंड)</div>
-          <input type="file" id="videoFileInput" accept="video/*" style="display:none;" onchange="validateSelectedVideo(this)">
-        </div>
-        <input type="text" id="videoCaptionInput" class="caption-input" placeholder="वीडियो का कैप्शन लिखें (#hashtags)..." data-key-placeholder="captionPlaceholder">
-        <button id="publishBtn" class="primary-btn" onclick="publishVideoToFeed()" disabled data-key="publishBtn">Cloudflare R2 पर सेव करें</button>
-        <div id="uploadFeedback" style="margin-top: 12px; font-size: 12px; color: #4ade80; text-align: center;"></div>
       </div>
-    </div>
+    </section>
 
-    <!-- 3. चैट स्क्रीन -->
-    <div id="view-chat" class="screen-view">
+    <!-- 3. चैट बॉक्स (सिर्फ 1-to-1 टेक्स्ट मैसेज) -->
+    <section id="view-chat" class="screen-view">
       <div class="chat-container">
-        <div class="chat-header-info">
+        <div class="chat-header">
           <span data-key="chatHeaderLeft">💬 1-to-1 टेक्स्ट चैट (सुरक्षित)</span>
-          <button class="chat-safety-btn" onclick="openSafetyMenu('chat', '2friend_support')" data-key="chatSafetyBtn">🛡️ Report / Block</button>
+          <button onclick="openSafetyMenu('chat', '2friend_support')" style="background:#262626; border:1px solid #444; color:#f87171; padding:3px 8px; border-radius:6px; font-size:11px; cursor:pointer;" data-key="chatSafetyBtn">🛡️ Report / Block</button>
         </div>
-        <div class="chat-box-area" id="chatHistory">
-          <div class="msg-bubble msg-received">नमस्ते! 2friend चैट बॉक्स में आपका स्वागत है।</div>
-          <div class="msg-bubble msg-sent">नमस्ते! लॉगिन सफल रहा।</div>
+        <div class="chat-messages" id="chatHistory">
+          <div class="msg-bubble msg-received">नमस्ते! 2friend चैट में आपका स्वागत है। यहाँ केवल सुरक्षित टेक्स्ट संदेश भेजे जा सकते हैं।</div>
         </div>
         <div class="chat-footer">
           <input type="text" id="chatTextInput" placeholder="यहाँ संदेश टाइप करें..." data-key-placeholder="chatPlaceholder" onkeypress="if(event.key==='Enter') sendChatMsg()">
           <button onclick="sendChatMsg()" data-key="sendBtn">भेजें</button>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- 4. नोटिफिकेशन स्क्रीन -->
-    <div id="view-notifications" class="screen-view">
-      <div class="notif-top-bar">
-        <h2 style="font-size: 21px; font-weight: 800; letter-spacing: 0.2px;" data-key="notifTitle">Notifications</h2>
-        <button onclick="triggerEnableNotificationsFromProfile()" style="background:#1877f2; color:#fff; border:none; padding:6px 12px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;" data-key="enableNotifBtn">🔔 Enable Push</button>
+    <!-- 4. नोटिफिकेशन -->
+    <section id="view-notifications" class="screen-view">
+      <div style="padding:14px; font-weight:bold; border-bottom:1px solid #222; display:flex; justify-content:space-between; align-items:center;">
+        <span><span data-key="notifTitle">Notifications</span> (OneSignal Push)</span>
+        <button id="enablePushBtn" onclick="triggerEnableNotificationsFromProfile()" style="background:#ff2a6d; color:#fff; border:none; padding:5px 10px; border-radius:6px; font-size:11px; font-weight:bold; cursor:pointer;" data-key="enableNotifBtn">🔔 Enable Push</button>
       </div>
-      <div class="notif-wrapper" id="notificationsList">
-        <div class="notif-section-title" data-key="notifNew">New</div>
-        <div class="notif-item" onclick="this.classList.add('read')">
-          <div class="notif-avatar-wrap">
-            <div class="notif-avatar">2F</div>
-            <span class="notif-mini-badge">🔔</span>
-          </div>
-          <div class="notif-content">
-            <div class="notif-text"><strong>2friend founder</strong> push notifications connected (72e22f54...).</div>
-            <div class="notif-time">अभी</div>
-          </div>
-        </div>
-        <div class="notif-item" onclick="this.classList.add('read')">
-          <div class="notif-avatar-wrap">
-            <div class="notif-avatar" style="background:linear-gradient(45deg,#ff9933,#ff2a6d);">2F</div>
-            <span class="notif-mini-badge" style="background:#ff2a6d;">▶</span>
-          </div>
-          <div class="notif-content">
-            <div class="notif-text"><strong>2friend founder</strong> shared a new 24-hour story and reel.</div>
-            <div class="notif-time">1h</div>
-          </div>
-        </div>
-      </div>
-    </div>
+      <div class="notif-item"><span>❤️ @amit_k ने आपके वीडियो को लाइक किया</span><span style="font-size:11px; color:#888;">2m</span></div>
+      <div class="notif-item"><span>👤 @priya_sharma ने आपको फॉलो किया</span><span style="font-size:11px; color:#888;">15m</span></div>
+      <div class="notif-item"><span>🎉 2friend पर रोज़ाना टॉप 6 यूज़र्स के लिए इनाम!</span><span style="font-size:11px; color:#4ade80;" data-key="notifNew">New</span></div>
+    </section>
 
-    <!-- 5. प्रोफाइल स्क्रीन -->
-    <div id="view-profile" class="screen-view">
-      <div class="profile-wrapper">
-        <div class="profile-pic">2F</div>
-        <h3 id="profileUsername" style="font-size: 19px; font-weight: 800;">2friend founder</h3>
-        <div class="founder-badge-pill">✓ Official Founder • 2friend</div>
+    <!-- 5. प्रोफाइल (सिर्फ "2friend founder" पहचान) -->
+    <section id="view-profile" class="screen-view">
+      <div class="profile-header">
+        <div class="profile-avatar">
+          <img src="logo.png" alt="2friend founder" onerror="this.style.display='none'; this.parentElement.textContent='2F';">
+        </div>
+        <h3 id="profileUsername" style="font-size:19px; font-weight:800; letter-spacing:0.3px;">2friend founder</h3>
+        <div class="founder-badge">✓ Official Founder • 2friend</div>
 
+        <!-- Notifications और Bookmarks बटन -->
         <div class="profile-action-row">
-          <button id="profileNotifToggleBtn" class="profile-notif-btn" onclick="triggerEnableNotificationsFromProfile()">
+          <button class="profile-pill-btn" id="profileNotifToggleBtn" onclick="triggerEnableNotificationsFromProfile()">
             <span>🔔</span>
             <span id="profileNotifBtnLabel" data-key="notifBtnLabel">Notifications</span>
           </button>
-          <button class="profile-bookmark-btn" onclick="scrollToBookmarkedVideos()">
+          <button class="profile-pill-btn" onclick="scrollToBookmarkedVideos()">
             <span>🔖</span>
-            <span data-key="bookmarksBtnLabel">Bookmarks (<span id="bookmarkCountStat">0</span>)</span>
+            <span data-key="bookmarksBtnLabel">Bookmarks</span>
+            <span id="bookmarkCountStat" style="background:#ff2a6d; color:#fff; padding:1px 6px; border-radius:10px; font-size:10px;">0</span>
           </button>
         </div>
 
-        <div class="stats-row">
-          <div class="stat-box"><strong id="userPostCount">1</strong><span data-key="postsLabel">Posts</span></div>
-          <div class="stat-box"><strong>5,000+</strong><span data-key="followersLabel">Followers</span></div>
-          <div class="stat-box"><strong id="langCountStat">17</strong><span data-key="langsLabel">Languages</span></div>
-        </div>
-
-        <!-- सिर्फ़ 2friend founder प्रोफाइल के लिए: इंडिया टॉप 6 स्क्रीन-टाइम इनाम नियंत्रण पैनल -->
-        <div class="founder-rewards-box" id="founderRewardsPanel">
-          <div class="founder-rewards-header">
-            <div>
-              <div style="font-size:13px; font-weight:800; color:#ffb74d;">🏆 India Top 6 Screen-Time Rewards</div>
-              <div style="font-size:10.5px; color:#9ca3af;">आज भारत में सबसे ज़्यादा समय बिताने वाले 6 यूज़र्स</div>
-            </div>
-            <button class="reward-clear-all-btn" onclick="clearAllRewardCandidates()">🗑️ सभी हटाएं</button>
-          </div>
-          <div id="founderRewardsList"></div>
-        </div>
-
-        <div class="profile-ad-box" onclick="handleGamingAdClick()" style="cursor:pointer;">
-          <span class="ad-badge">AD</span> <strong>AppLovin MAX Mediation Active</strong> (Google / Unity / Meta)
-        </div>
-
-        <div class="bookmark-section-box" id="profileBookmarksSection">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-weight:bold; font-size:13px; color:#facc15;" data-key="savedVideosTitle">🔖 बुकमार्क किए गए वीडियो (Saved Videos)</span>
-            <span id="bookmarkSectionCount" style="font-size:11px; color:#9ca3af;">0</span>
-          </div>
-          <div id="bookmarkedVideosList" class="bookmark-grid">
-            <div style="grid-column: 1 / -1; font-size: 11.5px; color: #888; padding: 8px 0;" data-key="noBookmarksYet">अभी कोई वीडियो बुकमार्क नहीं किया गया है। वीडियो के दाईं तरफ 🔖 दबाएं।</div>
-          </div>
-        </div>
-
-        <div style="width:100%; margin-top:14px; background:#121212; padding:12px; border-radius:10px; border:1px solid #262626; font-size:12px;">
-          <div style="font-weight:bold; margin-bottom:6px; color:#fff;" data-key="cloudStatusTitle">⚙️ क्लाउड स्टोरेज और कैश स्टेटस:</div>
-          <div style="color:#4ade80;">● Cloudflare R2 (VIDEOS_BUCKET): Connected</div>
-          <div style="color:#4ade80; margin-top:2px;">● CDN Cache Hit Target: 90% - 99% (Preload Max 2)</div>
-          <div style="color:#4ade80; margin-top:2px;">● Cloudflare D1 (2friend-db): Synced</div>
-          <div style="color:#4ade80; margin-top:2px;">● Google OAuth 2.0: Active</div>
-          <div style="color:#4ade80; margin-top:2px;">● OneSignal Push: Active</div>
-        </div>
-
-        <!-- अकाउंट सुरक्षा: लॉगआउट और अकाउंट डिलीट (Play Store नियम) -->
-        <div class="account-safety-box">
-          <div style="font-weight:bold; font-size:12px; color:#d1d5db;" data-key="accountSafetyTitle">🔐 अकाउंट सेटिंग्स और सुरक्षा:</div>
-          <div class="safety-btn-row">
-            <button class="logout-btn" onclick="handleLogout()" data-key="logoutBtn">लॉगआउट (Log Out)</button>
-            <button class="delete-account-btn" onclick="openDeleteAccountModal()" data-key="deleteAccountBtn">Delete Account</button>
-          </div>
-        </div>
-
-        <div class="policy-links">
-          <a href="#" onclick="event.preventDefault(); openPolicyModal('privacy')">Privacy Policy</a> | 
-          <a href="#" onclick="event.preventDefault(); openPolicyModal('terms')">Terms of Service</a>
+        <div class="profile-stats">
+          <div><strong id="userPostCount">1</strong><br><span style="color:#888; font-size:11px;" data-key="postsLabel">Posts</span></div>
+          <div><strong>5,000+</strong><br><span style="color:#888; font-size:11px;" data-key="followersLabel">Followers</span></div>
+          <div><strong id="langCountStat">17</strong><br><span style="color:#888; font-size:11px;" data-key="langsLabel">Languages</span></div>
         </div>
       </div>
-    </div>
 
+      <!-- केवल 2friend founder के लिए: भारत के टॉप 6 स्क्रीन-टाइम यूज़र्स इनाम नियंत्रण -->
+      <div class="founder-rewards-box" id="founderRewardsPanel">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">
+          <div>
+            <div style="font-size:13px; font-weight:800; color:#fbbf24;">🏆 India Top 6 Screen-Time Rewards</div>
+            <div style="font-size:11px; color:#cbd5e1; margin-top:2px;">भारत के टॉप 6 यूज़र्स: ₹20 / ₹40 / ₹100 / ₹200 चुनें, Approve या Delete करें</div>
+          </div>
+          <button onclick="clearAllRewardCandidates()" style="background:#7f1d1d; border:1px solid #ef4444; color:#fecaca; padding:5px 8px; border-radius:6px; font-size:10.5px; font-weight:700; cursor:pointer; white-space:nowrap;">सब डिलीट करें</button>
+        </div>
+        <div id="founderRewardsList"></div>
+      </div>
+
+      <!-- बुकमार्क किए गए वीडियो सेक्शन -->
+      <div id="profileBookmarksSection" style="margin:12px; background:#121212; border:1px solid #222; border-radius:10px; padding:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <strong style="font-size:13px; color:#facc15;" data-key="savedVideosTitle">🔖 बुकमार्क किए गए वीडियो (Saved Videos)</strong>
+          <span id="bookmarkSectionCount" style="font-size:11px; color:#888;">0</span>
+        </div>
+        <div id="bookmarkedVideosList" class="bookmarks-grid">
+          <div style="grid-column: 1 / -1; font-size: 11.5px; color: #888; padding: 8px 0;">अभी कोई वीडियो बुकमार्क नहीं किया गया है। वीडियो के दाईं तरफ 🔖 दबाएं।</div>
+        </div>
+      </div>
+
+      <div class="gaming-ad-banner" style="margin:12px; border-radius:8px; border:1px solid #3c1e70;">
+        <div><span class="ad-tag">AD</span> <span>AppLovin MAX Mediation Active (Google / Unity / Meta)</span></div>
+      </div>
+
+      <div style="margin:12px; background:#121212; border:1px solid #222; border-radius:10px; padding:12px; font-size:12px; color:#ccc; line-height:1.6;">
+        <strong style="color:#fff;" data-key="cloudStatusTitle">⚙️ क्लाउड स्टोरेज और कैश स्टेटस:</strong><br>
+        • Cloudflare R2 (VIDEOS_BUCKET): <span style="color:#4ade80;">Connected</span><br>
+        • CDN Cache Hit Target: <span style="color:#4ade80;">90% - 99% (Preload Max 2)</span><br>
+        • Cloudflare D1 (2friend-db): <span style="color:#4ade80;">Synced</span><br>
+        • Google OAuth 2.0: <span style="color:#4ade80;">Active</span><br>
+        • OneSignal Push: <span style="color:#4ade80;">Active</span>
+      </div>
+
+      <!-- लॉगआउट और अकाउंट डिलीट सुरक्षा विकल्प (केवल आम यूज़र्स के लिए, 2friend founder के लिए छिपा रहेगा) -->
+      <div id="accountSafetyBox" style="margin:12px; background:#121212; border:1px solid #2a2a2a; border-radius:10px; padding:12px; display:none; flex-direction:column; gap:8px;">
+        <strong style="font-size:12px; color:#fff;" data-key="accountSafetyTitle">🔐 अकाउंट सेटिंग्स और सुरक्षा:</strong>
+        <div style="display:flex; gap:8px;">
+          <button onclick="handleLogout()" style="flex:1; background:#1f2937; border:1px solid #374151; color:#fff; padding:9px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;" data-key="logoutBtn">लॉगआउट (Log Out)</button>
+          <button onclick="openDeleteAccountModal()" style="flex:1; background:rgba(220,38,38,0.16); border:1px solid rgba(220,38,38,0.55); color:#f87171; padding:9px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;" data-key="deleteAccountBtn">Delete Account</button>
+        </div>
+      </div>
+
+      <div style="text-align:center; padding:6px 12px 18px; font-size:11px; color:#888;">
+        <span onclick="openPolicyModal('privacy')" style="color:#66c0f4; cursor:pointer;">Privacy Policy</span>
+        &nbsp;|&nbsp;
+        <span onclick="openPolicyModal('terms')" style="color:#66c0f4; cursor:pointer;">Terms of Service</span>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- नीचे का नेविगेशन बार -->
+  <nav class="bottom-nav">
+    <button class="nav-tab active" onclick="navigateTab('home', this)" aria-label="Home">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1v-9.5z"/></svg>
+    </button>
+    <button class="nav-tab" onclick="navigateTab('upload', this)" aria-label="Upload">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+    </button>
+    <button class="nav-tab" onclick="navigateTab('chat', this)" aria-label="Chat">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+    </button>
+    <button class="nav-tab" onclick="navigateTab('notifications', this)" aria-label="Notifications">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span class="nav-badge" id="notifCountBadge">3</span>
+    </button>
+    <button class="nav-tab" onclick="navigateTab('profile', this)" aria-label="Profile">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </button>
+  </nav>
+
+  <!-- नई स्टोरी बनाने का मोडल (24 घंटे के लिए) -->
+  <div class="modal-overlay" id="storyCreatorModal">
+    <div class="story-creator-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <strong style="font-size:14px;" data-key="storyModalTitle">नई स्टोरी डालें (24 घंटे के लिए)</strong>
+        <button onclick="closeStoryCreator()" style="background:none; border:none; color:#fff; font-size:18px; cursor:pointer;">✕</button>
+      </div>
+      <input type="file" id="storyMediaInput" accept="image/*,video/mp4,video/webm,video/*" style="display:none;" onchange="handleStoryMediaSelect(this)">
+      <div class="file-drop-area" style="padding:18px 10px;" onclick="document.getElementById('storyMediaInput').click()">
+        <div style="font-size:24px; margin-bottom:4px;">📸 / 🎥</div>
+        <div id="storyVideoFileName" style="font-size:12px; font-weight:bold;" data-key="storyPickVideo">स्टोरी के लिए फोटो या वीडियो चुनें</div>
+        <div style="font-size:10px; color:#888; margin-top:3px;" data-key="storyHint">फोटो या अधिकतम 60 सेकंड का वीडियो • 24 घंटे बाद स्वतः हट जाएगी</div>
+      </div>
+      <input type="text" id="storyCaptionInput" class="input-dark" placeholder="या स्टोरी का संदेश लिखें..." data-key-placeholder="storyMsgPlaceholder">
+      <div id="storyCreatorStatus" style="font-size:11px; margin-bottom:8px; font-weight:bold;"></div>
+      <button class="btn-primary" id="storyShareBtnEl" onclick="publishNewStory()" data-key="storyShareBtn">स्टोरी शेयर करें</button>
+    </div>
   </div>
 
-  <!-- रिपोर्ट और ब्लॉक मोडल (User Safety) -->
-  <div class="generic-modal-overlay" id="safetyModal" onclick="closeSafetyMenu()">
-    <div class="generic-modal-card" onclick="event.stopPropagation()">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-        <strong style="font-size:16px; color:#fca5a5;">🛡️ Report / Block</strong>
+  <!-- रिपोर्ट व ब्लॉक मोडल (User Safety) -->
+  <div class="modal-overlay" id="safetyModal" onclick="closeSafetyMenu()">
+    <div class="story-creator-card" onclick="event.stopPropagation()">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <strong style="font-size:14px; color:#f87171;">🛡️ रिपोर्ट व ब्लॉक सुरक्षा केंद्र</strong>
         <button onclick="closeSafetyMenu()" style="background:none; border:none; color:#fff; font-size:18px; cursor:pointer;">✕</button>
       </div>
-      <p id="safetyTargetInfo" style="font-size:12px; color:#9ca3af; margin-bottom:12px;">इस कंटेंट या यूज़र के बारे में समस्या चुनें:</p>
-      <button class="report-option-btn" onclick="submitSafetyAction('spam')">🚫 स्पैम या भ्रामक जानकारी (Spam / Misleading)</button>
-      <button class="report-option-btn" onclick="submitSafetyAction('inappropriate')">⚠️ अनुचित या आपत्तिजनक कंटेंट (Inappropriate Content)</button>
-      <button class="report-option-btn" onclick="submitSafetyAction('harassment')">🛑 उत्पीड़न या गाली-गलौज (Harassment / Abuse)</button>
-      <button class="report-option-btn" style="border-color:#991b1b; color:#fca5a5;" onclick="submitSafetyAction('block_user')">⛔ इस यूज़र को ब्लॉक करें (Block User)</button>
+      <p id="safetyTargetInfo" style="font-size:12px; color:#ccc; margin-bottom:12px;">इस सामग्री या यूज़र पर कार्रवाई चुनें:</p>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <button onclick="submitSafetyAction('spam')" style="background:#1f1f1f; border:1px solid #333; color:#fff; padding:10px; border-radius:8px; text-align:left; font-size:12px; cursor:pointer;">🚩 स्पैम या भ्रामक जानकारी (Report Spam)</button>
+        <button onclick="submitSafetyAction('inappropriate')" style="background:#1f1f1f; border:1px solid #333; color:#fff; padding:10px; border-radius:8px; text-align:left; font-size:12px; cursor:pointer;">⚠️ अनुचित या आपत्तिजनक कंटेंट (Inappropriate Content)</button>
+        <button onclick="submitSafetyAction('block_user')" style="background:rgba(220,38,38,0.18); border:1px solid rgba(220,38,38,0.55); color:#f87171; padding:10px; border-radius:8px; text-align:left; font-size:12px; font-weight:700; cursor:pointer;">⛔ इस यूज़र को ब्लॉक करें (Block User)</button>
+      </div>
     </div>
   </div>
 
-  <!-- Delete Account कन्फर्मेशन मोडल -->
-  <div class="generic-modal-overlay" id="deleteAccountModal" onclick="closeDeleteAccountModal()">
-    <div class="generic-modal-card" onclick="event.stopPropagation()">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-        <strong style="font-size:16px; color:#f87171;">⚠️ Delete Account</strong>
-        <button onclick="closeDeleteAccountModal()" style="background:none; border:none; color:#fff; font-size:18px; cursor:pointer;">✕</button>
-      </div>
-      <p style="font-size:12.5px; color:#d1d5db; line-height:1.45; margin-bottom:14px;">
-        क्या आप वाकई अपना <strong>2friend</strong> अकाउंट और उससे जुड़ा लोकल व क्लाउड डेटा स्थायी रूप से डिलीट करना चाहते हैं? यह प्रक्रिया वापस नहीं ली जा सकती।
+  <!-- अकाउंट डिलीट पुष्टिकरण मोडल -->
+  <div class="modal-overlay" id="deleteAccountModal" onclick="closeDeleteAccountModal()">
+    <div class="story-creator-card" onclick="event.stopPropagation()">
+      <strong style="font-size:15px; color:#f87171; display:block; margin-bottom:8px;">⚠️ क्या आप वाकई अकाउंट डिलीट करना चाहते हैं?</strong>
+      <p style="font-size:12px; color:#ccc; line-height:1.45; margin-bottom:14px;">
+        अकाउंट डिलीट करने पर आपकी प्रोफाइल, सेव किए गए बुकमार्क, स्टोरीज़ और लोकल डेटा स्थायी रूप से हट जाएंगे।
       </p>
-      <div style="display:flex; gap:10px;">
-        <button onclick="closeDeleteAccountModal()" style="flex:1; background:#262626; color:#fff; border:none; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">रद्द करें</button>
-        <button onclick="confirmDeleteAccount()" style="flex:1; background:#dc2626; color:#fff; border:none; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">हाँ, डिलीट करें</button>
+      <div style="display:flex; gap:8px;">
+        <button onclick="closeDeleteAccountModal()" style="flex:1; background:#262626; border:1px solid #444; color:#fff; padding:10px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;">रद्द करें</button>
+        <button onclick="confirmDeleteAccount()" style="flex:1; background:#dc2626; border:none; color:#fff; padding:10px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;">हाँ, डिलीट करें</button>
       </div>
     </div>
   </div>
 
-  <!-- Privacy Policy और Terms मोडल -->
-  <div class="generic-modal-overlay" id="policyModal" onclick="closePolicyModal()">
-    <div class="generic-modal-card" onclick="event.stopPropagation()">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-        <strong id="policyModalTitle" style="font-size:16px; color:#4ade80;">Privacy Policy</strong>
+  <!-- Privacy Policy / Terms मोडल -->
+  <div class="modal-overlay" id="policyModal" onclick="closePolicyModal()">
+    <div class="story-creator-card" style="max-height:80vh; overflow-y:auto;" onclick="event.stopPropagation()">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <strong id="policyModalTitle" style="font-size:14px; color:#66c0f4;">Privacy Policy</strong>
         <button onclick="closePolicyModal()" style="background:none; border:none; color:#fff; font-size:18px; cursor:pointer;">✕</button>
       </div>
-      <div id="policyModalBody" style="font-size:12.5px; color:#d1d5db; line-height:1.55;"></div>
+      <div id="policyModalBody" style="font-size:12px; color:#d1d5db; line-height:1.55;"></div>
     </div>
   </div>
 
-  <!-- स्टोरी डालने का बॉक्स (वीडियो या फोटो + संदेश) -->
-  <div class="story-creator-modal" id="storyCreatorModal">
-    <div class="story-creator-card">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-        <strong style="font-size:16px;" data-key="storyModalTitle">नई स्टोरी डालें (24 घंटे के लिए)</strong>
-        <button onclick="closeStoryCreator()" style="background:none; border:none; color:#fff; font-size:18px;">✕</button>
-      </div>
-      <div class="drop-zone" style="padding:16px 10px; margin-bottom:10px;" onclick="document.getElementById('storyMediaInput').click()">
-        <div style="font-size:26px; margin-bottom:4px;">📸🎬</div>
-        <div id="storyVideoFileName" style="font-size:13px; font-weight:bold;" data-key="storyPickVideo">स्टोरी के लिए फोटो या वीडियो चुनें</div>
-        <div style="font-size:10px; color:#888;" data-key="storyHint">फोटो या अधिकतम 60 सेकंड का वीडियो • 24 घंटे बाद स्वतः हट जाएगी</div>
-        <input type="file" id="storyMediaInput" accept="video/*,image/*" style="display:none;" onchange="handleStoryMediaSelect(this)">
-      </div>
-      <input type="text" id="storyCaptionInput" class="caption-input" placeholder="या स्टोरी का संदेश लिखें..." data-key-placeholder="storyMsgPlaceholder">
-      <div id="storyCreatorStatus" style="font-size:11px; color:#4ade80; margin-bottom:10px; text-align:center;"></div>
-      <button id="storyShareBtnEl" class="primary-btn" onclick="publishNewStory()" data-key="storyShareBtn">स्टोरी शेयर करें</button>
-    </div>
-  </div>
-
-  <!-- स्टोरी व्यूअर (फोटो व वीडियो दोनों के लिए + उड़ने वाले दिल लाइक एनिमेशन) -->
-  <div class="story-modal" id="storyModal" onclick="closeStory()">
-    <div class="story-viewer-frame" onclick="event.stopPropagation(); toggleStoryPlayPause()">
-      <div class="story-progress-row" id="storyProgressRow"></div>
-
-      <div class="story-top-header" onclick="event.stopPropagation()">
-        <div class="story-user-group">
-          <div class="story-user-avatar" id="storyModalBadge">2F</div>
+  <!-- फुल-स्क्रीन 24-घंटे स्टोरी व्यूअर मोडल (उड़ने वाले दिलों के साथ) -->
+  <div class="modal-overlay" id="storyModal" onclick="closeStory()">
+    <div class="story-full-viewer" onclick="event.stopPropagation(); toggleStoryPlayPause()">
+      <div class="story-top-chrome" onclick="event.stopPropagation()">
+        <div class="story-progress-row" id="storyProgressRow"></div>
+        <div class="story-header-row">
           <div class="story-user-meta">
-            <span class="story-user-name" id="storyModalUser">2friend founder</span>
-            <span class="story-time-ago" id="storyModalTimeAgo">24h story</span>
+            <div class="story-user-badge" id="storyModalBadge">2F</div>
+            <div style="display:flex; flex-direction:column;">
+              <span style="font-weight:700; font-size:13px; color:#fff;" id="storyModalUser">2friend founder</span>
+              <span style="font-size:10px; color:#d1d5db;" id="storyModalTimeAgo">24h story</span>
+            </div>
           </div>
-        </div>
-        <div class="story-header-actions">
-          <button class="story-close-top-btn" onclick="event.stopPropagation(); closeStory()" aria-label="Close Story">✕</button>
+          <button class="story-close-btn" onclick="closeStory()" aria-label="Close">✕</button>
         </div>
       </div>
 
@@ -1887,6 +911,7 @@
         val.includes("बिरेन्द्र") ||
         val.includes("रावत") ||
         val.includes("सांची") ||
+        lower === "2friend" ||
         lower === "2friend founder" ||
         lower === "@2friend_founder"
       ) {
@@ -2071,7 +1096,7 @@
       document.getElementById("profileUsername").innerText = loggedInUser;
       document.getElementById("auth-screen").style.display = "none";
 
-      updateFounderRewardsVisibility();
+      updateFounderProfileControls();
       renderStoriesBar();
       userPrefersMuted = false;
       const feed = document.getElementById("reelsFeedContainer");
@@ -2088,6 +1113,7 @@
     }
 
     function handleLogout() {
+      if (resolvePublicDisplayName(loggedInUser) === FOUNDER_DISPLAY_NAME) return;
       pauseAllVideosAndMute();
       try {
         localStorage.removeItem(AUTH_SESSION_KEY);
@@ -2152,14 +1178,22 @@
       } catch (e) {}
     }
 
-    function updateFounderRewardsVisibility() {
+    function updateFounderProfileControls() {
+      const isFounder = resolvePublicDisplayName(loggedInUser) === FOUNDER_DISPLAY_NAME;
       const panel = document.getElementById("founderRewardsPanel");
-      if (!panel) return;
-      if (loggedInUser === FOUNDER_DISPLAY_NAME) {
-        panel.style.display = "block";
-        renderFounderRewardsPanel();
-      } else {
-        panel.style.display = "none";
+      const safetyBox = document.getElementById("accountSafetyBox");
+
+      if (panel) {
+        if (isFounder) {
+          panel.style.display = "block";
+          renderFounderRewardsPanel();
+        } else {
+          panel.style.display = "none";
+        }
+      }
+
+      if (safetyBox) {
+        safetyBox.style.display = isFounder ? "none" : "flex";
       }
     }
 
@@ -2419,6 +1453,7 @@
 
     /* --- Delete Account व Privacy Policy / Terms --- */
     function openDeleteAccountModal() {
+      if (resolvePublicDisplayName(loggedInUser) === FOUNDER_DISPLAY_NAME) return;
       document.getElementById("deleteAccountModal").classList.add("open");
     }
 
@@ -2427,6 +1462,7 @@
     }
 
     async function confirmDeleteAccount() {
+      if (resolvePublicDisplayName(loggedInUser) === FOUNDER_DISPLAY_NAME) return;
       closeDeleteAccountModal();
       pauseAllVideosAndMute();
 
@@ -2470,7 +1506,7 @@
         bodyEl.innerHTML = `
           <p style="margin-bottom:8px;"><strong>1. डेटा संग्रह:</strong> 2friend केवल आपकी प्रोफाइल पहचान, अपलोड किए गए वीडियो, टेक्स्ट चैट और नोटिफिकेशन टोकन सुरक्षित रूप से स्टोर करता है।</p>
           <p style="margin-bottom:8px;"><strong>2. डेटा सुरक्षा:</strong> आपका मीडिया डेटा Cloudflare R2 और D1 डेटाबेस पर एन्क्रिप्टेड रूप से सुरक्षित रहता है। हम आपका व्यक्तिगत डेटा किसी तीसरे पक्ष को नहीं बेचते।</p>
-          <p><strong>3. डेटा हटाने का अधिकार:</strong> आप अपनी प्रोफाइल में जाकर कभी भी <strong>Delete Account</strong> बटन द्वारा अपना पूरा डेटा स्थायी रूप से हटा सकते हैं।</p>
+          <p><strong>3. डेटा हटाने का अधिकार:</strong> यूज़र अपनी प्रोफाइल से अपना डेटा स्थायी रूप से हटा सकते हैं।</p>
         `;
       }
       document.getElementById("policyModal").classList.add("open");
@@ -3789,7 +2825,7 @@
     document.addEventListener('DOMContentLoaded', async () => {
       loadBookmarkedVideos();
       loadFounderRewardsState();
-      updateFounderRewardsVisibility();
+      updateFounderProfileControls();
       await initStories();
 
       const langSel = document.getElementById('languageSelect');
@@ -3899,7 +2935,7 @@
       }
 
       if (tabId === 'profile') {
-        updateFounderRewardsVisibility();
+        updateFounderProfileControls();
         renderBookmarkedVideos();
       }
 
@@ -4542,4 +3578,4 @@
     }
   </script>
 </body>
-  </html>
+</html>
