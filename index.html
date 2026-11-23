@@ -28,43 +28,47 @@
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-    body { background-color: #000; color: #fff; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
+    html, body {
+      background-color: #000; color: #fff; overflow: hidden;
+      height: 100vh; height: 100dvh; width: 100%;
+      display: flex; flex-direction: column;
+    }
     video { -webkit-touch-callout: none; user-select: none; }
 
-    /* ऊपर का हेडर और 14+ भारतीय व अंतरराष्ट्रीय भाषाएं */
+    /* ऊपर का हेडर */
     .top-bar {
-      height: 50px; background: #0d0d0d; border-bottom: 1px solid #222;
+      height: 46px; flex-shrink: 0; background: #0d0d0d; border-bottom: 1px solid #222;
       display: flex; align-items: center; justify-content: space-between; padding: 0 12px; z-index: 20;
     }
     .brand-title { font-size: 20px; font-weight: 800; color: #ff2a6d; letter-spacing: 0.5px; }
     .lang-box select {
-      background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 5px 8px;
-      border-radius: 6px; font-size: 12px; outline: none; max-width: 155px;
+      background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 4px 8px;
+      border-radius: 6px; font-size: 12px; outline: none; max-width: 145px;
     }
 
     /* मुख्य स्क्रीन कंटेनर */
-    .main-container { flex: 1; position: relative; overflow: hidden; }
+    .main-container { flex: 1; min-height: 0; position: relative; overflow: hidden; display: flex; flex-direction: column; }
     .screen-view { display: none; width: 100%; height: 100%; overflow-y: auto; }
     .screen-view.active { display: block; }
 
     /* होम फीड (रील्स + स्टोरीज़) */
-    #view-home { overflow: hidden; display: none; flex-direction: column; }
+    #view-home { overflow: hidden; display: none; flex-direction: column; height: 100%; }
     #view-home.active { display: flex; }
 
-    /* गोल 24-घंटे स्टोरी बार (Facebook / Instagram जैसा सिंपल गोल लुक) */
+    /* गोल 24-घंटे स्टोरी बार */
     .stories-bar {
-      display: flex; gap: 12px; padding: 10px 12px 8px; background: #080808;
+      display: flex; gap: 10px; padding: 7px 12px 6px; background: #080808;
       border-bottom: 1px solid #1c1c1c; overflow-x: auto; align-items: flex-start;
       scrollbar-width: none; -ms-overflow-style: none; flex-shrink: 0;
     }
     .stories-bar::-webkit-scrollbar { display: none; }
 
     .circle-story-item {
-      flex-shrink: 0; width: 68px; display: flex; flex-direction: column; align-items: center;
-      gap: 5px; cursor: pointer; user-select: none;
+      flex-shrink: 0; width: 62px; display: flex; flex-direction: column; align-items: center;
+      gap: 4px; cursor: pointer; user-select: none;
     }
     .circle-story-ring {
-      position: relative; width: 64px; height: 64px; border-radius: 50%; padding: 2.5px;
+      position: relative; width: 56px; height: 56px; border-radius: 50%; padding: 2.5px;
       background: linear-gradient(45deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5);
       display: flex; align-items: center; justify-content: center;
       transition: transform 0.15s ease;
@@ -79,24 +83,24 @@
       display: flex; align-items: center; justify-content: center;
     }
     .circle-story-inner img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .circle-story-initial { font-size: 16px; font-weight: 800; color: #fff; }
+    .circle-story-initial { font-size: 15px; font-weight: 800; color: #fff; }
     .circle-story-video-badge {
       width: 100%; height: 100%; background: linear-gradient(135deg, #1f1f2e, #2b1426);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      color: #fff; font-size: 13px; font-weight: 800;
+      color: #fff; font-size: 12px; font-weight: 800;
     }
     .circle-story-text-thumb {
       width: 100%; height: 100%; background: linear-gradient(135deg, #1e1b4b, #3b0764);
-      padding: 6px; display: flex; align-items: center; justify-content: center;
-      text-align: center; font-size: 9px; font-weight: 700; color: #f3f4f6; line-height: 1.15;
+      padding: 5px; display: flex; align-items: center; justify-content: center;
+      text-align: center; font-size: 8.5px; font-weight: 700; color: #f3f4f6; line-height: 1.15;
     }
     .circle-story-plus-badge {
-      position: absolute; right: 0; bottom: 0; width: 20px; height: 20px; border-radius: 50%;
+      position: absolute; right: 0; bottom: 0; width: 18px; height: 18px; border-radius: 50%;
       background: #0095f6; border: 2px solid #080808; color: #fff;
       display: flex; align-items: center; justify-content: center; z-index: 3;
     }
     .circle-story-label {
-      width: 68px; font-size: 11px; color: #e5e7eb; text-align: center;
+      width: 62px; font-size: 10.5px; color: #e5e7eb; text-align: center;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500;
     }
     .circle-story-item.seen-story .circle-story-label { color: #8e8e8e; }
@@ -104,14 +108,14 @@
     /* गेमिंग एड बैनर */
     .gaming-ad-banner {
       background: linear-gradient(90deg, #161032, #2b1055);
-      border-bottom: 1px solid #3c1e70; padding: 6px 12px;
+      border-bottom: 1px solid #3c1e70; padding: 5px 12px;
       display: flex; align-items: center; justify-content: space-between; font-size: 11px; flex-shrink: 0;
     }
     .ad-tag { background: #f59e0b; color: #000; font-weight: 800; padding: 1px 5px; border-radius: 3px; font-size: 9px; margin-right: 6px; }
-    .ad-cta { background: #10b981; color: #fff; border: none; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; cursor: pointer; }
+    .ad-cta { background: #10b981; color: #fff; border: none; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; cursor: pointer; }
 
     /* वर्टिकल रील्स स्क्रॉल फीड */
-    .reels-feed { flex: 1; overflow-y: scroll; scroll-snap-type: y mandatory; position: relative; }
+    .reels-feed { flex: 1; min-height: 0; overflow-y: scroll; scroll-snap-type: y mandatory; position: relative; }
     .reel-slide {
       width: 100%; height: 100%; scroll-snap-align: start; position: relative;
       background: #000; display: flex; align-items: center; justify-content: center;
@@ -138,32 +142,32 @@
 
     /* रील के ऊपर जानकारी और साइड बटन */
     .reel-bottom-info {
-      position: absolute; bottom: 44px; left: 12px; right: 72px; z-index: 10; pointer-events: auto;
+      position: absolute; bottom: 38px; left: 12px; right: 72px; z-index: 10; pointer-events: auto;
     }
-    .reel-user { font-weight: bold; font-size: 14px; display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+    .reel-user { font-weight: bold; font-size: 14px; display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
     .follow-chip {
       background: #ff2a6d; color: #fff; border: none; padding: 3px 10px;
       border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer;
     }
-    .reel-desc { font-size: 12px; color: #eee; line-height: 1.3; margin-bottom: 5px; }
+    .reel-desc { font-size: 12px; color: #eee; line-height: 1.3; margin-bottom: 4px; }
     .reel-music { font-size: 11px; color: #ccc; }
 
     /* वीडियो के ठीक नीचे टाइम और पतली सीक/प्रोग्रेस लाइन */
     .reel-timeline-wrap {
       position: absolute; bottom: 0; left: 0; right: 0; z-index: 18;
-      padding: 6px 10px 6px;
+      padding: 4px 10px 4px;
       background: linear-gradient(transparent, rgba(0,0,0,0.88));
-      display: flex; flex-direction: column; gap: 4px;
+      display: flex; flex-direction: column; gap: 3px;
     }
     .reel-time-row {
       display: flex; justify-content: space-between; align-items: center;
-      font-size: 10.5px; font-weight: 700; color: #f3f4f6;
+      font-size: 10px; font-weight: 700; color: #f3f4f6;
       font-variant-numeric: tabular-nums;
       text-shadow: 0 1px 2px rgba(0,0,0,0.9);
       pointer-events: none;
     }
     .reel-seek-bar {
-      width: 100%; height: 14px; display: flex; align-items: center;
+      width: 100%; height: 12px; display: flex; align-items: center;
       cursor: pointer; touch-action: none;
     }
     .reel-seek-track {
@@ -181,17 +185,17 @@
     }
 
     .reel-side-actions {
-      position: absolute; bottom: 48px; right: 10px; display: flex; flex-direction: column;
-      gap: 11px; align-items: center; z-index: 10;
+      position: absolute; bottom: 42px; right: 10px; display: flex; flex-direction: column;
+      gap: 9px; align-items: center; z-index: 10;
     }
     .side-btn-wrap { display: flex; flex-direction: column; align-items: center; gap: 2px; }
     .side-btn {
-      width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.16);
-      border: none; color: #fff; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer;
+      width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.16);
+      border: none; color: #fff; font-size: 17px; display: flex; align-items: center; justify-content: center; cursor: pointer;
     }
     .side-btn.liked { color: #ff2a6d; background: rgba(255,42,109,0.22); }
     .side-btn.bookmarked { color: #facc15; background: rgba(250,204,21,0.22); }
-    .side-count { font-size: 11px; font-weight: bold; }
+    .side-count { font-size: 10.5px; font-weight: bold; }
 
     /* वीडियो अपलोड स्क्रीन */
     .upload-box { padding: 18px; max-width: 450px; margin: 0 auto; }
@@ -318,10 +322,13 @@
       color: #f87171; padding: 6px 10px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer;
     }
 
-    /* नीचे का नेविगेशन बार */
+    /* नीचे का नेविगेशन बार (हमेशा स्क्रीन पर फिक्स दिखेगा) */
     .bottom-nav {
-      height: 54px; background: #0d0d0d; border-top: 1px solid #222;
-      display: flex; justify-content: space-around; align-items: center; z-index: 20;
+      height: 52px; flex-shrink: 0; width: 100%;
+      background: #0d0d0d; border-top: 1px solid #222;
+      display: flex; justify-content: space-around; align-items: center;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      z-index: 30;
     }
     .nav-tab {
       background: none; border: none; color: #888; font-size: 19px;
@@ -828,7 +835,7 @@
     </div>
   </div>
 
-  <!-- फुल-स्क्रीन 24-घंटे स्टोरी व्यूअर मोडल (उड़ने वाले दिलों के साथ) -->
+  <!-- फुल-स्क्रीन 24-घंटे स्टोरी व्यूअर मोडल -->
   <div class="modal-overlay" id="storyModal" onclick="closeStory()">
     <div class="story-full-viewer" onclick="event.stopPropagation(); toggleStoryPlayPause()">
       <div class="story-top-chrome" onclick="event.stopPropagation()">
@@ -852,7 +859,6 @@
       <video id="storyModalVideo" class="story-media-video" playsinline webkit-playsinline preload="auto" controlsList="nodownload" disablePictureInPicture></video>
       <div class="story-scrim-overlay"></div>
 
-      <!-- उड़ने वाले दिलों का लेयर -->
       <div class="story-hearts-layer" id="storyHeartsLayer"></div>
 
       <p class="story-center-text" id="storyModalText"></p>
@@ -920,7 +926,6 @@
       return val;
     }
 
-    /* --- Google OAuth लॉगिन कॉलबैक --- */
     function parseJwtPayload(token) {
       try {
         const base64Url = token.split(".")[1];
@@ -972,7 +977,6 @@
       }
     }
 
-    /* --- असली लॉगिन व साइन-अप लॉजिक --- */
     function switchAuthMode(mode) {
       authMode = mode === "signup" ? "signup" : "login";
       const confirmInput = document.getElementById("confirmPasswordInput");
@@ -1125,7 +1129,7 @@
       document.getElementById("auth-screen").style.display = "flex";
     }
 
-    /* --- फाउंडर टॉप 6 स्क्रीन-टाइम इनाम पैनल (₹20 / ₹40 / ₹100 / ₹200 Approve और Delete) --- */
+    /* --- फाउंडर टॉप 6 स्क्रीन-टाइम इनाम पैनल --- */
     const DEFAULT_TOP6_REWARD_USERS = [
       { id: "rwd-1", name: "@aarav_mumbai", minutes: 142, amount: 20, approved: false },
       { id: "rwd-2", name: "@priya_jaipur", minutes: 128, amount: 20, approved: false },
@@ -1313,7 +1317,6 @@
       });
     }
 
-    /* यूज़र का दैनिक स्क्रीन-टाइम ट्रैक करना */
     setInterval(() => {
       if (document.visibilityState === "visible" && document.getElementById("auth-screen").style.display === "none") {
         try {
@@ -1323,13 +1326,10 @@
       }
     }, 10000);
 
-    /* --- स्टोरी में उड़ने वाले दिल (Like Animation) --- */
     function triggerStoryHeartBurst() {
       const btn = document.getElementById("storyLikeHeartBtn");
       const layer = document.getElementById("storyHeartsLayer");
-      if (btn) {
-        btn.classList.add("liked");
-      }
+      if (btn) btn.classList.add("liked");
       if (!layer) return;
 
       const hearts = ["❤️", "💖", "💗", "💓", "❤️"];
@@ -1363,7 +1363,6 @@
       }
     }
 
-    /* --- रिपोर्ट व ब्लॉक (User Safety) --- */
     function getBlockedUsersSet() {
       try {
         const arr = JSON.parse(localStorage.getItem(BLOCKED_USERS_KEY) || "[]");
@@ -1451,7 +1450,6 @@
       } catch (e) {}
     }
 
-    /* --- Delete Account व Privacy Policy / Terms --- */
     function openDeleteAccountModal() {
       if (resolvePublicDisplayName(loggedInUser) === FOUNDER_DISPLAY_NAME) return;
       document.getElementById("deleteAccountModal").classList.add("open");
@@ -1833,7 +1831,6 @@
       if (sec) sec.scrollIntoView({ behavior: "smooth" });
     }
 
-    /* --- वीडियो के नीचे टाइम और सीक/प्रोग्रेस लाइन --- */
     function formatVideoTime(sec) {
       if (!isFinite(sec) || sec < 0) return "00:00";
       const totalSec = Math.floor(sec);
@@ -2326,7 +2323,7 @@
       } else if (ownStory && ownStory.mediaType === "video") {
         const vidBadge = document.createElement("div");
         vidBadge.className = "circle-story-video-badge";
-        vidBadge.innerHTML = `<span>▶</span><span style="font-size:9px;">STORY</span>`;
+        vidBadge.innerHTML = `<span>▶</span><span style="font-size:8.5px;">STORY</span>`;
         yourInner.appendChild(vidBadge);
       } else {
         const logoImg = document.createElement("img");
@@ -2344,7 +2341,7 @@
 
       const plusBadge = document.createElement("div");
       plusBadge.className = "circle-story-plus-badge";
-      plusBadge.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`;
+      plusBadge.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`;
 
       yourRing.appendChild(yourInner);
       yourRing.appendChild(plusBadge);
@@ -2379,7 +2376,7 @@
         } else if (story.mediaType === "video" || story.blob || story.remoteVideoUrl || story.videoUrl) {
           const vidBadge = document.createElement("div");
           vidBadge.className = "circle-story-video-badge";
-          vidBadge.innerHTML = `<span>▶</span><span style="font-size:8.5px; letter-spacing:0.4px;">VIDEO</span>`;
+          vidBadge.innerHTML = `<span>▶</span><span style="font-size:8px; letter-spacing:0.4px;">VIDEO</span>`;
           inner.appendChild(vidBadge);
         } else if (story.text) {
           const txtThumb = document.createElement("div");
