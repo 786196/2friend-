@@ -6,6 +6,7 @@
   <title>2friend - India's Own Social Video App</title>
   <link rel="icon" type="image/png" href="logo.png">
   <link rel="apple-touch-icon" href="logo.png">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
   <script>
     window.OneSignalDeferred = window.OneSignalDeferred || [];
@@ -54,6 +55,7 @@
       justify-content: center;
       align-items: center;
       padding: 20px;
+      overflow-y: auto;
     }
     .auth-card {
       width: 100%;
@@ -80,6 +82,27 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 6px;
+    }
+    .google-login-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #6b7280;
+      font-size: 11px;
+      margin: 10px 0 12px;
+    }
+    .auth-divider::before,
+    .auth-divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: #2a2a2a;
     }
     .auth-tabs {
       display: flex;
@@ -479,7 +502,6 @@
       cursor: pointer;
       padding-left: 4px;
     }
-    /* नीचे टाइमिंग (00:15) और ऑडियो लाइन के बीच साफ़ जगह */
     .reel-bottom-info {
       position: absolute;
       bottom: 48px;
@@ -891,9 +913,106 @@
     .stats-row { display: flex; gap: 24px; margin: 14px 0; text-align: center; }
     .stat-box strong { display: block; font-size: 16px; }
     .stat-box span { font-size: 11px; color: #888; }
+
+    /* फाउंडर टॉप 6 स्क्रीन-टाइम इनाम पैनल */
+    .founder-rewards-box {
+      width: 100%;
+      margin-top: 10px;
+      background: linear-gradient(145deg, #16161c, #111827);
+      border: 1px solid #ff9933;
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .founder-rewards-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .reward-clear-all-btn {
+      background: rgba(220, 38, 38, 0.25);
+      border: 1px solid #dc2626;
+      color: #fca5a5;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .reward-user-card {
+      background: #0d1117;
+      border: 1px solid #262c36;
+      border-radius: 10px;
+      padding: 10px;
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .reward-user-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12.5px;
+    }
+    .reward-amount-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .amt-chip-btn {
+      flex: 1;
+      min-width: 48px;
+      background: #1f2937;
+      border: 1px solid #374151;
+      color: #e5e7eb;
+      padding: 5px 6px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .amt-chip-btn.selected {
+      background: #ff9933;
+      color: #000;
+      border-color: #ffb74d;
+    }
+    .reward-action-row {
+      display: flex;
+      gap: 8px;
+    }
+    .reward-approve-btn {
+      flex: 2;
+      background: #16a34a;
+      color: #fff;
+      border: none;
+      padding: 7px 10px;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .reward-approve-btn.approved {
+      background: #14532d;
+      border: 1px solid #4ade80;
+      color: #86efac;
+    }
+    .reward-del-btn {
+      flex: 1;
+      background: rgba(127, 29, 29, 0.45);
+      color: #fca5a5;
+      border: 1px solid #991b1b;
+      padding: 7px 10px;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
     .profile-ad-box {
       width: 100%; background: #181818; border: 1px solid #2e2e2e;
-      border-radius: 8px; padding: 10px; margin-top: 10px; text-align: center; font-size: 11px; color: #bbb;
+      border-radius: 8px; padding: 10px; margin-top: 12px; text-align: center; font-size: 11px; color: #bbb;
     }
     .bookmark-section-box {
       width: 100%;
@@ -984,7 +1103,7 @@
       margin: 0 8px;
     }
 
-    /* फुल-स्क्रीन स्टोरी व्यूअर (फोटो व वीडियो दोनों के लिए बिना काटे पूरा दृश्य) */
+    /* फुल-स्क्रीन स्टोरी व्यूअर */
     .story-modal {
       position: fixed;
       inset: 0;
@@ -1153,6 +1272,39 @@
       word-break: break-word;
     }
 
+    /* स्टोरी में उड़ने वाले दिलों का लेयर और एनिमेशन */
+    .story-hearts-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 222;
+    }
+    .floating-story-heart {
+      position: absolute;
+      bottom: 68px;
+      right: 64px;
+      font-size: 26px;
+      user-select: none;
+      pointer-events: none;
+      animation: floatHeartUp 1.6s ease-out forwards;
+      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
+    }
+    @keyframes floatHeartUp {
+      0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(0.7);
+      }
+      40% {
+        opacity: 1;
+        transform: translate(var(--drift-x, -12px), -120px) scale(1.15);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(var(--drift-x-end, 14px), -290px) scale(0.95);
+      }
+    }
+
     .story-bottom-bar {
       position: absolute;
       bottom: 16px;
@@ -1176,6 +1328,28 @@
       text-align: left;
       cursor: pointer;
       backdrop-filter: blur(4px);
+    }
+    .story-heart-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(20, 20, 20, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      color: #fff;
+      font-size: 19px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.14s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+    .story-heart-btn:active {
+      transform: scale(1.25);
+    }
+    .story-heart-btn.liked {
+      color: #ff2a6d;
+      border-color: #ff2a6d;
+      background: rgba(255, 42, 109, 0.2);
     }
     .story-share-btn {
       width: 40px;
@@ -1268,6 +1442,27 @@
       <img src="logo.png" alt="2friend Logo" class="auth-logo-img" onerror="this.style.display='none'">
       <div class="auth-logo">2friend</div>
       <p style="color: #aaa; font-size: 12.5px; margin-bottom: 14px;" data-key="loginSub">अपने क्रिएटर अकाउंट से लॉगिन करें</p>
+
+      <!-- Google एक-क्लिक लॉगिन -->
+      <div class="google-login-wrap">
+        <div id="g_id_onload"
+             data-client_id="857463414976-qe5jfut213pj6mmjvml1hasmicc255q2.apps.googleusercontent.com"
+             data-context="signin"
+             data-ux_mode="popup"
+             data-callback="handleGoogleCredentialResponse"
+             data-auto_prompt="false">
+        </div>
+        <div class="g_id_signin"
+             data-type="standard"
+             data-shape="pill"
+             data-theme="filled_blue"
+             data-text="signin_with"
+             data-size="large"
+             data-logo_alignment="left">
+        </div>
+      </div>
+
+      <div class="auth-divider">या यूज़रनेम / पासवर्ड से</div>
 
       <div class="auth-tabs">
         <button id="tabSignInBtn" class="auth-tab-btn active" onclick="switchAuthMode('login')" data-key="signInTab">लॉगिन (Sign In)</button>
@@ -1493,6 +1688,18 @@
           <div class="stat-box"><strong id="langCountStat">17</strong><span data-key="langsLabel">Languages</span></div>
         </div>
 
+        <!-- सिर्फ़ 2friend founder प्रोफाइल के लिए: इंडिया टॉप 6 स्क्रीन-टाइम इनाम नियंत्रण पैनल -->
+        <div class="founder-rewards-box" id="founderRewardsPanel">
+          <div class="founder-rewards-header">
+            <div>
+              <div style="font-size:13px; font-weight:800; color:#ffb74d;">🏆 India Top 6 Screen-Time Rewards</div>
+              <div style="font-size:10.5px; color:#9ca3af;">आज भारत में सबसे ज़्यादा समय बिताने वाले 6 यूज़र्स</div>
+            </div>
+            <button class="reward-clear-all-btn" onclick="clearAllRewardCandidates()">🗑️ सभी हटाएं</button>
+          </div>
+          <div id="founderRewardsList"></div>
+        </div>
+
         <div class="profile-ad-box" onclick="handleGamingAdClick()" style="cursor:pointer;">
           <span class="ad-badge">AD</span> <strong>AppLovin MAX Mediation Active</strong> (Google / Unity / Meta)
         </div>
@@ -1512,6 +1719,7 @@
           <div style="color:#4ade80;">● Cloudflare R2 (VIDEOS_BUCKET): Connected</div>
           <div style="color:#4ade80; margin-top:2px;">● CDN Cache Hit Target: 90% - 99% (Preload Max 2)</div>
           <div style="color:#4ade80; margin-top:2px;">● Cloudflare D1 (2friend-db): Synced</div>
+          <div style="color:#4ade80; margin-top:2px;">● Google OAuth 2.0: Active</div>
           <div style="color:#4ade80; margin-top:2px;">● OneSignal Push: Active</div>
         </div>
 
@@ -1595,7 +1803,7 @@
     </div>
   </div>
 
-  <!-- स्टोरी व्यूअर (फोटो व वीडियो दोनों के लिए) -->
+  <!-- स्टोरी व्यूअर (फोटो व वीडियो दोनों के लिए + उड़ने वाले दिल लाइक एनिमेशन) -->
   <div class="story-modal" id="storyModal" onclick="closeStory()">
     <div class="story-viewer-frame" onclick="event.stopPropagation(); toggleStoryPlayPause()">
       <div class="story-progress-row" id="storyProgressRow"></div>
@@ -1620,10 +1828,14 @@
       <video id="storyModalVideo" class="story-media-video" playsinline webkit-playsinline preload="auto" controlsList="nodownload" disablePictureInPicture></video>
       <div class="story-scrim-overlay"></div>
 
+      <!-- उड़ने वाले दिलों का लेयर -->
+      <div class="story-hearts-layer" id="storyHeartsLayer"></div>
+
       <p class="story-center-text" id="storyModalText"></p>
 
       <div class="story-bottom-bar" onclick="event.stopPropagation()">
         <button class="story-reply-btn" onclick="openChatFromStory()">Send message...</button>
+        <button class="story-heart-btn" id="storyLikeHeartBtn" onclick="triggerStoryHeartBurst()" aria-label="Like Story">♥</button>
         <button class="story-share-btn" onclick="shareCurrentReel()" aria-label="Share">➤</button>
       </div>
     </div>
@@ -1646,6 +1858,7 @@
 
   <script>
     const API_BASE = "https://still-star-01fc.sanchirawat786.workers.dev";
+    const GOOGLE_CLIENT_ID = "857463414976-qe5jfut213pj6mmjvml1hasmicc255q2.apps.googleusercontent.com";
     const CHAT_PARTNER = "2friend_support";
     const STORY_TTL_MS = 24 * 60 * 60 * 1000;
     const FOUNDER_DISPLAY_NAME = "2friend founder";
@@ -1654,6 +1867,8 @@
     const LOCAL_ACCOUNTS_KEY = "2friend_registered_users_v1";
     const BLOCKED_USERS_KEY = "2friend_blocked_users_v1";
     const REPORTED_REELS_KEY = "2friend_reported_reels_v1";
+    const FOUNDER_REWARDS_KEY = "2friend_founder_top6_rewards_v1";
+    const SCREEN_TIME_SECONDS_KEY = "2friend_daily_screen_seconds_v1";
 
     let authMode = "login";
     let safetyTarget = { reelId: "", author: "" };
@@ -1678,6 +1893,58 @@
         return FOUNDER_DISPLAY_NAME;
       }
       return val;
+    }
+
+    /* --- Google OAuth लॉगिन कॉलबैक --- */
+    function parseJwtPayload(token) {
+      try {
+        const base64Url = token.split(".")[1];
+        const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+        const jsonPayload = decodeURIComponent(
+          atob(base64)
+            .split("")
+            .map(c => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+            .join("")
+        );
+        return JSON.parse(jsonPayload);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    async function handleGoogleCredentialResponse(response) {
+      try {
+        const payload = parseJwtPayload(response && response.credential);
+        const rawGoogleName = (payload && (payload.name || payload.email)) || FOUNDER_DISPLAY_NAME;
+        const email = (payload && payload.email) || "";
+        const publicName = resolvePublicDisplayName(rawGoogleName);
+
+        try {
+          await fetch(`${API_BASE}/api/auth/google`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              credential: response.credential,
+              email,
+              publicName
+            })
+          });
+        } catch (e) {}
+
+        try {
+          localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify({
+            username: email || rawGoogleName,
+            publicName,
+            provider: "google",
+            loggedInAt: Date.now()
+          }));
+        } catch (e) {}
+
+        await completeLoginSession(publicName);
+      } catch (err) {
+        const errEl = document.getElementById("authErrorMsg");
+        if (errEl) errEl.textContent = "Google लॉगिन पूरा नहीं हो सका, कृपया पुनः प्रयास करें।";
+      }
     }
 
     /* --- असली लॉगिन व साइन-अप लॉजिक --- */
@@ -1804,6 +2071,7 @@
       document.getElementById("profileUsername").innerText = loggedInUser;
       document.getElementById("auth-screen").style.display = "none";
 
+      updateFounderRewardsVisibility();
       renderStoriesBar();
       userPrefersMuted = false;
       const feed = document.getElementById("reelsFeedContainer");
@@ -1829,6 +2097,236 @@
       document.getElementById("authErrorMsg").textContent = "";
       switchAuthMode("login");
       document.getElementById("auth-screen").style.display = "flex";
+    }
+
+    /* --- फाउंडर टॉप 6 स्क्रीन-टाइम इनाम पैनल (₹20 / ₹40 / ₹100 / ₹200 Approve और Delete) --- */
+    const DEFAULT_TOP6_REWARD_USERS = [
+      { id: "rwd-1", name: "@aarav_mumbai", minutes: 142, amount: 20, approved: false },
+      { id: "rwd-2", name: "@priya_jaipur", minutes: 128, amount: 20, approved: false },
+      { id: "rwd-3", name: "@rohan_lucknow", minutes: 115, amount: 20, approved: false },
+      { id: "rwd-4", name: "@neha_patna", minutes: 104, amount: 20, approved: false },
+      { id: "rwd-5", name: "@vikram_bhopal", minutes: 96, amount: 20, approved: false },
+      { id: "rwd-6", name: "@kavita_pune", minutes: 89, amount: 20, approved: false }
+    ];
+
+    let founderRewardCandidates = [];
+
+    function loadFounderRewardsState() {
+      try {
+        const raw = localStorage.getItem(FOUNDER_REWARDS_KEY);
+        if (raw !== null) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            founderRewardCandidates = parsed;
+            return;
+          }
+        }
+      } catch (e) {}
+      founderRewardCandidates = DEFAULT_TOP6_REWARD_USERS.map(item => ({ ...item }));
+      saveFounderRewardsState();
+    }
+
+    function saveFounderRewardsState() {
+      try {
+        localStorage.setItem(FOUNDER_REWARDS_KEY, JSON.stringify(founderRewardCandidates));
+      } catch (e) {}
+    }
+
+    async function syncTop6FromServer() {
+      try {
+        const res = await fetch(`${API_BASE}/api/rewards/top6`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const arr = Array.isArray(data) ? data : (Array.isArray(data.users) ? data.users : []);
+        if (arr.length > 0) {
+          founderRewardCandidates = arr.slice(0, 6).map((u, idx) => ({
+            id: String(u.id || `rwd-${idx + 1}`),
+            name: String(u.name || u.username || `@user_${idx + 1}`),
+            minutes: Number(u.minutes || u.screenMinutes || 60),
+            amount: [20, 40, 100, 200].includes(Number(u.amount)) ? Number(u.amount) : 20,
+            approved: Boolean(u.approved)
+          }));
+          saveFounderRewardsState();
+          renderFounderRewardsPanel();
+        }
+      } catch (e) {}
+    }
+
+    function updateFounderRewardsVisibility() {
+      const panel = document.getElementById("founderRewardsPanel");
+      if (!panel) return;
+      if (loggedInUser === FOUNDER_DISPLAY_NAME) {
+        panel.style.display = "block";
+        renderFounderRewardsPanel();
+      } else {
+        panel.style.display = "none";
+      }
+    }
+
+    function selectRewardAmount(userId, amount) {
+      const target = founderRewardCandidates.find(u => u.id === userId);
+      if (!target) return;
+      target.amount = amount;
+      saveFounderRewardsState();
+      renderFounderRewardsPanel();
+    }
+
+    async function approveUserReward(userId) {
+      const target = founderRewardCandidates.find(u => u.id === userId);
+      if (!target) return;
+      target.approved = true;
+      saveFounderRewardsState();
+      renderFounderRewardsPanel();
+
+      try {
+        await fetch(`${API_BASE}/api/rewards/approve`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            approvedBy: loggedInUser,
+            userId: target.id,
+            username: target.name,
+            amount: target.amount,
+            minutes: target.minutes
+          })
+        });
+      } catch (e) {}
+
+      alert(`✅ ${target.name} को ₹${target.amount} का इनाम अप्रूव कर दिया गया है!`);
+    }
+
+    async function deleteRewardCandidate(userId) {
+      founderRewardCandidates = founderRewardCandidates.filter(u => u.id !== userId);
+      saveFounderRewardsState();
+      renderFounderRewardsPanel();
+
+      try {
+        await fetch(`${API_BASE}/api/rewards/delete`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ deletedBy: loggedInUser, userId })
+        });
+      } catch (e) {}
+    }
+
+    async function clearAllRewardCandidates() {
+      founderRewardCandidates = [];
+      saveFounderRewardsState();
+      renderFounderRewardsPanel();
+
+      try {
+        await fetch(`${API_BASE}/api/rewards/clear`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ deletedBy: loggedInUser })
+        });
+      } catch (e) {}
+
+      alert("🗑️ आज की इनाम सूची डिलीट कर दी गई है—आज किसी को इनाम नहीं दिया जाएगा।");
+    }
+
+    function renderFounderRewardsPanel() {
+      const listEl = document.getElementById("founderRewardsList");
+      if (!listEl) return;
+
+      if (founderRewardCandidates.length === 0) {
+        listEl.innerHTML = `<div style="font-size:11.5px; color:#9ca3af; padding:8px 0; text-align:center;">आज के लिए कोई इनाम सूची सक्रिय नहीं है।</div>`;
+        return;
+      }
+
+      listEl.innerHTML = "";
+      founderRewardCandidates.slice(0, 6).forEach((u, index) => {
+        const card = document.createElement("div");
+        card.className = "reward-user-card";
+
+        const topRow = document.createElement("div");
+        topRow.className = "reward-user-top";
+        topRow.innerHTML = `
+          <span><strong style="color:#ffb74d;">#${index + 1}</strong> <strong>${u.name}</strong></span>
+          <span style="color:#4ade80; font-size:11px; font-weight:700;">⏱️ ${u.minutes} min</span>
+        `;
+
+        const amtRow = document.createElement("div");
+        amtRow.className = "reward-amount-row";
+        [20, 40, 100, 200].forEach(amt => {
+          const chip = document.createElement("button");
+          chip.className = `amt-chip-btn ${u.amount === amt ? "selected" : ""}`;
+          chip.textContent = `₹${amt}`;
+          chip.onclick = () => selectRewardAmount(u.id, amt);
+          amtRow.appendChild(chip);
+        });
+
+        const actRow = document.createElement("div");
+        actRow.className = "reward-action-row";
+
+        const appBtn = document.createElement("button");
+        appBtn.className = `reward-approve-btn ${u.approved ? "approved" : ""}`;
+        appBtn.textContent = u.approved ? `✓ Approved (₹${u.amount})` : `Approve ₹${u.amount}`;
+        appBtn.onclick = () => approveUserReward(u.id);
+
+        const delBtn = document.createElement("button");
+        delBtn.className = "reward-del-btn";
+        delBtn.textContent = "Delete";
+        delBtn.onclick = () => deleteRewardCandidate(u.id);
+
+        actRow.appendChild(appBtn);
+        actRow.appendChild(delBtn);
+
+        card.appendChild(topRow);
+        card.appendChild(amtRow);
+        card.appendChild(actRow);
+        listEl.appendChild(card);
+      });
+    }
+
+    /* यूज़र का दैनिक स्क्रीन-टाइम ट्रैक करना */
+    setInterval(() => {
+      if (document.visibilityState === "visible" && document.getElementById("auth-screen").style.display === "none") {
+        try {
+          const cur = parseInt(localStorage.getItem(SCREEN_TIME_SECONDS_KEY) || "0", 10) || 0;
+          localStorage.setItem(SCREEN_TIME_SECONDS_KEY, String(cur + 10));
+        } catch (e) {}
+      }
+    }, 10000);
+
+    /* --- स्टोरी में उड़ने वाले दिल (Like Animation) --- */
+    function triggerStoryHeartBurst() {
+      const btn = document.getElementById("storyLikeHeartBtn");
+      const layer = document.getElementById("storyHeartsLayer");
+      if (btn) {
+        btn.classList.add("liked");
+      }
+      if (!layer) return;
+
+      const hearts = ["❤️", "💖", "💗", "💓", "❤️"];
+      hearts.forEach((symbol, i) => {
+        setTimeout(() => {
+          const span = document.createElement("span");
+          span.className = "floating-story-heart";
+          span.textContent = symbol;
+          const driftX = (Math.random() * 50 - 25).toFixed(0) + "px";
+          const driftXEnd = (Math.random() * 70 - 35).toFixed(0) + "px";
+          span.style.setProperty("--drift-x", driftX);
+          span.style.setProperty("--drift-x-end", driftXEnd);
+          span.style.right = (52 + Math.floor(Math.random() * 26)) + "px";
+          layer.appendChild(span);
+          setTimeout(() => span.remove(), 1700);
+        }, i * 95);
+      });
+
+      const currentStory = storiesList[activeStoryIndex];
+      if (currentStory) {
+        try {
+          fetch(`${API_BASE}/api/story-like`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              storyId: currentStory.id,
+              user: loggedInUser
+            })
+          }).catch(() => {});
+        } catch (e) {}
+      }
     }
 
     /* --- रिपोर्ट व ब्लॉक (User Safety) --- */
@@ -2146,7 +2644,7 @@
     let pendingVideoFile = null;
     let pendingVideoURL = null;
     let pendingStoryMediaFile = null;
-    let pendingStoryMediaType = ""; // "video" | "image" | ""
+    let pendingStoryMediaType = "";
     let pendingStoryImageDataUrl = "";
     let videoCounter = 1;
     let storyTimer = null;
@@ -2420,7 +2918,6 @@
       }
     }
 
-    /* फोटो को हल्का और साफ़ DataURL में बदलना ताकि गोल घेरे में कभी कालापन न आए */
     function readImageFileAsCompressedDataUrl(file) {
       return new Promise((resolve) => {
         if (!file) {
@@ -2697,7 +3194,6 @@
           const pubUser = resolvePublicDisplayName((dbRec && dbRec.user) || m.user || FOUNDER_DISPLAY_NAME);
           const detectedType = (dbRec && dbRec.mediaType) || m.mediaType || (imageDataUrl ? "image" : ((blob || remoteUrl) ? "video" : "text"));
 
-          /* यदि वीडियो स्टोरी का कोई स्रोत उपलब्ध नहीं है (पुराना एक्सपायर्ड लिंक), तो खाली काला गोला न बनाएं */
           if (detectedType === "video" && !blob && !remoteUrl && !m.isDefault) return;
 
           mergedMap.set(m.id, {
@@ -2907,6 +3403,9 @@
       activeStoryPlaybackSession++;
       const sessionId = activeStoryPlaybackSession;
       activeStoryIndex = index;
+
+      const heartBtn = document.getElementById("storyLikeHeartBtn");
+      if (heartBtn) heartBtn.classList.remove("liked");
 
       const story = storiesList[index];
       markStorySeen(story.id);
@@ -3289,6 +3788,8 @@
 
     document.addEventListener('DOMContentLoaded', async () => {
       loadBookmarkedVideos();
+      loadFounderRewardsState();
+      updateFounderRewardsVisibility();
       await initStories();
 
       const langSel = document.getElementById('languageSelect');
@@ -3338,6 +3839,7 @@
       }
 
       await syncFeedFromD1AndR2();
+      await syncTop6FromServer();
       applyBlockedAndReportedFilters();
 
       const feed = document.getElementById('reelsFeedContainer');
@@ -3348,7 +3850,6 @@
         }, { passive: true });
       }
 
-      /* यदि यूज़र पहले से लॉगिन है तो सीधे होम स्क्रीन खोलें */
       try {
         const savedSessionRaw = localStorage.getItem(AUTH_SESSION_KEY);
         if (savedSessionRaw) {
@@ -3398,6 +3899,7 @@
       }
 
       if (tabId === 'profile') {
+        updateFounderRewardsVisibility();
         renderBookmarkedVideos();
       }
 
@@ -3798,6 +4300,8 @@
       activeStoryIndex = -1;
       const vidEl = document.getElementById('storyModalVideo');
       const posterEl = document.getElementById('storyModalPoster');
+      const heartsLayer = document.getElementById('storyHeartsLayer');
+      if (heartsLayer) heartsLayer.innerHTML = "";
       vidEl.pause();
       vidEl.onloadedmetadata = null;
       vidEl.onloadeddata = null;
