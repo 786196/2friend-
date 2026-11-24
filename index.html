@@ -1836,11 +1836,35 @@
 
       <p class="story-center-text" id="storyModalText"></p>
 
-      <div class="story-bottom-bar" onclick="event.stopPropagation()">
-        <button class="story-reply-btn" onclick="openChatFromStory()">Send message...</button>
-        <button class="story-heart-btn" id="storyLikeHeartBtn" onclick="triggerStoryHeartBurst()" aria-label="Like Story">♥</button>
-        <button class="story-share-btn" onclick="shareCurrentReel()" aria-label="Share">➤</button>
+            <!-- स्टोरी के ऊपर ही खुलने वाला रिप्लाई व क्विक इमोजी बार -->
+      <div class="story-reply-overlay" id="storyReplyOverlay" onclick="event.stopPropagation()" style="display:none;">
+        <div class="story-quick-emojis" style="display:flex; justify-content:space-around; gap:6px; padding:4px 2px;">
+          <button type="button" class="story-emoji-chip" onclick="sendStoryEmojiBurst('❤️')" style="background:rgba(255,255,255,0.12); border:none; border-radius:20px; padding:5px 10px; font-size:18px; cursor:pointer;">❤️</button>
+          <button type="button" class="story-emoji-chip" onclick="sendStoryEmojiBurst('😂')" style="background:rgba(255,255,255,0.12); border:none; border-radius:20px; padding:5px 10px; font-size:18px; cursor:pointer;">😂</button>
+          <button type="button" class="story-emoji-chip" onclick="sendStoryEmojiBurst('😭')" style="background:rgba(255,255,255,0.12); border:none; border-radius:20px; padding:5px 10px; font-size:18px; cursor:pointer;">😭</button>
+          <button type="button" class="story-emoji-chip" onclick="sendStoryEmojiBurst('🙏')" style="background:rgba(255,255,255,0.12); border:none; border-radius:20px; padding:5px 10px; font-size:18px; cursor:pointer;">🙏</button>
+          <button type="button" class="story-emoji-chip" onclick="sendStoryEmojiBurst('😍')" style="background:rgba(255,255,255,0.12); border:none; border-radius:20px; padding:5px 10px; font-size:18px; cursor:pointer;">😍</button>
+          <button type="button" class="story-emoji-chip" onclick="sendStoryEmojiBurst('🔥')" style="background:rgba(255,255,255,0.12); border:none; border-radius:20px; padding:5px 10px; font-size:18px; cursor:pointer;">🔥</button>
+        </div>
+        <div class="story-reply-input-row" style="display:flex; align-items:center; gap:8px;">
+          <input
+            type="text"
+            id="storyReplyInput"
+            class="story-reply-input"
+            placeholder="Send message..."
+            autocomplete="off"
+            onkeydown="if(event.key==='Enter'){ event.preventDefault(); sendStoryTextReply(); }"
+          >
+          <button type="button" class="story-reply-send-btn" onclick="sendStoryTextReply()" style="background:#0084ff; color:#fff; border:none; border-radius:50%; width:38px; height:38px; font-size:16px; cursor:pointer; flex-shrink:0;">➤</button>
+        </div>
       </div>
+
+      <div class="story-bottom-bar" id="storyBottomBar" onclick="event.stopPropagation()">
+        <button type="button" class="story-reply-btn" onclick="openChatFromStory()">Send message...</button>
+        <button type="button" class="story-heart-btn" id="storyLikeHeartBtn" onclick="sendStoryEmojiBurst('❤️')" aria-label="Like Story">♥</button>
+        <button type="button" class="story-share-btn" onclick="shareCurrentReel()" aria-label="Share">➤</button>
+      </div>
+
     </div>
   </div>
 
