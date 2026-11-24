@@ -3565,11 +3565,124 @@
       }
     }
 
-    function openChatFromStory() {
-      closeStory();
-      const chatNavBtn = document.querySelectorAll(".nav-tab")[2];
-      navigateTab("chat", chatNavBtn);
+        function spawnManyStoryHearts(emoji = "❤️", count = 24) {
+      const layer = document.getElementById("storyHeartsLayer");
+      if (!layer) return;
+
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement("span");
+        el.className = "floating-story-heart";
+        el.textContent = emoji;
+
+        const rightOffset = 16 + Math.random() * 200;
+        const bottomOffset = 58 + Math.random() * 50;
+        const driftX = (Math.random() * 64 - 32).toFixed(0) + "px";
+        const driftXEnd = (Math.random() * 96 - 48).toFixed(0) + "px";
+        const sizePx = (22 + Math.random() * 18).toFixed(0) + "px";
+        const durationSec = (1.1 + Math.random() * 0.9).toFixed(2) + "s";
+
+        el.style.right = rightOffset + "px";
+        el.style.bottom = bottomOffset + "px";
+        el.style.left = "auto";
+        el.style.fontSize = sizePx;
+        el.style.animationDuration = durationSec;
+        el.style.setProperty("--drift-x", driftX);
+        el.style.setProperty("--drift-x-end", driftXEnd);
+
+        layer.appendChild(el);
+        setTimeout(() => el.remove(), 2100);
+      }
     }
+
+    function sendStoryEmojiBurst(emoji = "❤️") {
+      const heartBtn = document.getElementById("storyLikeHeartBtn");
+      if (emoji === "❤️" && heartBtn) {
+        heartBtn.classList.add("liked");
+      }
+      spawnManyStoryHearts(emoji, emoji === "❤️" ? 26 : 12);
+      pushStoryMessageToChat(`${emoji} (Story reaction)`);
+    }
+
+    function openChatFromStory() {
+      const overlay = document.getElementById("storyReplyOverlay");
+      const bottomBar = document.getElementById("storyBottomBar");
+      const input = document.getElementById("storyReplyInput");
+
+      if (bottomBar) bottomBar.style.display = "none";
+      if (overlay) {
+        overlay.style.display = "flex";
+        overlay.style.flexDirection = "column";
+        overlay.style.gap = "8px";
+        overlay.style.position = "absolute";
+        overlay.style.left = "12px";
+        overlay.style.right = "12px";
+        overlay.style.bottom = "14px";
+        overlay.style.zIndex = "230";
+        overlay.style.background = "rgba(15, 15, 15, 0.88)";
+        overlay.style.padding = "10px";
+        overlay.style.borderRadius = "16px";
+        overlay.style.border = "1px solid rgba(255,255,255,0.22)";
+      }
+      if (input) {
+        input.style.flex = "1";
+        input.style.background = "#222";
+        input.style.color = "#fff";
+        input.style.border = "1px solid rgba(255,255,255,0.35)";
+        input.style.borderRadius = "20px";
+        input.style.padding = "10px 14px";
+        input.style.fontSize = "14px";
+        input.style.outline = "none";
+        setTimeout(() => input.focus(), 60);
+      }
+    }
+
+    function closeStoryReplyOverlay() {
+      const overlay = document.getElementById("storyReplyOverlay");
+      const bottomBar = document.getElementById("storyBottomBar");
+      if (overlay) overlay.style.display = "none";
+      if (bottomBar) bottomBar.style.display = "flex";
+    }
+
+    async function pushStoryMessageToChat(messageText) {
+      const cleanText = String(messageText || "").trim();
+      if (!cleanText) return;
+
+      const storyUser = document.getElementById("storyModalUser")?.textContent?.trim() || "Story";
+      const formattedMsg = `Story (${storyUser}): ${cleanText}`;
+
+      const chatBox = document.querySelector(".chat-box-area");
+      if (chatBox) {
+        const bubble = document.createElement("div");
+        bubble.className = "msg-bubble msg-sent";
+        bubble.textContent = formattedMsg;
+        chatBox.appendChild(bubble);
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+
+      try {
+        await fetch(`${API_BASE}/api/chat`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sender: FOUNDER_DISPLAY_NAME,
+            text: formattedMsg
+          })
+        });
+      } catch (e) {}
+    }
+
+    async function sendStoryTextReply() {
+      const input = document.getElementById("storyReplyInput");
+      if (!input) return;
+      const text = input.value.trim();
+      if (!text) return;
+
+      input.value = "";
+      await pushStoryMessageToChat(text);
+      spawnManyStoryHearts("❤️", 12);
+      closeStoryReplyOverlay();
+    }
+
 
     function prepareVideoFrame(video) {
       if (!video) return;
