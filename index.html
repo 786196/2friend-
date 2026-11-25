@@ -4296,6 +4296,31 @@ async function trimVideoTo60Seconds(sourceVideoEl, maxSec) {
     return;
   }
 
+          if (tempVideo.duration > 60) {
+    feedback.style.color = "#facc15";
+    feedback.innerText = "✂️ वीडियो 1 मिनट से बड़ा है, 60 सेकंड में काटा जा रहा है...";
+    publishBtn.disabled = true;
+
+    const trimmedFile = await trimVideoTo60Seconds(tempVideo, 60);
+
+    if (trimmedFile) {
+      URL.revokeObjectURL(blobUrl);
+      const trimmedUrl = URL.createObjectURL(trimmedFile);
+      pendingVideoFile = trimmedFile;
+      pendingVideoURL = trimmedUrl;
+      fileNameDisplay.innerText = trimmedFile.name;
+      feedback.style.color = "#4ade80";
+      feedback.innerText = "Cloudflare R2 पर अपलोड के लिए तैयार! (1 मिनट में कट गया)";
+      publishBtn.disabled = false;
+    } else {
+      URL.revokeObjectURL(blobUrl);
+      feedback.style.color = "#f87171";
+      feedback.innerText = "❌ इस डिवाइस पर 60 सेकंड कटिंग पूरी नहीं हो सकी।";
+      input.value = "";
+    }
+    return;
+  }
+
         if (tempVideo.duration > CLOUD_CONFIG.maxDurationSeconds + 0.5) {
           URL.revokeObjectURL(blobUrl);
           feedback.style.color = "#f87171";
