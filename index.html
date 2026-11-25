@@ -4818,6 +4818,165 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 
 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  var paidState = {};
+  var paytmState = {};
+
+  try {
+    paidState = JSON.parse(localStorage.getItem("2friend_reward_paid_v2") || "{}");
+  } catch (e) {}
+
+  try {
+    paytmState = JSON.parse(localStorage.getItem("2friend_reward_paytm_v2") || "{}");
+  } catch (e) {}
+
+  function saveStates() {
+    try {
+      localStorage.setItem("2friend_reward_paid_v2", JSON.stringify(paidState));
+      localStorage.setItem("2friend_reward_paytm_v2", JSON.stringify(paytmState));
+    } catch (e) {}
+  }
+
+  function getUserKey(card) {
+    var text = (card.innerText || "").trim();
+    var match = text.match(/@[a-zA-Z0-9._-]+/);
+    if (match) return match[0];
+    var lines = text.split("\n").map(function (s) { return s.trim(); }).filter(Boolean);
+    return lines[0] || "user";
+  }
+
+  function enhanceRewardCards() {
+    var allButtons = Array.from(document.querySelectorAll("button"));
+    var approveBtns = allButtons.filter(function (btn) {
+      return /approve/i.test(btn.textContent || "");
+    });
+
+    var cards = [];
+    approveBtns.forEach(function (btn) {
+      var card = btn.closest("div[style], article, li, .reward-card, .user-card");
+      if (!card) card = btn.parentElement && btn.parentElement.parentElement;
+      if (card && cards.indexOf(card) === -1) {
+        cards.push(card);
+      }
+    });
+
+    cards.forEach(function (card) {
+      if (card.querySelector(".tf-paytm-reward-box")) return;
+
+      var key = getUserKey(card);
+      var savedNumber = paytmState[key] || "";
+
+      var box = document.createElement("div");
+      box.className = "tf-paytm-reward-box";
+      box.style.cssText = "margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.12);display:flex;flex-direction:column;gap:8px;";
+
+      var msgBtn = document.createElement("button");
+      msgBtn.type = "button";
+      msgBtn.textContent = "Copy Winner Message (Paytm नंबर मांगें)";
+      msgBtn.style.cssText = "width:100%;padding:7px 10px;border-radius:7px;border:1px solid rgba(255,255,255,0.22);background:#1f2937;color:#f9fafb;font-size:12px;font-weight:600;cursor:pointer;";
+
+      var topRow = document.createElement("div");
+      topRow.style.cssText = "display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:13px;";
+
+      var numLabel = document.createElement("span");
+      numLabel.style.cssText = "color:#e5e7eb;word-break:break-all;";
+      numLabel.textContent = savedNumber ? ("Paytm नंबर: " + savedNumber) : "Paytm नंबर: अभी दर्ज नहीं";
+
+      var copyNumBtn = document.createElement("button");
+      copyNumBtn.type = "button";
+      copyNumBtn.textContent = "Copy No.";
+      copyNumBtn.style.cssText = "padding:5px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:#262630;color:#fff;font-size:12px;cursor:pointer;";
+
+      var inputRow = document.createElement("div");
+      inputRow.style.cssText = "display:flex;gap:6px;align-items:center;";
+
+      var numInput = document.createElement("input");
+      numInput.type = "tel";
+      numInput.placeholder = "यूज़र का Paytm फ़ोन नंबर डालें";
+      numInput.value = savedNumber;
+      numInput.style.cssText = "flex:1;padding:6px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.18);background:#18181f;color:#fff;font-size:12px;";
+
+      var saveNumBtn = document.createElement("button");
+      saveNumBtn.type = "button";
+      saveNumBtn.textContent = "Save";
+      saveNumBtn.style.cssText = "padding:6px 12px;border-radius:6px;border:none;background:#374151;color:#fff;font-size:12px;cursor:pointer;";
+
+      var paidBtn = document.createElement("button");
+      paidBtn.type = "button";
+      paidBtn.style.cssText = "width:100%;padding:8px 12px;border-radius:8px;border:none;font-weight:700;font-size:13px;cursor:pointer;";
+
+      function refreshPaidButton() {
+        var isPaid = !!paidState[key];
+        if (isPaid) {
+          paidBtn.textContent = "✓ Paid (भेज दिया गया)";
+          paidBtn.style.background = "#15803d";
+          paidBtn.style.color = "#ffffff";
+        } else {
+          paidBtn.textContent = "Paid मार्क करें";
+          paidBtn.style.background = "#2563eb";
+          paidBtn.style.color = "#ffffff";
+        }
+      }
+
+      msgBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var msg = "बधाई हो " + key + "! आपका नाम 2friend के आज के इनाम के लिए चुना गया है। कृपया अपना वह फ़ोन नंबर बता दें जिस पर आपका Paytm सक्रिय है, ताकि इनाम की राशि भेजी जा सके।";
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(msg).catch(function () {});
+        }
+        msgBtn.textContent = "Message Copied ✓";
+        setTimeout(function () {
+          msgBtn.textContent = "Copy Winner Message (Paytm नंबर मांगें)";
+        }, 1400);
+      });
+
+      saveNumBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var val = (numInput.value || "").trim();
+        paytmState[key] = val;
+        savedNumber = val;
+        numLabel.textContent = val ? ("Paytm नंबर: " + val) : "Paytm नंबर: अभी दर्ज नहीं";
+        saveStates();
+      });
+
+      copyNumBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var val = (numInput.value || savedNumber || "").trim();
+        if (!val) return;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(val).catch(function () {});
+        }
+        copyNumBtn.textContent = "Copied ✓";
+        setTimeout(function () {
+          copyNumBtn.textContent = "Copy No.";
+        }, 1200);
+      });
+
+      paidBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        paidState[key] = !paidState[key];
+        saveStates();
+        refreshPaidButton();
+      });
+
+      refreshPaidButton();
+      topRow.appendChild(numLabel);
+      topRow.appendChild(copyNumBtn);
+      inputRow.appendChild(numInput);
+      inputRow.appendChild(saveNumBtn);
+      box.appendChild(msgBtn);
+      box.appendChild(topRow);
+      box.appendChild(inputRow);
+      box.appendChild(paidBtn);
+      card.appendChild(box);
+    });
+  }
+
+  enhanceRewardCards();
+  setTimeout(enhanceRewardCards, 800);
+});
+</script>
 
 
 
