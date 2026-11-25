@@ -4263,7 +4263,7 @@ async function trimVideoTo60Seconds(sourceVideoEl, maxSec) {
 
 }
 
-      tempVideo.onloadedmetadata = function() {
+      tempVideo.onloadedmetadata = async function () {
         clearTimeout(metaTimer);
         if (!isFinite(tempVideo.duration) || tempVideo.duration <= 0) {
           URL.revokeObjectURL(blobUrl);
