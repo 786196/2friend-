@@ -4288,7 +4288,7 @@ async function trimVideoTo60Seconds(sourceVideoEl, maxSec) {
           publishBtn.disabled = false;
         }
       }
-    };
+    
 
         if (tempVideo.duration > CLOUD_CONFIG.maxDurationSeconds + 0.5) {
           URL.revokeObjectURL(blobUrl);
@@ -4312,7 +4312,7 @@ async function trimVideoTo60Seconds(sourceVideoEl, maxSec) {
         input.value = "";
       };
       tempVideo.src = blobUrl;
-    }
+    
 
     async function publishVideoToFeed() {
       if (!pendingVideoURL || !pendingVideoFile) return;
