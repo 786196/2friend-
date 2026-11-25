@@ -4185,6 +4185,82 @@
         feedback.innerText = "❌ वीडियो लोड होने में समय लगा, दूसरा वीडियो चुनें या पुनः प्रयास करें।";
         input.value = "";
       }, 8000);
+async function trimVideoTo60Seconds(sourceVideoEl, maxSec) {
+  return new Promise((resolve) => {
+    const stream = sourceVideoEl.captureStream
+      ? sourceVideoEl.captureStream()
+      : (sourceVideoEl.mozCaptureStream ? sourceVideoEl.mozCaptureStream() : null);
+
+    if (!stream || typeof MediaRecorder === 'undefined') {
+      resolve(null);
+      return;
+    }
+
+    const mimeTypes = [
+      'video/webm;codecs=vp9,opus',
+      'video/webm;codecs=vp8,opus',
+      'video/webm',
+      'video/mp4'
+    ];
+    const supportedMime = mimeTypes.find((t) => MediaRecorder.isTypeSupported(t)) || '';
+
+    let recorder;
+    try {
+      recorder = supportedMime
+        ? new MediaRecorder(stream, { mimeType: supportedMime })
+        : new MediaRecorder(stream);
+    } catch (e) {
+      resolve(null);
+      return;
+    }
+
+    const chunks = [];
+    recorder.ondataavailable = (ev) => {
+      if (ev.data && ev.data.size > 0) chunks.push(ev.data);
+    };
+
+    const stopRecording = () => {
+      if (recorder.state !== 'inactive') {
+        try { recorder.stop(); } catch (_) {}
+      }
+      sourceVideoEl.pause();
+    };
+
+    recorder.onstop = () => {
+      const outType = recorder.mimeType || supportedMime || 'video/webm';
+      const trimmedBlob = new Blob(chunks, { type: outType });
+      if (!trimmedBlob.size) {
+        resolve(null);
+        return;
+      }
+      const ext = outType.includes('mp4') ? 'mp4' : 'webm';
+      const baseName = (file.name || 'video').replace(/\.[^/.]+$/, '');
+      const trimmedFile = new File([trimmedBlob], `${baseName}_60s.${ext}`, {
+        type: outType,
+        lastModified: Date.now()
+      });
+      resolve(trimmedFile);
+    };
+
+    sourceVideoEl.currentTime = 0;
+    sourceVideoEl.ontimeupdate = () => {
+      if (sourceVideoEl.currentTime >= maxSec) {
+        sourceVideoEl.ontimeupdate = null;
+        stopRecording();
+      }
+    };
+
+    recorder.start(500);
+    sourceVideoEl.play().catch(() => {
+      stopRecording();
+      resolve(null);
+    });
+
+    setTimeout(() => {
+      stopRecording();
+    }, (maxSec + 2) * 1000);
+  });
+}
 
       tempVideo.onloadedmetadata = function() {
         clearTimeout(metaTimer);
