@@ -4979,6 +4979,114 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 
 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  var customAmountMap = {};
+
+  function getCardKey(card) {
+    var text = (card.innerText || "").trim();
+    var match = text.match(/@[a-zA-Z0-9._-]+/);
+    if (match) return match[0];
+    var lines = text.split("\n").map(function (s) { return s.trim(); }).filter(Boolean);
+    return lines[0] || "user";
+  }
+
+  function addCustomAmountControls() {
+    var allButtons = Array.from(document.querySelectorAll("button"));
+    var approveBtns = allButtons.filter(function (btn) {
+      return /approve/i.test(btn.textContent || "");
+    });
+
+    var cards = [];
+    approveBtns.forEach(function (btn) {
+      var card = btn.closest("div[style], article, li, .reward-card, .user-card");
+      if (!card) card = btn.parentElement && btn.parentElement.parentElement;
+      if (card && cards.indexOf(card) === -1) {
+        cards.push(card);
+      }
+    });
+
+    cards.forEach(function (card) {
+      if (card.querySelector(".tf-custom-amt-box")) return;
+
+      var key = getCardKey(card);
+      var cardApproveBtn = Array.from(card.querySelectorAll("button")).find(function (b) {
+        return /approve/i.test(b.textContent || "");
+      });
+
+      var box = document.createElement("div");
+      box.className = "tf-custom-amt-box";
+      box.style.cssText = "margin-top:8px;display:flex;gap:6px;align-items:center;";
+
+      var amtInput = document.createElement("input");
+      amtInput.type = "number";
+      amtInput.min = "1";
+      amtInput.step = "1";
+      amtInput.placeholder = "खुद राशि टाइप करें (जैसे 50, 100, 200)";
+      amtInput.style.cssText = "flex:1;padding:6px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:#18181f;color:#fff;font-size:12px;";
+
+      var applyBtn = document.createElement("button");
+      applyBtn.type = "button";
+      applyBtn.textContent = "राशि सेट करें";
+      applyBtn.style.cssText = "padding:6px 10px;border-radius:6px;border:none;background:#d97706;color:#fff;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;";
+
+      function applyCustomAmount() {
+        var raw = (amtInput.value || "").trim();
+        var num = parseInt(raw, 10);
+        if (!num || num <= 0) return;
+
+        customAmountMap[key] = num;
+
+        var presetBtns = Array.from(card.querySelectorAll("button")).filter(function (b) {
+          var t = (b.textContent || "").trim();
+          return /^₹?\d+$/.test(t);
+        });
+
+        var matchedPreset = presetBtns.find(function (b) {
+          return parseInt((b.textContent || "").replace(/[^\d]/g, ""), 10) === num;
+        });
+
+        if (matchedPreset) {
+          matchedPreset.click();
+        } else if (cardApproveBtn) {
+          cardApproveBtn.setAttribute("data-custom-amount", String(num));
+          cardApproveBtn.textContent = "Approve ₹" + num;
+        }
+
+        applyBtn.textContent = "सेट हो गया ✓";
+        setTimeout(function () {
+          applyBtn.textContent = "राशि सेट करें";
+        }, 1200);
+      }
+
+      applyBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        applyCustomAmount();
+      });
+
+      amtInput.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          e.stopPropagation();
+          applyCustomAmount();
+        }
+      });
+
+      box.appendChild(amtInput);
+      box.appendChild(applyBtn);
+
+      if (cardApproveBtn && cardApproveBtn.parentElement) {
+        cardApproveBtn.parentElement.insertAdjacentElement("afterend", box);
+      } else {
+        card.appendChild(box);
+      }
+    });
+  }
+
+  addCustomAmountControls();
+  setTimeout(addCustomAmountControls, 800);
+});
+</script>
 
 </body>
   </html>
