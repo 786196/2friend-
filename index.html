@@ -4685,7 +4685,93 @@ document.addEventListener("DOMContentLoaded", function () {
     feed.parentNode.insertBefore(banner, feed.nextSibling);
   }
 });
+</script><script>
+document.addEventListener("DOMContentLoaded", function () {
+  var style = document.createElement("style");
+  style.textContent = `
+    .reel-fullscreen-mode .app-header,
+    .reel-fullscreen-mode .stories-bar,
+    .reel-fullscreen-mode .bottom-nav,
+    .reel-fullscreen-mode nav {
+      display: none !important;
+    }
+    .reel-fullscreen-mode .reel-slide.active-fullscreen {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      z-index: 9999 !important;
+      background: #000 !important;
+    }
+    .reel-fullscreen-mode .reel-slide.active-fullscreen video {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important;
+    }
+    #exitReelFullscreenBtn {
+      position: fixed;
+      top: 14px;
+      left: 14px;
+      z-index: 10000;
+      background: rgba(0, 0, 0, 0.65);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      font-size: 20px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .reel-fullscreen-mode #exitReelFullscreenBtn {
+      display: flex !important;
+    }
+  `;
+  document.head.appendChild(style);
+
+  var backBtn = document.createElement("button");
+  backBtn.id = "exitReelFullscreenBtn";
+  backBtn.type = "button";
+  backBtn.innerHTML = "&#8592;";
+  backBtn.title = "Back";
+  document.body.appendChild(backBtn);
+
+  function exitFullscreenReel() {
+    document.body.classList.remove("reel-fullscreen-mode");
+    document.querySelectorAll(".reel-slide.active-fullscreen").forEach(function (el) {
+      el.classList.remove("active-fullscreen");
+    });
+  }
+
+  backBtn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    exitFullscreenReel();
+  });
+
+  document.addEventListener("click", function (e) {
+    if (e.target.closest("button, a, input, textarea, select, #exitReelFullscreenBtn")) return;
+    var slide = e.target.closest(".reel-slide");
+    var video = e.target.closest("video");
+    if (slide || video) {
+      var targetSlide = slide || video.closest(".reel-slide");
+      var isAlreadyFull = targetSlide && targetSlide.classList.contains("active-fullscreen");
+      exitFullscreenReel();
+      if (!isAlreadyFull && targetSlide) {
+        document.body.classList.add("reel-fullscreen-mode");
+        targetSlide.classList.add("active-fullscreen");
+        var vid = targetSlide.querySelector("video");
+        if (vid && vid.paused) {
+          vid.play().catch(function () {});
+        }
+      }
+    }
+  });
+});
 </script>
+
 
 </body>
   </html>
