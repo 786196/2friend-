@@ -4270,7 +4270,7 @@ async function trimVideoTo60Seconds(sourceVideoEl, maxSec) {
         return;
       }
 
-      if (tempVideo.duration > 60) {
+       if(tempVideo.duration > 60) {
         feedback.style.color = "#facc15";
         feedback.innerText = "✂️ वीडियो 1 मिनट से बड़ा है, 60 सेकंड में काटा जा रहा है...";
         publishBtn.disabled = true;
@@ -4322,7 +4322,7 @@ async function trimVideoTo60Seconds(sourceVideoEl, maxSec) {
   }
 
   async function publishVideoToFeed() {
- {
+ 
       if (!pendingVideoURL || !pendingVideoFile) return;
 
       const caption = document.getElementById('videoCaptionInput').value.trim() || "मेरा नया वीडियो #2friend";
