@@ -4677,6 +4677,15 @@
         if (dict[k]) el.placeholder = dict[k];
       });
     }
-  </script>
+  </script><script>
+document.addEventListener("DOMContentLoaded", function () {
+  var banner = document.querySelector(".ad-slot-banner");
+  var feed = document.getElementById("reelsFeed") || document.querySelector(".reels-feed");
+  if (banner && feed && feed.parentNode) {
+    feed.parentNode.insertBefore(banner, feed.nextSibling);
+  }
+});
+</script>
+
 </body>
   </html>
