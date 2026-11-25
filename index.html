@@ -4677,15 +4677,8 @@
         if (dict[k]) el.placeholder = dict[k];
       });
     }
-  </script><script>
-document.addEventListener("DOMContentLoaded", function () {
-  var banner = document.querySelector(".ad-slot-banner");
-  var feed = document.getElementById("reelsFeed") || document.querySelector(".reels-feed");
-  if (banner && feed && feed.parentNode) {
-    feed.parentNode.insertBefore(banner, feed.nextSibling);
-  }
-});
-</script><script>
+  
+<script>
 document.addEventListener("DOMContentLoaded", function () {
   var style = document.createElement("style");
   style.textContent = `
@@ -4700,7 +4693,7 @@ document.addEventListener("DOMContentLoaded", function () {
       top: 0 !important;
       left: 0 !important;
       width: 100vw !important;
-      height: 100vh !important;
+      height: calc(100vh - 54px) !important;
       z-index: 9999 !important;
       background: #000 !important;
     }
@@ -4709,11 +4702,22 @@ document.addEventListener("DOMContentLoaded", function () {
       height: 100% !important;
       object-fit: cover !important;
     }
+    .reel-fullscreen-mode .ad-slot-banner {
+      display: flex !important;
+      position: fixed !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      width: 100% !important;
+      min-height: 54px !important;
+      z-index: 10001 !important;
+      margin: 0 !important;
+    }
     #exitReelFullscreenBtn {
       position: fixed;
       top: 14px;
       left: 14px;
-      z-index: 10000;
+      z-index: 10002;
       background: rgba(0, 0, 0, 0.65);
       color: #fff;
       border: 1px solid rgba(255,255,255,0.3);
@@ -4732,12 +4736,36 @@ document.addEventListener("DOMContentLoaded", function () {
   `;
   document.head.appendChild(style);
 
+  var banner = document.querySelector(".ad-slot-banner");
+  var feed = document.getElementById("reelsFeed") || document.querySelector(".reels-feed");
+  if (banner && feed && feed.parentNode) {
+    feed.parentNode.insertBefore(banner, feed.nextSibling);
+  }
+
   var backBtn = document.createElement("button");
   backBtn.id = "exitReelFullscreenBtn";
   backBtn.type = "button";
   backBtn.innerHTML = "&#8592;";
   backBtn.title = "Back";
   document.body.appendChild(backBtn);
+
+  function pauseAndMuteAllExcept(activeVideo) {
+    document.querySelectorAll("video").forEach(function (vid) {
+      if (vid !== activeVideo) {
+        vid.muted = true;
+        vid.pause();
+      }
+    });
+  }
+
+  function pinBannerInFullscreen() {
+    var currentBanner = document.querySelector(".ad-slot-banner");
+    if (document.body.classList.contains("reel-fullscreen-mode") && currentBanner) {
+      if (currentBanner.parentElement !== document.body) {
+        document.body.appendChild(currentBanner);
+      }
+    }
+  }
 
   function exitFullscreenReel() {
     document.body.classList.remove("reel-fullscreen-mode");
@@ -4757,52 +4785,22 @@ document.addEventListener("DOMContentLoaded", function () {
     var video = e.target.closest("video");
     if (slide || video) {
       var targetSlide = slide || video.closest(".reel-slide");
+      var vid = targetSlide ? targetSlide.querySelector("video") : video;
       var isAlreadyFull = targetSlide && targetSlide.classList.contains("active-fullscreen");
+
       exitFullscreenReel();
+
       if (!isAlreadyFull && targetSlide) {
         document.body.classList.add("reel-fullscreen-mode");
         targetSlide.classList.add("active-fullscreen");
-        var vid = targetSlide.querySelector("video");
-        if (vid && vid.paused) {
+        pinBannerInFullscreen();
+        if (vid) {
+          pauseAndMuteAllExcept(vid);
+          vid.muted = false;
           vid.play().catch(function () {});
         }
       }
     }
-  });
-});
-</script>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-  var fsBannerStyle = document.createElement("style");
-  fsBannerStyle.textContent = `
-    .reel-fullscreen-mode .reel-slide.active-fullscreen {
-      height: calc(100vh - 54px) !important;
-    }
-    .reel-fullscreen-mode .ad-slot-banner {
-      display: flex !important;
-      position: fixed !important;
-      left: 0 !important;
-      right: 0 !important;
-      bottom: 0 !important;
-      width: 100% !important;
-      min-height: 54px !important;
-      z-index: 10001 !important;
-      margin: 0 !important;
-    }
-  `;
-  document.head.appendChild(fsBannerStyle);
-
-  function pinBannerInFullscreen() {
-    var banner = document.querySelector(".ad-slot-banner");
-    if (document.body.classList.contains("reel-fullscreen-mode") && banner) {
-      if (banner.parentElement !== document.body) {
-        document.body.appendChild(banner);
-      }
-    }
-  }
-
-  document.addEventListener("click", function () {
-    setTimeout(pinBannerInFullscreen, 30);
   });
 });
 </script>
