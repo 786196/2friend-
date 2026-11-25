@@ -4980,9 +4980,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-  var customAmountMap = {};
-
+(function () {
   function getCardKey(card) {
     var text = (card.innerText || "").trim();
     var match = text.match(/@[a-zA-Z0-9._-]+/);
@@ -4991,102 +4989,96 @@ document.addEventListener("DOMContentLoaded", function () {
     return lines[0] || "user";
   }
 
-  function addCustomAmountControls() {
-    var allButtons = Array.from(document.querySelectorAll("button"));
-    var approveBtns = allButtons.filter(function (btn) {
-      return /approve/i.test(btn.textContent || "");
+  function addCustomAmountBoxes() {
+    var buttons = Array.from(document.querySelectorAll("button"));
+    var approveButtons = buttons.filter(function (btn) {
+      return /approve/i.test((btn.textContent || "").trim());
     });
 
-    var cards = [];
-    approveBtns.forEach(function (btn) {
-      var card = btn.closest("div[style], article, li, .reward-card, .user-card");
-      if (!card) card = btn.parentElement && btn.parentElement.parentElement;
-      if (card && cards.indexOf(card) === -1) {
-        cards.push(card);
+    approveButtons.forEach(function (approveBtn) {
+      var card = approveBtn.parentElement;
+      for (var i = 0; i < 4 && card; i++) {
+        var hasPreset = Array.from(card.querySelectorAll("button")).some(function (b) {
+          return /^₹?\d+$/.test((b.textContent || "").trim());
+        });
+        if (hasPreset) break;
+        card = card.parentElement;
       }
-    });
-
-    cards.forEach(function (card) {
-      if (card.querySelector(".tf-custom-amt-box")) return;
+      if (!card || card.querySelector(".tf-custom-amt-box")) return;
 
       var key = getCardKey(card);
-      var cardApproveBtn = Array.from(card.querySelectorAll("button")).find(function (b) {
-        return /approve/i.test(b.textContent || "");
-      });
-
       var box = document.createElement("div");
       box.className = "tf-custom-amt-box";
-      box.style.cssText = "margin-top:8px;display:flex;gap:6px;align-items:center;";
+      box.style.cssText = "margin-top:8px;display:flex;gap:6px;align-items:center;width:100%;";
 
-      var amtInput = document.createElement("input");
-      amtInput.type = "number";
-      amtInput.min = "1";
-      amtInput.step = "1";
-      amtInput.placeholder = "खुद राशि टाइप करें (जैसे 50, 100, 200)";
-      amtInput.style.cssText = "flex:1;padding:6px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:#18181f;color:#fff;font-size:12px;";
+      var input = document.createElement("input");
+      input.type = "number";
+      input.min = "1";
+      input.step = "1";
+      input.placeholder = "खुद राशि टाइप करें (जैसे 50, 100, 200)";
+      input.style.cssText = "flex:1;min-width:0;padding:7px 9px;border-radius:7px;border:1px solid rgba(255,255,255,0.22);background:#14151c;color:#ffffff;font-size:12px;";
 
-      var applyBtn = document.createElement("button");
-      applyBtn.type = "button";
-      applyBtn.textContent = "राशि सेट करें";
-      applyBtn.style.cssText = "padding:6px 10px;border-radius:6px;border:none;background:#d97706;color:#fff;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;";
+      var setBtn = document.createElement("button");
+      setBtn.type = "button";
+      setBtn.textContent = "राशि सेट करें";
+      setBtn.style.cssText = "padding:7px 11px;border-radius:7px;border:none;background:#d97706;color:#ffffff;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;";
 
-      function applyCustomAmount() {
-        var raw = (amtInput.value || "").trim();
-        var num = parseInt(raw, 10);
-        if (!num || num <= 0) return;
+      function applyAmount() {
+        var val = parseInt((input.value || "").trim(), 10);
+        if (!val || val <= 0) return;
 
-        customAmountMap[key] = num;
-
-        var presetBtns = Array.from(card.querySelectorAll("button")).filter(function (b) {
-          var t = (b.textContent || "").trim();
-          return /^₹?\d+$/.test(t);
+        var presets = Array.from(card.querySelectorAll("button")).filter(function (b) {
+          return /^₹?\d+$/.test((b.textContent || "").trim());
         });
 
-        var matchedPreset = presetBtns.find(function (b) {
-          return parseInt((b.textContent || "").replace(/[^\d]/g, ""), 10) === num;
+        var exact = presets.find(function (b) {
+          return parseInt((b.textContent || "").replace(/[^\d]/g, ""), 10) === val;
         });
 
-        if (matchedPreset) {
-          matchedPreset.click();
-        } else if (cardApproveBtn) {
-          cardApproveBtn.setAttribute("data-custom-amount", String(num));
-          cardApproveBtn.textContent = "Approve ₹" + num;
+        if (exact) {
+          exact.click();
+        } else {
+          approveBtn.setAttribute("data-custom-amount", String(val));
+          approveBtn.textContent = "Approve ₹" + val;
+          approveBtn.setAttribute("data-tf-user", key);
         }
 
-        applyBtn.textContent = "सेट हो गया ✓";
+        setBtn.textContent = "सेट ✓";
         setTimeout(function () {
-          applyBtn.textContent = "राशि सेट करें";
+          setBtn.textContent = "राशि सेट करें";
         }, 1200);
       }
 
-      applyBtn.addEventListener("click", function (e) {
+      setBtn.addEventListener("click", function (e) {
+        e.preventDefault();
         e.stopPropagation();
-        applyCustomAmount();
+        applyAmount();
       });
 
-      amtInput.addEventListener("keydown", function (e) {
+      input.addEventListener("keydown", function (e) {
         if (e.key === "Enter") {
           e.preventDefault();
           e.stopPropagation();
-          applyCustomAmount();
+          applyAmount();
         }
       });
 
-      box.appendChild(amtInput);
-      box.appendChild(applyBtn);
+      box.appendChild(input);
+      box.appendChild(setBtn);
 
-      if (cardApproveBtn && cardApproveBtn.parentElement) {
-        cardApproveBtn.parentElement.insertAdjacentElement("afterend", box);
+      if (approveBtn.parentElement && approveBtn.parentElement !== card) {
+        approveBtn.parentElement.insertAdjacentElement("afterend", box);
       } else {
-        card.appendChild(box);
+        approveBtn.insertAdjacentElement("afterend", box);
       }
     });
   }
 
-  addCustomAmountControls();
-  setTimeout(addCustomAmountControls, 800);
-});
+  addCustomAmountBoxes();
+  setInterval(addCustomAmountBoxes, 1000);
+})();
 </script>
+
 
 </body>
   </html>
