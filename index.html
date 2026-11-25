@@ -4259,7 +4259,8 @@ async function trimVideoTo60Seconds(sourceVideoEl, maxSec) {
     setTimeout(() => {
       stopRecording();
     }, (maxSec + 2) * 1000);
-  });
+    tempVideo.onloadedmetadata = async function () {
+
 }
 
       tempVideo.onloadedmetadata = function() {
