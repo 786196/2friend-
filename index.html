@@ -1957,7 +1957,14 @@
               publicName
             })
           });
-        } catch (e) {}
+              } catch (err) {
+        console.error("Google login error:", err);
+        const errEl = document.getElementById("authErrorMsg");
+        if (errEl) {
+          errEl.textContent = "Google लॉगिन पूरा नहीं हो सका: " + (err && err.message ? err.message : "अज्ञात एरर");
+        }
+      }
+
 
         try {
           localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify({
