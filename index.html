@@ -5531,12 +5531,67 @@
   </script>
 <script>
 (function () {
-  if (window.__tfFounderAndVideoInitialized) return;
-  window.__tfFounderAndVideoInitialized = true;
+  if (window.__tfFounderStrictLockV5) return;
+  window.__tfFounderStrictLockV5 = true;
 
+  var FOUNDER_NAME = "2friend founder";
   var selectedPresetAmount = null;
 
+  function normalizeFounderLabel() {
+    var cardNameEl = document.querySelector("#tf-founder-profile-card .tf-founder-name");
+    if (cardNameEl && cardNameEl.textContent.trim() !== FOUNDER_NAME) {
+      cardNameEl.textContent = FOUNDER_NAME;
+    }
+  }
+
+  function isCurrentUserFounder() {
+    var activeUser = (typeof loggedInUser === "string" ? loggedInUser : "").trim().toLowerCase();
+    var displayHeaderUser = (document.getElementById("displayUser")?.textContent || "").trim().toLowerCase();
+    var currentName = activeUser || displayHeaderUser;
+    return (
+      currentName === "2friend founder" ||
+      currentName === "to friend founder" ||
+      currentName === "@2friend_founder"
+    );
+  }
+
+  function syncUserIdentityAndPublicFeed() {
+    normalizeFounderLabel();
+
+    var card = document.getElementById("tf-founder-profile-card");
+    var rewardsPanel = document.getElementById("founderRewardsPanel");
+    var profileView = document.getElementById("view-profile");
+    var profileWrapper = profileView ? profileView.querySelector(".profile-wrapper") : null;
+    var targetContainer = profileWrapper || profileView;
+
+    if (card && targetContainer && !targetContainer.contains(card)) {
+      if (rewardsPanel && rewardsPanel.parentNode) {
+        rewardsPanel.parentNode.insertBefore(card, rewardsPanel);
+      } else {
+        targetContainer.appendChild(card);
+      }
+    }
+
+    var isProfileTabActive = Boolean(profileView && profileView.classList.contains("active"));
+    var isViewingSomeoneElse = Boolean(typeof viewingProfileUser !== "undefined" && viewingProfileUser);
+    var allowFounderTools = Boolean(isProfileTabActive && !isViewingSomeoneElse && isCurrentUserFounder());
+
+    if (card) {
+      card.style.setProperty("display", allowFounderTools ? "block" : "none", "important");
+    }
+    if (rewardsPanel) {
+      rewardsPanel.style.setProperty("display", allowFounderTools ? "block" : "none", "important");
+    }
+
+    document.querySelectorAll("#reelsFeedContainer .reel-slide").forEach(function (slide) {
+      if (slide.style.display === "none") {
+        slide.style.display = "";
+      }
+    });
+  }
+
   function setRewardStatus(msg, isError) {
+    if (!isCurrentUserFounder()) return;
     var statusEl = document.getElementById("tf-reward-status");
     if (!statusEl) return;
     statusEl.textContent = msg || "";
@@ -5544,15 +5599,51 @@
   }
 
   function clearPresetActive() {
-    var btns = document.querySelectorAll(".tf-preset-btn");
-    btns.forEach(function (btn) {
+    document.querySelectorAll(".tf-preset-btn").forEach(function (btn) {
       btn.classList.remove("active");
     });
+  }
+
+  function enterBigScreen(wrap) {
+    if (!wrap) return;
+    wrap.classList.add("tf-pseudo-fullscreen");
+    var vid = wrap.querySelector("video");
+    if (vid && vid.paused) {
+      vid.play().catch(function () {});
+    }
+    if (wrap.requestFullscreen) {
+      wrap.requestFullscreen().catch(function () {});
+    } else if (wrap.webkitRequestFullscreen) {
+      try { wrap.webkitRequestFullscreen(); } catch (err) {}
+    }
+  }
+
+  function exitBigScreen(wrap) {
+    if (!wrap) return;
+    wrap.classList.remove("tf-pseudo-fullscreen");
+    if (document.fullscreenElement && document.exitFullscreen) {
+      document.exitFullscreen().catch(function () {});
+    } else if (document.webkitExitFullscreen) {
+      try { document.webkitExitFullscreen(); } catch (err) {}
+    }
+  }
+
+  function toggleBigScreen(wrap) {
+    if (!wrap) return;
+    if (wrap.classList.contains("tf-pseudo-fullscreen") || document.fullscreenElement === wrap) {
+      exitBigScreen(wrap);
+    } else {
+      enterBigScreen(wrap);
+    }
   }
 
   document.addEventListener("click", function (e) {
     var presetBtn = e.target.closest(".tf-preset-btn");
     if (presetBtn) {
+      if (!isCurrentUserFounder()) {
+        syncUserIdentityAndPublicFeed();
+        return;
+      }
       clearPresetActive();
       presetBtn.classList.add("active");
       selectedPresetAmount = Number(presetBtn.getAttribute("data-amt")) || null;
@@ -5568,21 +5659,39 @@
 
     var approveBtn = e.target.closest("#tf-approve-reward-btn");
     if (approveBtn) {
+      if (!isCurrentUserFounder()) {
+        syncUserIdentityAndPublicFeed();
+        return;
+      }
       var customInput = document.getElementById("tf-custom-reward-input");
       var rawVal = customInput && customInput.value ? Number(customInput.value) : selectedPresetAmount;
       if (!rawVal || isNaN(rawVal) || rawVal <= 0) {
         setRewardStatus("Please select ₹20/₹30/₹40 or enter a valid amount.", true);
         return;
       }
-      setRewardStatus("Approved ₹" + rawVal + " reward by 2friend founder.", false);
+      setRewardStatus("Approved ₹" + rawVal + " reward by " + FOUNDER_NAME + ".", false);
       return;
     }
 
     var fsBtn = e.target.closest(".tf-fs-btn");
     if (fsBtn) {
+      e.preventDefault();
+      e.stopPropagation();
       var wrap = fsBtn.closest(".tf-video-wrap");
-      if (!wrap) return;
-      toggleWrapFullscreen(wrap);
+      toggleBigScreen(wrap);
+    }
+
+    setTimeout(syncUserIdentityAndPublicFeed, 40);
+  }, true);
+
+  document.addEventListener("dblclick", function (e) {
+    var vid = e.target.closest("video");
+    if (vid) {
+      var wrap = vid.closest(".tf-video-wrap");
+      if (wrap) {
+        e.preventDefault();
+        toggleBigScreen(wrap);
+      }
     }
   });
 
@@ -5593,36 +5702,8 @@
     }
   });
 
-  function toggleWrapFullscreen(wrap) {
-    var isFs =
-      document.fullscreenElement === wrap ||
-      document.webkitFullscreenElement === wrap ||
-      wrap.classList.contains("tf-pseudo-fullscreen");
-
-    if (isFs) {
-      if (document.exitFullscreen) {
-        document.exitFullscreen().catch(function () {});
-      } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-      }
-      wrap.classList.remove("tf-pseudo-fullscreen");
-      return;
-    }
-
-    if (wrap.requestFullscreen) {
-      wrap.requestFullscreen().catch(function () {
-        wrap.classList.add("tf-pseudo-fullscreen");
-      });
-    } else if (wrap.webkitRequestFullscreen) {
-      wrap.webkitRequestFullscreen();
-    } else {
-      wrap.classList.add("tf-pseudo-fullscreen");
-    }
-  }
-
   function enhanceVideos() {
-    var videos = document.querySelectorAll("video");
-    videos.forEach(function (video) {
+    document.querySelectorAll("video").forEach(function (video) {
       if (video.dataset.tfEnhanced === "1") return;
       video.dataset.tfEnhanced = "1";
 
@@ -5646,15 +5727,21 @@
   }
 
   enhanceVideos();
+  syncUserIdentityAndPublicFeed();
+
   var observer = new MutationObserver(function () {
     enhanceVideos();
+    syncUserIdentityAndPublicFeed();
   });
   observer.observe(document.body || document.documentElement, {
     childList: true,
-    subtree: true
+    subtree: true,
+    attributes: true,
+    attributeFilter: ["class", "style"]
   });
 })();
 </script>
+
 
 </body>
 </html>
