@@ -5529,6 +5529,132 @@
       });
     }
   </script>
+<script>
+(function () {
+  if (window.__tfFounderAndVideoInitialized) return;
+  window.__tfFounderAndVideoInitialized = true;
+
+  var selectedPresetAmount = null;
+
+  function setRewardStatus(msg, isError) {
+    var statusEl = document.getElementById("tf-reward-status");
+    if (!statusEl) return;
+    statusEl.textContent = msg || "";
+    statusEl.style.color = isError ? "#fca5a5" : "#86efac";
+  }
+
+  function clearPresetActive() {
+    var btns = document.querySelectorAll(".tf-preset-btn");
+    btns.forEach(function (btn) {
+      btn.classList.remove("active");
+    });
+  }
+
+  document.addEventListener("click", function (e) {
+    var presetBtn = e.target.closest(".tf-preset-btn");
+    if (presetBtn) {
+      clearPresetActive();
+      presetBtn.classList.add("active");
+      selectedPresetAmount = Number(presetBtn.getAttribute("data-amt")) || null;
+      var inputEl = document.getElementById("tf-custom-reward-input");
+      if (inputEl && selectedPresetAmount) {
+        inputEl.value = selectedPresetAmount;
+      }
+      if (selectedPresetAmount) {
+        setRewardStatus("Selected ₹" + selectedPresetAmount + ". Click Approve to confirm.", false);
+      }
+      return;
+    }
+
+    var approveBtn = e.target.closest("#tf-approve-reward-btn");
+    if (approveBtn) {
+      var customInput = document.getElementById("tf-custom-reward-input");
+      var rawVal = customInput && customInput.value ? Number(customInput.value) : selectedPresetAmount;
+      if (!rawVal || isNaN(rawVal) || rawVal <= 0) {
+        setRewardStatus("Please select ₹20/₹30/₹40 or enter a valid amount.", true);
+        return;
+      }
+      setRewardStatus("Approved ₹" + rawVal + " reward by 2friend founder.", false);
+      return;
+    }
+
+    var fsBtn = e.target.closest(".tf-fs-btn");
+    if (fsBtn) {
+      var wrap = fsBtn.closest(".tf-video-wrap");
+      if (!wrap) return;
+      toggleWrapFullscreen(wrap);
+    }
+  });
+
+  document.addEventListener("input", function (e) {
+    if (e.target && e.target.id === "tf-custom-reward-input") {
+      selectedPresetAmount = null;
+      clearPresetActive();
+    }
+  });
+
+  function toggleWrapFullscreen(wrap) {
+    var isFs =
+      document.fullscreenElement === wrap ||
+      document.webkitFullscreenElement === wrap ||
+      wrap.classList.contains("tf-pseudo-fullscreen");
+
+    if (isFs) {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(function () {});
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      }
+      wrap.classList.remove("tf-pseudo-fullscreen");
+      return;
+    }
+
+    if (wrap.requestFullscreen) {
+      wrap.requestFullscreen().catch(function () {
+        wrap.classList.add("tf-pseudo-fullscreen");
+      });
+    } else if (wrap.webkitRequestFullscreen) {
+      wrap.webkitRequestFullscreen();
+    } else {
+      wrap.classList.add("tf-pseudo-fullscreen");
+    }
+  }
+
+  function enhanceVideos() {
+    var videos = document.querySelectorAll("video");
+    videos.forEach(function (video) {
+      if (video.dataset.tfEnhanced === "1") return;
+      video.dataset.tfEnhanced = "1";
+
+      var parent = video.parentElement;
+      if (!parent) return;
+
+      if (!parent.classList.contains("tf-video-wrap")) {
+        var wrap = document.createElement("div");
+        wrap.className = "tf-video-wrap";
+        parent.insertBefore(wrap, video);
+        wrap.appendChild(video);
+
+        var fsBtn = document.createElement("button");
+        fsBtn.type = "button";
+        fsBtn.className = "tf-fs-btn";
+        fsBtn.textContent = "⛶";
+        fsBtn.title = "Fullscreen";
+        wrap.appendChild(fsBtn);
+      }
+    });
+  }
+
+  enhanceVideos();
+  var observer = new MutationObserver(function () {
+    enhanceVideos();
+  });
+  observer.observe(document.body || document.documentElement, {
+    childList: true,
+    subtree: true
+  });
+})();
+</script>
 
 </body>
 </html>
