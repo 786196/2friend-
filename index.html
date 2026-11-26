@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>2friend - India's Own Social Video App</title>
   <link rel="icon" type="image/png" href="1795486781322.png">
-<link rel="apple-touch-icon" href="1795486781322.png">
+  <link rel="apple-touch-icon" href="1795486781322.png">
   <link rel="manifest" href="manifest.json">
 
-   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
   <script>
@@ -33,10 +33,14 @@
       -webkit-user-select: none;
       user-select: none;
       -webkit-touch-callout: none;
+      -webkit-tap-highlight-color: transparent;
+      tap-highlight-color: transparent;
+      outline: none;
     }
     input, textarea, select {
       -webkit-user-select: text;
       user-select: text;
+      -webkit-tap-highlight-color: transparent;
     }
     body {
       background-color: #000;
@@ -139,7 +143,6 @@
       border-radius: 10px;
       font-size: 14px;
       margin-bottom: 10px;
-      outline: none;
     }
     .auth-btn {
       width: 100%;
@@ -204,7 +207,6 @@
       padding: 4px 8px;
       border-radius: 6px;
       font-size: 12px;
-      outline: none;
       max-width: 130px;
     }
 
@@ -337,7 +339,7 @@
       width: 100%;
       height: 100%;
       border-radius: 50%;
-      background: linear-gradient(135deg, #1f2937, #111827);
+      background: #121212;
       border: 2.5px solid #0b0b0b;
       overflow: hidden;
       position: relative;
@@ -351,19 +353,6 @@
       height: 100%;
       object-fit: cover;
       display: block;
-    }
-    .circle-story-video-badge {
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(145deg, #ff2a6d, #ff9933);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      color: #fff;
-      font-weight: 800;
-      font-size: 16px;
-      gap: 2px;
     }
     .circle-story-text-thumb {
       width: 100%;
@@ -383,11 +372,11 @@
     .circle-story-initial {
       width: 100%;
       height: 100%;
-      background: linear-gradient(135deg, #ff9933, #ff2a6d);
+      background: #1f2937;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 800;
       color: #fff;
     }
@@ -421,28 +410,6 @@
     }
     .circle-story-item.seen-story .circle-story-label {
       color: #9a9a9a;
-    }
-
-    /* विज्ञापन बैनर */
-    .ad-slot-banner {
-      background: linear-gradient(90deg, #1a1a2e, #16213e);
-      border-bottom: 1px solid #2a2a4a;
-      padding: 5px 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 11px;
-      color: #a0c4ff;
-      flex-shrink: 0;
-    }
-    .ad-badge {
-      background: #ff9900;
-      color: #000;
-      font-weight: bold;
-      padding: 1px 4px;
-      border-radius: 3px;
-      font-size: 9px;
-      margin-right: 4px;
     }
 
     /* रील्स फीड */
@@ -663,7 +630,6 @@
       border-radius: 8px;
       font-size: 13px;
       margin-bottom: 12px;
-      outline: none;
     }
     .primary-btn {
       width: 100%;
@@ -742,7 +708,6 @@
       padding: 10px 14px;
       border-radius: 20px;
       font-size: 14px;
-      outline: none;
     }
     .chat-footer button {
       background: #0084ff;
@@ -861,7 +826,7 @@
       border: 2px solid #ff9933;
     }
     .founder-badge-pill {
-      display: inline-flex;
+      display: none;
       align-items: center;
       gap: 5px;
       background: rgba(255, 153, 51, 0.14);
@@ -918,9 +883,10 @@
     .stat-box strong { display: block; font-size: 16px; }
     .stat-box span { font-size: 11px; color: #888; }
 
-    /* फाउंडर टॉप 6 स्क्रीन-टाइम इनाम पैनल */
+    /* सिर्फ़ To friend founder प्रोफ़ाइल के लिए स्क्रीन-टाइम इनाम पैनल */
     .founder-rewards-box {
       width: 100%;
+      display: none;
       margin-top: 10px;
       background: linear-gradient(145deg, #16161c, #111827);
       border: 1px solid #ff9933;
@@ -967,7 +933,7 @@
     }
     .amt-chip-btn {
       flex: 1;
-      min-width: 48px;
+      min-width: 44px;
       background: #1f2937;
       border: 1px solid #374151;
       color: #e5e7eb;
@@ -1014,10 +980,6 @@
       cursor: pointer;
     }
 
-    .profile-ad-box {
-      width: 100%; background: #181818; border: 1px solid #2e2e2e;
-      border-radius: 8px; padding: 10px; margin-top: 12px; text-align: center; font-size: 11px; color: #bbb;
-    }
     .bookmark-section-box {
       width: 100%;
       margin-top: 14px;
@@ -1489,7 +1451,7 @@
       <div class="brand-logo">2friend</div>
     </div>
     <div class="header-right">
-      <span id="displayUser" style="font-size: 12px; color: #4ade80; font-weight: 700;">To friend founder</span>
+      <span id="displayUser" style="font-size: 12px; color: #4ade80; font-weight: 700;">2friend founder</span>
       <select class="lang-dropdown" id="languageSelect" onchange="applyLanguage()">
         <option value="hi">हिन्दी</option>
         <option value="en">English</option>
@@ -1539,11 +1501,6 @@
     <div id="view-home" class="screen-view active">
       <div class="stories-bar" id="storiesBarContainer"></div>
 
-      <div class="ad-slot-banner">
-        <div><span class="ad-badge">AD</span> <strong>Ludo & Cricket Arena</strong> - <span data-key="gamePlayText">खेलें!</span></div>
-        <span style="color:#fff; text-decoration:underline; cursor:pointer;" onclick="handleGamingAdClick()" data-key="adOpen">Open</span>
-      </div>
-
       <div class="reels-feed" id="reelsFeedContainer">
         <div class="reel-slide" data-reel-id="reel-1" data-author="2friend founder">
           <video id="vid-1" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" loop playsinline webkit-playsinline preload="auto" onclick="handleReelTap('vid-1', 'ctrl-1', 'spk-1')" controlsList="nodownload" disablePictureInPicture oncontextmenu="return false;"></video>
@@ -1553,8 +1510,8 @@
           </div>
           <div class="reel-bottom-info">
             <div class="reel-user">
-              <span id="reelAuthorName">To friend founder</span>
-              <button class="follow-chip" onclick="toggleFollow(this, 'To friend founder')" data-key="followBtn">Follow</button>
+              <span id="reelAuthorName">2friend founder</span>
+              <button class="follow-chip" onclick="toggleFollow(this, '2friend founder')" data-key="followBtn">Follow</button>
             </div>
             <div class="reel-desc">2friend ऐप पर आपका स्वागत है! 720p/1080p क्वालिटी, तेज़ लोडिंग और क्लाउड डेटाबेस सिंक। #2friend #India</div>
             <div class="reel-music">🎵 Original Audio (Copyright-Free)</div>
@@ -1577,7 +1534,7 @@
               <span class="side-count" data-key="shareLabel">Share</span>
             </div>
             <div class="side-btn-wrap">
-              <button class="side-btn" onclick="openSafetyMenu('reel-1', 'To friend founder')" title="Report / Block">⋮</button>
+              <button class="side-btn" onclick="openSafetyMenu('reel-1', '2friend founder')" title="Report / Block">⋮</button>
               <span class="side-count" data-key="reportLabel">Report</span>
             </div>
           </div>
@@ -1651,7 +1608,7 @@
             <span class="notif-mini-badge">🔔</span>
           </div>
           <div class="notif-content">
-            <div class="notif-text"><strong>To friend founder</strong> push notifications connected (72e22f54...).</div>
+            <div class="notif-text"><strong>2friend founder</strong> push notifications connected (72e22f54...).</div>
             <div class="notif-time">अभी</div>
           </div>
         </div>
@@ -1661,7 +1618,7 @@
             <span class="notif-mini-badge" style="background:#ff2a6d;">▶</span>
           </div>
           <div class="notif-content">
-            <div class="notif-text"><strong>To friend founder</strong> shared a new 24-hour story and reel.</div>
+            <div class="notif-text"><strong>2friend founder</strong> shared a new 24-hour story and reel.</div>
             <div class="notif-time">1h</div>
           </div>
         </div>
@@ -1671,8 +1628,8 @@
     <!-- 5. प्रोफाइल स्क्रीन -->
     <div id="view-profile" class="screen-view">
       <div class="profile-wrapper">
-        <div class="profile-pic">2F</div>
-        <h3 id="profileUsername" style="font-size: 19px; font-weight: 800;">To friend founder</h3>
+        <div class="profile-pic" id="profileAvatarPic">U</div>
+        <h3 id="profileUsername" style="font-size: 19px; font-weight: 800;">User</h3>
         <div class="founder-badge-pill" id="founderBadgePill">✓ Official Founder • 2friend</div>
 
         <div class="profile-action-row">
@@ -1692,20 +1649,16 @@
           <div class="stat-box"><strong id="langCountStat">17</strong><span data-key="langsLabel">Languages</span></div>
         </div>
 
-        <!-- सिर्फ़ 2friend founder प्रोफाइल के लिए: इंडिया टॉप 6 स्क्रीन-टाइम इनाम नियंत्रण पैनल -->
+        <!-- सिर्फ़ 2friend founder प्रोफाइल के लिए: स्क्रीन-टाइम इनाम नियंत्रण पैनल -->
         <div class="founder-rewards-box" id="founderRewardsPanel">
           <div class="founder-rewards-header">
             <div>
-              <div style="font-size:13px; font-weight:800; color:#ffb74d;">🏆 सबसे ज़्यादा समय बिताने वाले यूज़र इनाम (₹20 / ₹30 / ₹40)</div>
+              <div style="font-size:13px; font-weight:800; color:#ffb74d;">🏆 सबसे ज़्यादा समय बिताने वाले यूज़र इनाम</div>
               <div style="font-size:10.5px; color:#9ca3af;">यहीं से इनाम चुनें, अप्रूव (Approve) करें या जिस दिन न देना हो उस दिन डिलीट (Delete) करें</div>
             </div>
             <button class="reward-clear-all-btn" onclick="clearAllRewardCandidates()">🗑️ आज डिलीट करें</button>
           </div>
           <div id="founderRewardsList"></div>
-        </div>
-
-        <div class="profile-ad-box" onclick="handleGamingAdClick()" style="cursor:pointer;">
-          <span class="ad-badge">AD</span> <strong>AppLovin MAX Mediation Active</strong> (Google / Unity / Meta)
         </div>
 
         <div class="bookmark-section-box" id="profileBookmarksSection">
@@ -1718,21 +1671,12 @@
           </div>
         </div>
 
-        <div style="width:100%; margin-top:14px; background:#121212; padding:12px; border-radius:10px; border:1px solid #262626; font-size:12px;">
-          <div style="font-weight:bold; margin-bottom:6px; color:#fff;" data-key="cloudStatusTitle">⚙️ क्लाउड स्टोरेज और कैश स्टेटस:</div>
-          <div style="color:#4ade80;">● Cloudflare R2 (VIDEOS_BUCKET): Connected</div>
-          <div style="color:#4ade80; margin-top:2px;">● CDN Cache Hit Target: 90% - 99% (Preload Max 2)</div>
-          <div style="color:#4ade80; margin-top:2px;">● Cloudflare D1 (2friend-db): Synced</div>
-          <div style="color:#4ade80; margin-top:2px;">● Google OAuth 2.0: Active</div>
-          <div style="color:#4ade80; margin-top:2px;">● OneSignal Push: Active</div>
-        </div>
-
-        <!-- अकाउंट सुरक्षा: लॉगआउट और अकाउंट डिलीट (सिर्फ़ सामान्य यूज़र प्रोफाइल के लिए) -->
+        <!-- अकाउंट सुरक्षा: लॉगआउट और अकाउंट डिलीट -->
         <div class="account-safety-box" id="accountSafetyBox">
           <div style="font-weight:bold; font-size:12px; color:#d1d5db;" data-key="accountSafetyTitle">🔐 अकाउंट सेटिंग्स और सुरक्षा:</div>
           <div class="safety-btn-row">
-            <button class="logout-btn" onclick="handleLogout()" data-key="logoutBtn">लॉगआउट (Log Out)</button>
-            <button class="delete-account-btn" onclick="openDeleteAccountModal()" data-key="deleteAccountBtn">Delete Account</button>
+            <button class="logout-btn" id="profileLogoutBtn" onclick="handleLogout()" data-key="logoutBtn">लॉगआउट (Log Out)</button>
+            <button class="delete-account-btn" id="profileDeleteAccountBtn" onclick="openDeleteAccountModal()" data-key="deleteAccountBtn">Delete Account</button>
           </div>
         </div>
 
@@ -1807,7 +1751,7 @@
     </div>
   </div>
 
-  <!-- स्टोरी व्यूअर (फोटो व वीडियो दोनों के लिए + उड़ने वाले दिल लाइक एनिमेशन) -->
+  <!-- स्टोरी व्यूअर (फोटो व वीडियो दोनों के लिए + उड़ने वाले दिल लाइक एनिमेशन + दिल/इमोजी पिकर) -->
   <div class="story-modal" id="storyModal" onclick="closeStory()">
     <div class="story-viewer-frame" onclick="event.stopPropagation(); toggleStoryPlayPause()">
       <div class="story-progress-row" id="storyProgressRow"></div>
@@ -1816,7 +1760,7 @@
         <div class="story-user-group">
           <div class="story-user-avatar" id="storyModalBadge">2F</div>
           <div class="story-user-meta">
-            <span class="story-user-name" id="storyModalUser">To friend founder</span>
+            <span class="story-user-name" id="storyModalUser">2friend founder</span>
             <span class="story-time-ago" id="storyModalTimeAgo">24h story</span>
           </div>
         </div>
@@ -1837,22 +1781,42 @@
 
       <p class="story-center-text" id="storyModalText"></p>
 
-      <!-- स्टोरी के ऊपर ही खुलने वाला रिप्लाई व क्विक इमोजी बार -->
+      <!-- स्टोरी के ऊपर ही खुलने वाला रिप्लाई व दिल/इमोजी पैनल -->
       <div class="story-reply-overlay" id="storyReplyOverlay" onclick="event.stopPropagation()" style="display:none;">
-        <div class="story-quick-emojis" style="display:flex; justify-content:space-around; gap:6px; padding:4px 2px;">
-          <button type="button" class="story-emoji-chip" onclick="sendStoryEmojiBurst('❤️')" style="background:rgba(255,255,255,0.12); border:none; border-radius:20px; padding:5px 10px; font-size:18px; cursor:pointer;">❤️</button>
-          <button type="button" class="story-emoji-chip" onclick="sendStoryEmojiBurst('😂')" style="background:rgba(255,255,255,0.12); border:none; border-radius:20px; padding:5px 10px; font-size:18px; cursor:pointer;">😂</button>
-          <button type="button" class="story-emoji-chip" onclick="sendStoryEmojiBurst('😭')" style="background:rgba(255,255,255,0.12); border:none; border-radius:20px; padding:5px 10px; font-size:18px; cursor:pointer;">😭</button>
-          <button type="button" class="story-emoji-chip" onclick="sendStoryEmojiBurst('🙏')" style="background:rgba(255,255,255,0.12); border:none; border-radius:20px; padding:5px 10px; font-size:18px; cursor:pointer;">🙏</button>
-          <button type="button" class="story-emoji-chip" onclick="sendStoryEmojiBurst('😍')" style="background:rgba(255,255,255,0.12); border:none; border-radius:20px; padding:5px 10px; font-size:18px; cursor:pointer;">😍</button>
-          <button type="button" class="story-emoji-chip" onclick="sendStoryEmojiBurst('🔥')" style="background:rgba(255,255,255,0.12); border:none; border-radius:20px; padding:5px 10px; font-size:18px; cursor:pointer;">🔥</button>
+        <div class="story-quick-emojis" style="display:flex; justify-content:space-around; gap:6px; padding:4px 2px; flex-wrap:wrap;">
+          <button type="button" class="story-emoji-chip" onclick="insertEmojiIntoStoryInput('❤️')" style="background:rgba(255,255,255,0.14); border:none; border-radius:20px; padding:5px 10px; font-size:18px; cursor:pointer;">❤️</button>
+          <button type="button" class="story-emoji-chip" onclick="insertEmojiIntoStoryInput('💖')" style="background:rgba(255,255,255,0.14); border:none; border-radius:20px; padding:5px 10px; font-size:18px; cursor:pointer;">💖</button>
+          <button type="button" class="story-emoji-chip" onclick="insertEmojiIntoStoryInput('💕')" style="background:rgba(255,255,255,0.14); border:none; border-radius:20px; padding:5px 10px; font-size:18px; cursor:pointer;">💕</button>
+          <button type="button" class="story-emoji-chip" onclick="insertEmojiIntoStoryInput('😂')" style="background:rgba(255,255,255,0.14); border:none; border-radius:20px; padding:5px 10px; font-size:18px; cursor:pointer;">😂</button>
+          <button type="button" class="story-emoji-chip" onclick="insertEmojiIntoStoryInput('😍')" style="background:rgba(255,255,255,0.14); border:none; border-radius:20px; padding:5px 10px; font-size:18px; cursor:pointer;">😍</button>
+          <button type="button" class="story-emoji-chip" onclick="insertEmojiIntoStoryInput('🙏')" style="background:rgba(255,255,255,0.14); border:none; border-radius:20px; padding:5px 10px; font-size:18px; cursor:pointer;">🙏</button>
+          <button type="button" class="story-emoji-chip" onclick="insertEmojiIntoStoryInput('🔥')" style="background:rgba(255,255,255,0.14); border:none; border-radius:20px; padding:5px 10px; font-size:18px; cursor:pointer;">🔥</button>
+          <button type="button" class="story-emoji-chip" onclick="toggleMoreStoryEmojis()" style="background:rgba(255,255,255,0.2); border:none; border-radius:20px; padding:5px 10px; font-size:14px; font-weight:700; color:#fff; cursor:pointer;">😊+</button>
+        </div>
+        <div id="moreStoryEmojisGrid" style="display:none; grid-template-columns:repeat(8, 1fr); gap:6px; background:rgba(0,0,0,0.55); padding:8px; border-radius:12px;">
+          <button type="button" onclick="insertEmojiIntoStoryInput('❤️')" style="background:none;border:none;font-size:18px;cursor:pointer;">❤️</button>
+          <button type="button" onclick="insertEmojiIntoStoryInput('🧡')" style="background:none;border:none;font-size:18px;cursor:pointer;">🧡</button>
+          <button type="button" onclick="insertEmojiIntoStoryInput('💛')" style="background:none;border:none;font-size:18px;cursor:pointer;">💛</button>
+          <button type="button" onclick="insertEmojiIntoStoryInput('💚')" style="background:none;border:none;font-size:18px;cursor:pointer;">💚</button>
+          <button type="button" onclick="insertEmojiIntoStoryInput('💙')" style="background:none;border:none;font-size:18px;cursor:pointer;">💙</button>
+          <button type="button" onclick="insertEmojiIntoStoryInput('💜')" style="background:none;border:none;font-size:18px;cursor:pointer;">💜</button>
+          <button type="button" onclick="insertEmojiIntoStoryInput('🖤')" style="background:none;border:none;font-size:18px;cursor:pointer;">🖤</button>
+          <button type="button" onclick="insertEmojiIntoStoryInput('🤍')" style="background:none;border:none;font-size:18px;cursor:pointer;">🤍</button>
+          <button type="button" onclick="insertEmojiIntoStoryInput('💘')" style="background:none;border:none;font-size:18px;cursor:pointer;">💘</button>
+          <button type="button" onclick="insertEmojiIntoStoryInput('💝')" style="background:none;border:none;font-size:18px;cursor:pointer;">💝</button>
+          <button type="button" onclick="insertEmojiIntoStoryInput('😘')" style="background:none;border:none;font-size:18px;cursor:pointer;">😘</button>
+          <button type="button" onclick="insertEmojiIntoStoryInput('🥰')" style="background:none;border:none;font-size:18px;cursor:pointer;">🥰</button>
+          <button type="button" onclick="insertEmojiIntoStoryInput('😭')" style="background:none;border:none;font-size:18px;cursor:pointer;">😭</button>
+          <button type="button" onclick="insertEmojiIntoStoryInput('👏')" style="background:none;border:none;font-size:18px;cursor:pointer;">👏</button>
+          <button type="button" onclick="insertEmojiIntoStoryInput('🎉')" style="background:none;border:none;font-size:18px;cursor:pointer;">🎉</button>
+          <button type="button" onclick="insertEmojiIntoStoryInput('✨')" style="background:none;border:none;font-size:18px;cursor:pointer;">✨</button>
         </div>
         <div class="story-reply-input-row" style="display:flex; align-items:center; gap:8px;">
           <input
             type="text"
             id="storyReplyInput"
             class="story-reply-input"
-            placeholder="Send message..."
+            placeholder="संदेश या दिल/इमोजी लिखें..."
             autocomplete="off"
             onkeydown="if(event.key==='Enter'){ event.preventDefault(); sendStoryTextReply(); }"
           >
@@ -1861,7 +1825,7 @@
       </div>
 
       <div class="story-bottom-bar" id="storyBottomBar" onclick="event.stopPropagation()">
-        <button type="button" class="story-reply-btn" onclick="openChatFromStory()">Send message...</button>
+        <button type="button" class="story-reply-btn" onclick="openChatFromStory()">Send message... ❤️😊</button>
         <button type="button" class="story-heart-btn" id="storyLikeHeartBtn" onclick="sendStoryEmojiBurst('❤️')" aria-label="Like Story">♥</button>
         <button type="button" class="story-share-btn" onclick="shareCurrentReel()" aria-label="Share">➤</button>
       </div>
@@ -1886,17 +1850,17 @@
 
   <script>
     const API_BASE = "https://still-star-01fc.sanchirawat786.workers.dev";
-    const GOOGLE_CLIENT_ID = "857463414976-qe5jfut213pj6mmjvml1hasmicc255q2.apps.googleusercontent.com";
     const CHAT_PARTNER = "2friend_support";
     const STORY_TTL_MS = 24 * 60 * 60 * 1000;
-    const FOUNDER_DISPLAY_NAME = "To friend founder";
+    const FOUNDER_DISPLAY_NAME = "2friend founder";
     const MAX_PRELOAD_VIDEOS = 2;
     const AUTH_SESSION_KEY = "2friend_auth_session_v1";
     const LOCAL_ACCOUNTS_KEY = "2friend_registered_users_v1";
     const BLOCKED_USERS_KEY = "2friend_blocked_users_v1";
     const REPORTED_REELS_KEY = "2friend_reported_reels_v1";
-    const FOUNDER_REWARDS_KEY = "2friend_founder_top6_rewards_v1";
+    const FOUNDER_REWARDS_KEY = "2friend_founder_top6_rewards_v2";
     const SCREEN_TIME_SECONDS_KEY = "2friend_daily_screen_seconds_v1";
+    const CHAT_PERSIST_KEY = "2friend_saved_chat_messages_v1";
 
     let authMode = "login";
     let safetyTarget = { reelId: "", author: "" };
@@ -1916,14 +1880,15 @@
         val.includes("रावत") ||
         val.includes("सांची") ||
         lower === "2friend founder" ||
-        lower === "@2friend_founder" ||
-        lower === "to friend founder" ||
-        lower === "@to_friend_founder" ||
-        lower === "tofriend founder"
+        lower === "@2friend_founder"
       ) {
         return FOUNDER_DISPLAY_NAME;
       }
       return val;
+    }
+
+    function isFounderAccount(name) {
+      return resolvePublicDisplayName(name) === FOUNDER_DISPLAY_NAME;
     }
 
     /* --- Google OAuth लॉगिन कॉलबैक --- */
@@ -1953,12 +1918,12 @@
         }
 
         const payload = parseJwtPayload(response.credential);
-        const rawGoogleName = (payload && (payload.name || payload.email)) || FOUNDER_DISPLAY_NAME;
+        const rawGoogleName = (payload && (payload.name || payload.email)) || "User";
         const email = (payload && payload.email) || "";
         const publicName = resolvePublicDisplayName(rawGoogleName);
 
         try {
-          const authRes = await fetch(`${API_BASE}/api/auth/google`, {
+          await fetch(`${API_BASE}/api/auth/google`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -1967,12 +1932,7 @@
               publicName
             })
           });
-          if (!authRes.ok) {
-            console.log("Google backend auth status:", authRes.status);
-          }
-        } catch (netErr) {
-          console.log("Google backend sync fallback:", netErr);
-        }
+        } catch (netErr) {}
 
         try {
           localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify({
@@ -1985,14 +1945,13 @@
 
         await completeLoginSession(publicName);
       } catch (err) {
-        console.error("Google login error:", err);
         if (errEl) {
           errEl.textContent = "Google लॉगिन पूरा नहीं हो सका: " + (err && err.message ? err.message : "कृपया पुनः प्रयास करें।");
         }
       }
     }
 
-    /* --- असली लॉगिन व साइन-अप लॉजिक --- */
+    /* --- लॉगिन व साइन-अप लॉजिक --- */
     function switchAuthMode(mode) {
       authMode = mode === "signup" ? "signup" : "login";
       const confirmInput = document.getElementById("confirmPasswordInput");
@@ -2110,10 +2069,15 @@
     }
 
     async function completeLoginSession(publicName) {
-      loggedInUser = resolvePublicDisplayName(publicName || FOUNDER_DISPLAY_NAME);
+      loggedInUser = resolvePublicDisplayName(publicName || "User");
+      const initials = loggedInUser === FOUNDER_DISPLAY_NAME
+        ? "2F"
+        : (loggedInUser.replace(/^@/, "").slice(0, 2).toUpperCase() || "U");
+
       document.getElementById("displayUser").innerText = loggedInUser;
-      document.getElementById("reelAuthorName").innerText = loggedInUser;
       document.getElementById("profileUsername").innerText = loggedInUser;
+      const avatarPic = document.getElementById("profileAvatarPic");
+      if (avatarPic) avatarPic.innerText = initials;
       document.getElementById("auth-screen").style.display = "none";
 
       updateFounderRewardsVisibility();
@@ -2144,14 +2108,16 @@
       document.getElementById("auth-screen").style.display = "flex";
     }
 
-    /* --- फाउंडर टॉप 6 स्क्रीन-टाइम इनाम पैनल (₹20 / ₹40 / ₹100 / ₹200 Approve और Delete) --- */
+    /* --- फाउंडर स्क्रीन-टाइम इनाम पैनल (₹100 चुनने/भेजने पर ₹20 जाने की गड़बड़ी ठीक) --- */
+    const ALLOWED_REWARD_AMOUNTS = [20, 30, 40, 50, 100, 200];
+
     const DEFAULT_TOP6_REWARD_USERS = [
-      { id: "rwd-1", name: "@aarav_mumbai", minutes: 142, amount: 20, approved: false },
-      { id: "rwd-2", name: "@priya_jaipur", minutes: 128, amount: 20, approved: false },
-      { id: "rwd-3", name: "@rohan_lucknow", minutes: 115, amount: 20, approved: false },
-      { id: "rwd-4", name: "@neha_patna", minutes: 104, amount: 20, approved: false },
-      { id: "rwd-5", name: "@vikram_bhopal", minutes: 96, amount: 20, approved: false },
-      { id: "rwd-6", name: "@kavita_pune", minutes: 89, amount: 20, approved: false }
+      { id: "rwd-1", name: "@aarav_mumbai", minutes: 142, amount: 100, approved: false },
+      { id: "rwd-2", name: "@priya_jaipur", minutes: 128, amount: 100, approved: false },
+      { id: "rwd-3", name: "@rohan_lucknow", minutes: 115, amount: 100, approved: false },
+      { id: "rwd-4", name: "@neha_patna", minutes: 104, amount: 100, approved: false },
+      { id: "rwd-5", name: "@vikram_bhopal", minutes: 96, amount: 100, approved: false },
+      { id: "rwd-6", name: "@kavita_pune", minutes: 89, amount: 100, approved: false }
     ];
 
     let founderRewardCandidates = [];
@@ -2162,7 +2128,10 @@
         if (raw !== null) {
           const parsed = JSON.parse(raw);
           if (Array.isArray(parsed)) {
-            founderRewardCandidates = parsed;
+            founderRewardCandidates = parsed.map(item => ({
+              ...item,
+              amount: Number(item.amount) > 0 ? Number(item.amount) : 100
+            }));
             return;
           }
         }
@@ -2177,10 +2146,6 @@
       } catch (e) {}
     }
 
-    function isCurrentUserFounder() {
-      return resolvePublicDisplayName(loggedInUser) === FOUNDER_DISPLAY_NAME;
-    }
-
     async function syncTop6FromServer() {
       try {
         const res = await fetch(`${API_BASE}/api/rewards/top6`);
@@ -2188,13 +2153,16 @@
         const data = await res.json();
         const arr = Array.isArray(data) ? data : (Array.isArray(data.users) ? data.users : []);
         if (arr.length > 0) {
-          founderRewardCandidates = arr.slice(0, 6).map((u, idx) => ({
-            id: String(u.id || `rwd-${idx + 1}`),
-            name: String(u.name || u.username || `@user_${idx + 1}`),
-            minutes: Number(u.minutes || u.screenMinutes || 60),
-            amount: Number(u.amount) > 0 ? Number(u.amount) : 20,
-            approved: Boolean(u.approved)
-          }));
+          founderRewardCandidates = arr.slice(0, 6).map((u, idx) => {
+            const parsedAmt = Number(u.amount ?? u.rewardAmount ?? 100);
+            return {
+              id: String(u.id || `rwd-${idx + 1}`),
+              name: String(u.name || u.username || `@user_${idx + 1}`),
+              minutes: Number(u.minutes || u.screenMinutes || 60),
+              amount: Number.isFinite(parsedAmt) && parsedAmt > 0 ? parsedAmt : 100,
+              approved: Boolean(u.approved)
+            };
+          });
           saveFounderRewardsState();
           renderFounderRewardsPanel();
         }
@@ -2202,30 +2170,20 @@
     }
 
     function updateFounderRewardsVisibility() {
-      const isFounder = isCurrentUserFounder();
       const panel = document.getElementById("founderRewardsPanel");
-      const badgePill = document.getElementById("founderBadgePill");
-      const safetyBox = document.getElementById("accountSafetyBox");
-
-      if (badgePill) {
-        badgePill.style.display = isFounder ? "inline-flex" : "none";
-      }
-      if (panel) {
-        panel.style.display = isFounder ? "block" : "none";
-      }
-      if (safetyBox) {
-        safetyBox.style.display = isFounder ? "none" : "block";
-      }
-      if (isFounder) {
-        renderFounderRewardsPanel();
-      }
+      const badge = document.getElementById("founderBadgePill");
+      const isFounder = isFounderAccount(loggedInUser);
+      if (panel) panel.style.display = isFounder ? "block" : "none";
+      if (badge) badge.style.display = isFounder ? "inline-flex" : "none";
+      if (isFounder) renderFounderRewardsPanel();
     }
 
     function selectRewardAmount(userId, amount) {
       const target = founderRewardCandidates.find(u => u.id === userId);
-      const parsed = parseInt(amount, 10);
-      if (!target || !parsed || parsed <= 0) return;
-      target.amount = parsed;
+      const numericAmt = Number(amount);
+      if (!target || !Number.isFinite(numericAmt) || numericAmt <= 0) return;
+      target.amount = numericAmt;
+      target.approved = false;
       saveFounderRewardsState();
       renderFounderRewardsPanel();
     }
@@ -2233,6 +2191,8 @@
     async function approveUserReward(userId) {
       const target = founderRewardCandidates.find(u => u.id === userId);
       if (!target) return;
+      const amountToSend = Number(target.amount) > 0 ? Number(target.amount) : 100;
+      target.amount = amountToSend;
       target.approved = true;
       saveFounderRewardsState();
       renderFounderRewardsPanel();
@@ -2242,16 +2202,16 @@
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            approvedBy: loggedInUser,
+            approvedBy: FOUNDER_DISPLAY_NAME,
             userId: target.id,
             username: target.name,
-            amount: target.amount,
+            amount: amountToSend,
             minutes: target.minutes
           })
         });
       } catch (e) {}
 
-      alert(`✅ ${target.name} को ₹${target.amount} का इनाम अप्रूव कर दिया गया है!`);
+      alert(`✅ ${target.name} को ₹${amountToSend} का इनाम अप्रूव कर दिया गया है!`);
     }
 
     async function deleteRewardCandidate(userId) {
@@ -2263,7 +2223,7 @@
         await fetch(`${API_BASE}/api/rewards/delete`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ deletedBy: loggedInUser, userId })
+          body: JSON.stringify({ deletedBy: FOUNDER_DISPLAY_NAME, userId })
         });
       } catch (e) {}
     }
@@ -2277,7 +2237,7 @@
         await fetch(`${API_BASE}/api/rewards/clear`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ deletedBy: loggedInUser })
+          body: JSON.stringify({ deletedBy: FOUNDER_DISPLAY_NAME })
         });
       } catch (e) {}
 
@@ -2295,6 +2255,7 @@
 
       listEl.innerHTML = "";
       founderRewardCandidates.slice(0, 6).forEach((u, index) => {
+        const currentAmt = Number(u.amount) > 0 ? Number(u.amount) : 100;
         const card = document.createElement("div");
         card.className = "reward-user-card";
 
@@ -2302,62 +2263,19 @@
         topRow.className = "reward-user-top";
         topRow.innerHTML = `
           <span><strong style="color:#ffb74d;">#${index + 1}</strong> <strong>${u.name}</strong></span>
-          <span style="color:#4ade80; font-size:11px; font-weight:700;">⏱️ ${u.minutes} min</span>
+          <span style="color:#4ade80; font-size:11px; font-weight:700;">⏱️ ${u.minutes} min • ₹${currentAmt}</span>
         `;
 
         const amtRow = document.createElement("div");
         amtRow.className = "reward-amount-row";
-        [20, 30, 40].forEach(amt => {
+        ALLOWED_REWARD_AMOUNTS.forEach(amt => {
           const chip = document.createElement("button");
           chip.type = "button";
-          chip.className = `amt-chip-btn ${Number(u.amount) === amt ? "selected" : ""}`;
+          chip.className = `amt-chip-btn ${currentAmt === amt ? "selected" : ""}`;
           chip.textContent = `₹${amt}`;
           chip.onclick = () => selectRewardAmount(u.id, amt);
           amtRow.appendChild(chip);
         });
-
-        const customBox = document.createElement("div");
-        customBox.className = "tf-custom-amt-box";
-        customBox.style.cssText = "margin-top:8px;display:flex;gap:6px;align-items:center;width:100%;";
-
-        const customInput = document.createElement("input");
-        customInput.type = "number";
-        customInput.min = "1";
-        customInput.step = "1";
-        customInput.placeholder = "खुद राशि टाइप करें (जैसे 100, 200, 1000)";
-        if (![20, 30, 40].includes(Number(u.amount)) && Number(u.amount) > 0) {
-          customInput.value = String(u.amount);
-        }
-        customInput.style.cssText = "flex:1;min-width:0;padding:7px 9px;border-radius:7px;border:1px solid rgba(255,255,255,0.22);background:#14151c;color:#ffffff;font-size:12px;";
-
-        const setAmtBtn = document.createElement("button");
-        setAmtBtn.type = "button";
-        setAmtBtn.textContent = "राशि सेट करें";
-        setAmtBtn.style.cssText = "padding:7px 11px;border-radius:7px;border:none;background:#d97706;color:#ffffff;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;";
-
-        const applyCustomAmount = () => {
-          const typed = parseInt((customInput.value || "").trim(), 10);
-          if (!typed || typed <= 0) return false;
-          selectRewardAmount(u.id, typed);
-          return true;
-        };
-
-        setAmtBtn.onclick = (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          applyCustomAmount();
-        };
-
-        customInput.onkeydown = (e) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            e.stopPropagation();
-            applyCustomAmount();
-          }
-        };
-
-        customBox.appendChild(customInput);
-        customBox.appendChild(setAmtBtn);
 
         const actRow = document.createElement("div");
         actRow.className = "reward-action-row";
@@ -2365,15 +2283,8 @@
         const appBtn = document.createElement("button");
         appBtn.type = "button";
         appBtn.className = `reward-approve-btn ${u.approved ? "approved" : ""}`;
-        appBtn.textContent = u.approved ? `✓ Approved (₹${u.amount})` : `Approve ₹${u.amount}`;
-        appBtn.onclick = () => {
-          const typed = parseInt((customInput.value || "").trim(), 10);
-          if (typed && typed > 0 && typed !== Number(u.amount)) {
-            u.amount = typed;
-            saveFounderRewardsState();
-          }
-          approveUserReward(u.id);
-        };
+        appBtn.textContent = u.approved ? `✓ Approved (₹${currentAmt})` : `Approve ₹${currentAmt}`;
+        appBtn.onclick = () => approveUserReward(u.id);
 
         const delBtn = document.createElement("button");
         delBtn.type = "button";
@@ -2386,7 +2297,6 @@
 
         card.appendChild(topRow);
         card.appendChild(amtRow);
-        card.appendChild(customBox);
         card.appendChild(actRow);
         listEl.appendChild(card);
       });
@@ -2518,6 +2428,7 @@
         localStorage.removeItem(SEEN_STORIES_KEY);
         localStorage.removeItem(BLOCKED_USERS_KEY);
         localStorage.removeItem(REPORTED_REELS_KEY);
+        localStorage.removeItem(CHAT_PERSIST_KEY);
       } catch (e) {}
 
       try {
@@ -2575,7 +2486,7 @@
 
     async function fetchChatMessages(userA, userB) {
       const params = new URLSearchParams({
-        user1: userA || FOUNDER_DISPLAY_NAME,
+        user1: userA || loggedInUser || "User",
         user2: userB || CHAT_PARTNER
       });
       const res = await fetch(`${API_BASE}/api/chat?${params.toString()}`);
@@ -2592,7 +2503,7 @@
       const formData = new FormData();
       formData.append("video", file);
       formData.append("cacheControl", "public, max-age=31536000, immutable");
-      formData.append("author", FOUNDER_DISPLAY_NAME);
+      formData.append("author", resolvePublicDisplayName(loggedInUser));
 
       const res = await fetch(`${API_BASE}/api/upload-video`, {
         method: "POST",
@@ -2648,9 +2559,7 @@
         });
         enforceMaxTwoVideoPreload();
         renderBookmarkedVideos();
-      } catch (err) {
-        console.log("Server feed sync fallback:", err);
-      }
+      } catch (err) {}
     }
 
     async function fetchReelComments(reelId) {
@@ -2679,9 +2588,7 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ reelId, user: loggedInUser, liked, likes: totalCount })
         });
-      } catch (err) {
-        console.log("Like sync fallback:", err);
-      }
+      } catch (err) {}
     }
 
     async function syncFollowToServer(targetUser, following) {
@@ -2691,20 +2598,7 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ follower: loggedInUser, targetUser, following })
         });
-      } catch (err) {
-        console.log("Follow sync fallback:", err);
-      }
-    }
-
-    function handleGamingAdClick() {
-      try {
-        fetch(`${API_BASE}/api/ad-event`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ user: loggedInUser, adType: "gaming_banner", action: "click" })
-        }).catch(() => {});
-      } catch (e) {}
-      alert("🎮 AppLovin MAX Ad Slot Active — Ludo & Cricket Arena");
+      } catch (err) {}
     }
 
     const CLOUD_CONFIG = {
@@ -2713,7 +2607,7 @@
       maxDurationSeconds: 60
     };
 
-    let loggedInUser = FOUNDER_DISPLAY_NAME;
+    let loggedInUser = "User";
     let pendingVideoFile = null;
     let pendingVideoURL = null;
     let pendingStoryMediaFile = null;
@@ -3053,9 +2947,7 @@
           req.onsuccess = () => resolve(req.result);
           req.onerror = () => reject(req.error);
         });
-      } catch (err) {
-        console.log("Story DB save error:", err);
-      }
+      } catch (err) {}
     }
 
     async function deleteExpiredStoryFromDB(id) {
@@ -3077,7 +2969,6 @@
           req.onerror = () => reject(req.error);
         });
       } catch (err) {
-        console.log("Story DB load error:", err);
         return [];
       }
     }
@@ -3097,9 +2988,7 @@
           req.onsuccess = () => resolve(req.result);
           req.onerror = () => reject(req.error);
         });
-      } catch (err) {
-        console.log("Local DB save error:", err);
-      }
+      } catch (err) {}
     }
 
     async function loadSavedVideosFromLocalDB() {
@@ -3113,7 +3002,6 @@
           req.onerror = () => reject(req.error);
         });
       } catch (err) {
-        console.log("Local DB load error:", err);
         return [];
       }
     }
@@ -3209,6 +3097,20 @@
         const freshUrl = URL.createObjectURL(story.blob);
         activeStoryObjectUrl = freshUrl;
         return freshUrl;
+      }
+      if (story.remoteVideoUrl && !story.remoteVideoUrl.startsWith("blob:")) {
+        return story.remoteVideoUrl;
+      }
+      if (story.videoUrl && !story.videoUrl.startsWith("blob:")) {
+        return story.videoUrl;
+      }
+      return "";
+    }
+
+    function getThumbnailVideoSrc(story) {
+      if (!story) return "";
+      if (story.blob instanceof Blob && story.mediaType === "video") {
+        return URL.createObjectURL(story.blob);
       }
       if (story.remoteVideoUrl && !story.remoteVideoUrl.startsWith("blob:")) {
         return story.remoteVideoUrl;
@@ -3361,10 +3263,21 @@
         img.alt = yourStoryLabel;
         yourInner.appendChild(img);
       } else if (ownStory && ownStory.mediaType === "video") {
-        const vidBadge = document.createElement("div");
-        vidBadge.className = "circle-story-video-badge";
-        vidBadge.innerHTML = `<span>▶</span><span style="font-size:9px;">STORY</span>`;
-        yourInner.appendChild(vidBadge);
+        const vidThumbSrc = getThumbnailVideoSrc(ownStory);
+        if (vidThumbSrc) {
+          const thumbVid = document.createElement("video");
+          thumbVid.src = vidThumbSrc;
+          thumbVid.muted = true;
+          thumbVid.playsInline = true;
+          thumbVid.preload = "metadata";
+          thumbVid.addEventListener("loadeddata", () => {
+            try { thumbVid.currentTime = 0.2; } catch (e) {}
+            if (ownStory.blob instanceof Blob) {
+              try { URL.revokeObjectURL(vidThumbSrc); } catch (e) {}
+            }
+          });
+          yourInner.appendChild(thumbVid);
+        }
       } else {
         const logoImg = document.createElement("img");
         logoImg.src = "logo.png";
@@ -3373,7 +3286,7 @@
           this.remove();
           const initDiv = document.createElement("div");
           initDiv.className = "circle-story-initial";
-          initDiv.textContent = "2F";
+          initDiv.textContent = loggedInUser === FOUNDER_DISPLAY_NAME ? "2F" : (loggedInUser.charAt(0).toUpperCase() || "U");
           yourInner.appendChild(initDiv);
         };
         yourInner.appendChild(logoImg);
@@ -3414,10 +3327,26 @@
           img.alt = pubName;
           inner.appendChild(img);
         } else if (story.mediaType === "video" || story.blob || story.remoteVideoUrl || story.videoUrl) {
-          const vidBadge = document.createElement("div");
-          vidBadge.className = "circle-story-video-badge";
-          vidBadge.innerHTML = `<span>▶</span><span style="font-size:8.5px; letter-spacing:0.4px;">VIDEO</span>`;
-          inner.appendChild(vidBadge);
+          const vidThumbSrc = getThumbnailVideoSrc(story);
+          if (vidThumbSrc) {
+            const thumbVid = document.createElement("video");
+            thumbVid.src = vidThumbSrc;
+            thumbVid.muted = true;
+            thumbVid.playsInline = true;
+            thumbVid.preload = "metadata";
+            thumbVid.addEventListener("loadeddata", () => {
+              try { thumbVid.currentTime = 0.2; } catch (e) {}
+              if (story.blob instanceof Blob) {
+                try { URL.revokeObjectURL(vidThumbSrc); } catch (e) {}
+              }
+            });
+            inner.appendChild(thumbVid);
+          } else {
+            const initDiv = document.createElement("div");
+            initDiv.className = "circle-story-initial";
+            initDiv.textContent = pubName.replace(/^@/, "").slice(0, 2).toUpperCase() || "2F";
+            inner.appendChild(initDiv);
+          }
         } else if (story.text) {
           const txtThumb = document.createElement("div");
           txtThumb.className = "circle-story-text-thumb";
@@ -3668,6 +3597,21 @@
       }
     }
 
+    function insertEmojiIntoStoryInput(emoji) {
+      const input = document.getElementById("storyReplyInput");
+      if (input) {
+        input.value = (input.value || "") + emoji;
+        input.focus();
+      }
+      spawnManyStoryHearts(emoji, 8);
+    }
+
+    function toggleMoreStoryEmojis() {
+      const grid = document.getElementById("moreStoryEmojisGrid");
+      if (!grid) return;
+      grid.style.display = grid.style.display === "none" ? "grid" : "none";
+    }
+
     function sendStoryEmojiBurst(emoji = "❤️") {
       const heartBtn = document.getElementById("storyLikeHeartBtn");
       if (emoji === "❤️" && heartBtn) {
@@ -3692,7 +3636,7 @@
         overlay.style.right = "12px";
         overlay.style.bottom = "14px";
         overlay.style.zIndex = "230";
-        overlay.style.background = "rgba(15, 15, 15, 0.88)";
+        overlay.style.background = "rgba(15, 15, 15, 0.92)";
         overlay.style.padding = "10px";
         overlay.style.borderRadius = "16px";
         overlay.style.border = "1px solid rgba(255,255,255,0.22)";
@@ -3705,7 +3649,6 @@
         input.style.borderRadius = "20px";
         input.style.padding = "10px 14px";
         input.style.fontSize = "14px";
-        input.style.outline = "none";
         setTimeout(() => input.focus(), 60);
       }
     }
@@ -3713,6 +3656,8 @@
     function closeStoryReplyOverlay() {
       const overlay = document.getElementById("storyReplyOverlay");
       const bottomBar = document.getElementById("storyBottomBar");
+      const grid = document.getElementById("moreStoryEmojisGrid");
+      if (grid) grid.style.display = "none";
       if (overlay) overlay.style.display = "none";
       if (bottomBar) bottomBar.style.display = "flex";
     }
@@ -3724,24 +3669,10 @@
       const storyUser = document.getElementById("storyModalUser")?.textContent?.trim() || "Story";
       const formattedMsg = `Story (${storyUser}): ${cleanText}`;
 
-      const chatBox = document.querySelector(".chat-box-area");
-      if (chatBox) {
-        const bubble = document.createElement("div");
-        bubble.className = "msg-bubble msg-sent";
-        bubble.textContent = formattedMsg;
-        chatBox.appendChild(bubble);
-        chatBox.scrollTop = chatBox.scrollHeight;
-      }
+      appendChatBubble(formattedMsg, true);
 
       try {
-        await fetch(`${API_BASE}/api/chat`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            sender: FOUNDER_DISPLAY_NAME,
-            text: formattedMsg
-          })
-        });
+        await sendChatMessage(loggedInUser, CHAT_PARTNER, formattedMsg);
       } catch (e) {}
     }
 
@@ -3964,9 +3895,7 @@
             return;
           }
         }
-      } catch (err) {
-        console.log("Notification toggle info:", err);
-      }
+      } catch (err) {}
       const notifTabBtn = document.querySelectorAll(".nav-tab")[3];
       navigateTab("notifications", notifTabBtn);
     }
@@ -3975,6 +3904,7 @@
       loadBookmarkedVideos();
       loadFounderRewardsState();
       updateFounderRewardsVisibility();
+      loadPersistedChatMessages();
       await initStories();
 
       const langSel = document.getElementById('languageSelect');
@@ -4006,9 +3936,7 @@
         if (remoteCfg && typeof remoteCfg.resolution === "string") {
           CLOUD_CONFIG.resolution = remoteCfg.resolution;
         }
-      } catch (err) {
-        console.log("Config fetch fallback:", err);
-      }
+      } catch (err) {}
 
       const initialVid = document.getElementById('vid-1');
       prepareVideoFrame(initialVid);
@@ -4067,9 +3995,7 @@
             await oneSignalInstance.Notifications.requestPermission();
           }
         }
-      } catch (err) {
-        console.log("Push status sync info:", err);
-      }
+      } catch (err) {}
     }
 
     function navigateTab(tabId, btnElement) {
@@ -4080,6 +4006,7 @@
       if (btnElement) btnElement.classList.add('active');
 
       if (tabId === 'chat') {
+        loadPersistedChatMessages();
         loadChatHistoryFromServer();
       }
 
@@ -4401,9 +4328,7 @@
         if (uploadResult && (uploadResult.id || uploadResult.reelId)) {
           remoteId = String(uploadResult.id || uploadResult.reelId);
         }
-      } catch (err) {
-        console.log("Worker upload fallback to local:", err);
-      }
+      } catch (err) {}
 
       await saveVideoToLocalDB(fileToPersist, caption, loggedInUser);
 
@@ -4544,9 +4469,7 @@
           if (upRes && typeof upRes.url === "string" && upRes.url.trim() !== "") {
             remoteVideoUrl = upRes.url.trim();
           }
-        } catch (e) {
-          console.log("Story R2 upload fallback:", e);
-        }
+        } catch (e) {}
       }
 
       const storyObj = {
@@ -4594,6 +4517,7 @@
       clearInterval(storyTimer);
       activeStoryPlaybackSession++;
       activeStoryIndex = -1;
+      closeStoryReplyOverlay();
       const vidEl = document.getElementById('storyModalVideo');
       const posterEl = document.getElementById('storyModalPoster');
       const heartsLayer = document.getElementById('storyHeartsLayer');
@@ -4615,12 +4539,44 @@
       syncFeedPlaybackOnScroll();
     }
 
-    function appendChatBubble(text, isSent) {
+    /* --- चैट मैसेज सुरक्षित रखना (LocalStorage + Server Sync) --- */
+    function persistChatMessageToStorage(text, isSent, timestamp = Date.now()) {
+      try {
+        const raw = localStorage.getItem(CHAT_PERSIST_KEY);
+        const list = raw ? JSON.parse(raw) : [];
+        const arr = Array.isArray(list) ? list : [];
+        const exists = arr.some(m => m.text === text && Boolean(m.isSent) === Boolean(isSent));
+        if (!exists) {
+          arr.push({ text, isSent: Boolean(isSent), timestamp });
+          localStorage.setItem(CHAT_PERSIST_KEY, JSON.stringify(arr.slice(-300)));
+        }
+      } catch (e) {}
+    }
+
+    function loadPersistedChatMessages() {
+      try {
+        const raw = localStorage.getItem(CHAT_PERSIST_KEY);
+        const arr = raw ? JSON.parse(raw) : [];
+        if (Array.isArray(arr)) {
+          arr.forEach(m => {
+            if (m && typeof m.text === "string" && m.text.trim()) {
+              appendChatBubble(m.text.trim(), Boolean(m.isSent), false);
+            }
+          });
+        }
+      } catch (e) {}
+    }
+
+    function appendChatBubble(text, isSent, shouldPersist = true) {
       const clean = typeof text === "string" ? text.trim() : "";
       if (!clean) return;
       const key = `${isSent ? "S" : "R"}:${clean}`;
       if (renderedChatKeys.has(key)) return;
       renderedChatKeys.add(key);
+
+      if (shouldPersist) {
+        persistChatMessageToStorage(clean, isSent, Date.now());
+      }
 
       const box = document.getElementById('chatHistory');
       if (!box) return;
@@ -4638,25 +4594,21 @@
           const txt = m.text || m.message || "";
           const sender = m.sender || "";
           const isSent = resolvePublicDisplayName(sender) === loggedInUser;
-          appendChatBubble(txt, isSent);
+          appendChatBubble(txt, isSent, true);
         });
-      } catch (err) {
-        console.log("Chat history sync fallback:", err);
-      }
+      } catch (err) {}
     }
 
     async function sendChatMsg() {
       const input = document.getElementById('chatTextInput');
       const msg = input.value.trim();
       if (!msg) return;
-      appendChatBubble(msg, true);
+      appendChatBubble(msg, true, true);
       input.value = '';
 
       try {
         await sendChatMessage(loggedInUser, CHAT_PARTNER, msg);
-      } catch (err) {
-        console.log("Chat API sync fallback:", err);
-      }
+      } catch (err) {}
     }
 
     function appendCommentRow(author, text) {
@@ -4685,9 +4637,7 @@
             appendCommentRow(c.author || c.user || "@user", c.text || c.comment || "");
           });
         }
-      } catch (err) {
-        console.log("Comments fetch fallback:", err);
-      }
+      } catch (err) {}
     }
 
     function closeComments() { document.getElementById('commentSheet').classList.remove('open'); }
@@ -4706,9 +4656,7 @@
 
       try {
         await saveReelComment(currentActiveReelId, loggedInUser, text);
-      } catch (err) {
-        console.log("Comment save fallback:", err);
-      }
+      } catch (err) {}
     }
 
     const translations = {
@@ -4721,8 +4669,6 @@
         loginBtn: "लॉगिन करें",
         yourStory: "Your story",
         addStory: "+ स्टोरी",
-        gamePlayText: "खेलें!",
-        adOpen: "Open",
         followBtn: "Follow",
         saveLabel: "Save",
         shareLabel: "Share",
@@ -4749,7 +4695,6 @@
         postsLabel: "Posts",
         followersLabel: "Followers",
         langsLabel: "Languages",
-        cloudStatusTitle: "⚙️ क्लाउड स्टोरेज और कैश स्टेटस:",
         accountSafetyTitle: "🔐 अकाउंट सेटिंग्स और सुरक्षा:",
         logoutBtn: "लॉगआउट (Log Out)",
         deleteAccountBtn: "Delete Account",
@@ -4771,8 +4716,6 @@
         loginBtn: "Log In",
         yourStory: "Your story",
         addStory: "+ Story",
-        gamePlayText: "Play Now!",
-        adOpen: "Open",
         followBtn: "Follow",
         saveLabel: "Save",
         shareLabel: "Share",
@@ -4799,7 +4742,6 @@
         postsLabel: "Posts",
         followersLabel: "Followers",
         langsLabel: "Languages",
-        cloudStatusTitle: "⚙️ Cloud Storage & Cache Status:",
         accountSafetyTitle: "🔐 Account Settings & Safety:",
         logoutBtn: "Log Out",
         deleteAccountBtn: "Delete Account",
@@ -4838,305 +4780,205 @@
     }
   </script>
 
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-  var style = document.createElement("style");
-  style.textContent = `
-    .reel-fullscreen-mode .app-header,
-    .reel-fullscreen-mode .stories-bar,
-    .reel-fullscreen-mode .bottom-nav,
-    .reel-fullscreen-mode #twoFriendUploadBox,
-    .reel-fullscreen-mode nav,
-    button[aria-label*="Share" i],
-    button[title*="Share" i],
-    .share-btn,
-    .reel-share-btn {
-      display: none !important;
-    }
-
-    .reel-fullscreen-mode .reel-slide {
-      position: relative !important;
-      top: auto !important;
-      left: auto !important;
-      width: 100vw !important;
-      min-height: calc(100vh - 54px) !important;
-      height: calc(100vh - 54px) !important;
-      scroll-snap-align: start !important;
-      background: #000 !important;
-    }
-
-    .reel-fullscreen-mode .reel-slide video {
-      width: 100% !important;
-      height: 100% !important;
-      object-fit: cover !important;
-    }
-
-    .reel-fullscreen-mode .ad-slot-banner {
-      display: flex !important;
-      position: fixed !important;
-      left: 0 !important;
-      right: 0 !important;
-      bottom: 0 !important;
-      width: 100% !important;
-      min-height: 54px !important;
-      z-index: 10001 !important;
-      margin: 0 !important;
-    }
-
-    #exitReelFullscreenBtn {
-      position: fixed;
-      top: 14px;
-      left: 14px;
-      z-index: 10002;
-      background: rgba(0, 0, 0, 0.65);
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      border-radius: 50%;
-      width: 38px;
-      height: 38px;
-      font-size: 20px;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
-
-    .reel-fullscreen-mode #exitReelFullscreenBtn {
-      display: flex !important;
-    }
-  `;
-  document.head.appendChild(style);
-
-  var banner = document.querySelector(".ad-slot-banner");
-  var feed = document.getElementById("reelsFeed") || document.querySelector(".reels-feed") || document.querySelector("main");
-  if (banner && feed && feed.parentNode) {
-    feed.parentNode.insertBefore(banner, feed.nextSibling);
-  }
-
-  var backBtn = document.createElement("button");
-  backBtn.id = "exitReelFullscreenBtn";
-  backBtn.type = "button";
-  backBtn.innerHTML = "&#8592;";
-  backBtn.title = "Back";
-  document.body.appendChild(backBtn);
-
-  function pauseAndMuteAllExcept(activeVideo) {
-    document.querySelectorAll("video").forEach(function (vid) {
-      if (vid !== activeVideo) {
-        vid.muted = true;
-        vid.pause();
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var style = document.createElement("style");
+    style.textContent = `
+      * {
+        -webkit-tap-highlight-color: transparent !important;
       }
-    });
-  }
-
-  function pinBannerInFullscreen() {
-    var currentBanner = document.querySelector(".ad-slot-banner");
-    if (currentBanner && document.body.classList.contains("reel-fullscreen-mode")) {
-      if (currentBanner.parentElement !== document.body) {
-        document.body.appendChild(currentBanner);
+      .reel-fullscreen-mode .app-header,
+      .reel-fullscreen-mode .stories-bar,
+      .reel-fullscreen-mode .bottom-nav,
+      .reel-fullscreen-mode #twoFriendUploadBox,
+      .reel-fullscreen-mode nav,
+      button[aria-label*="Share" i],
+      button[title*="Share" i],
+      .share-btn,
+      .reel-share-btn {
+        display: none !important;
       }
+
+      .reel-fullscreen-mode .reel-slide {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        width: 100vw !important;
+        min-height: 100vh !important;
+        height: 100vh !important;
+        scroll-snap-align: start !important;
+        background: #000 !important;
+      }
+
+      .reel-fullscreen-mode .reel-slide video {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+      }
+
+      #exitReelFullscreenBtn {
+        position: fixed;
+        top: 14px;
+        left: 14px;
+        z-index: 10002;
+        background: rgba(0, 0, 0, 0.65);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 50%;
+        width: 38px;
+        height: 38px;
+        font-size: 20px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+
+      .reel-fullscreen-mode #exitReelFullscreenBtn {
+        display: flex !important;
+      }
+    `;
+    document.head.appendChild(style);
+
+    var backBtn = document.createElement("button");
+    backBtn.id = "exitReelFullscreenBtn";
+    backBtn.type = "button";
+    backBtn.innerHTML = "&#8592;";
+    backBtn.title = "Back";
+    document.body.appendChild(backBtn);
+
+    function pauseAndMuteAllExcept(activeVideo) {
+      document.querySelectorAll("video").forEach(function (vid) {
+        if (vid !== activeVideo) {
+          vid.muted = true;
+          vid.pause();
+        }
+      });
     }
-  }
 
-  function exitFullscreenReel() {
-    document.body.classList.remove("reel-fullscreen-mode");
-    document.querySelectorAll(".reel-slide.active-fullscreen").forEach(function (el) {
-      el.classList.remove("active-fullscreen");
-    });
-  }
+    function exitFullscreenReel() {
+      document.body.classList.remove("reel-fullscreen-mode");
+      document.querySelectorAll(".reel-slide.active-fullscreen").forEach(function (el) {
+        el.classList.remove("active-fullscreen");
+      });
+    }
 
-  backBtn.addEventListener("click", function (e) {
-    e.stopPropagation();
-    exitFullscreenReel();
-  });
-
-  document.addEventListener("click", function (e) {
-    if (e.target.closest("button, a, input, textarea, select, label, #exitReelFullscreenBtn")) return;
-    var slide = e.target.closest(".reel-slide");
-    var video = e.target.closest("video");
-    if (slide || video) {
-      var targetSlide = slide || video.closest(".reel-slide");
-      var vid = targetSlide ? targetSlide.querySelector("video") : video;
-      var isAlreadyFull = targetSlide && targetSlide.classList.contains("active-fullscreen");
-
+    backBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
       exitFullscreenReel();
+    });
 
-      if (!isAlreadyFull && targetSlide) {
-        document.body.classList.add("reel-fullscreen-mode");
-        targetSlide.classList.add("active-fullscreen");
-        pinBannerInFullscreen();
-        if (vid) {
-          pauseAndMuteAllExcept(vid);
-          vid.muted = false;
-          vid.play().catch(function () {});
+    document.addEventListener("click", function (e) {
+      if (e.target.closest("button, a, input, textarea, select, label, #exitReelFullscreenBtn")) return;
+      var slide = e.target.closest(".reel-slide");
+      var video = e.target.closest("video");
+      if (slide || video) {
+        var targetSlide = slide || video.closest(".reel-slide");
+        var vid = targetSlide ? targetSlide.querySelector("video") : video;
+        var isAlreadyFull = targetSlide && targetSlide.classList.contains("active-fullscreen");
+
+        exitFullscreenReel();
+
+        if (!isAlreadyFull && targetSlide) {
+          document.body.classList.add("reel-fullscreen-mode");
+          targetSlide.classList.add("active-fullscreen");
+          if (vid) {
+            pauseAndMuteAllExcept(vid);
+            vid.muted = false;
+            vid.play().catch(function () {});
+          }
         }
       }
-    }
+    });
   });
-});
-</script>
+  </script>
 
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-  var paidState = {};
-  var paytmState = {};
+  <script>
+  (function () {
+    function getCardKey(card) {
+      var text = (card.innerText || "").trim();
+      var match = text.match(/@[a-zA-Z0-9._-]+/);
+      if (match) return match[0];
+      var lines = text.split("\n").map(function (s) { return s.trim(); }).filter(Boolean);
+      return lines[0] || "user";
+    }
 
-  try {
-    paidState = JSON.parse(localStorage.getItem("2friend_reward_paid_v2") || "{}");
-  } catch (e) {}
+    function addCustomAmountBoxes() {
+      if (!isFounderAccount(loggedInUser)) return;
+      var buttons = Array.from(document.querySelectorAll("#founderRewardsList button"));
+      var approveButtons = buttons.filter(function (btn) {
+        return /approve/i.test((btn.textContent || "").trim());
+      });
 
-  try {
-    paytmState = JSON.parse(localStorage.getItem("2friend_reward_paytm_v2") || "{}");
-  } catch (e) {}
+      approveButtons.forEach(function (approveBtn) {
+        var card = approveBtn.closest(".reward-user-card");
+        if (!card || card.querySelector(".tf-custom-amt-box")) return;
 
-  function saveStates() {
-    try {
-      localStorage.setItem("2friend_reward_paid_v2", JSON.stringify(paidState));
-      localStorage.setItem("2friend_reward_paytm_v2", JSON.stringify(paytmState));
-    } catch (e) {}
-  }
+        var key = getCardKey(card);
+        var box = document.createElement("div");
+        box.className = "tf-custom-amt-box";
+        box.style.cssText = "margin-top:4px;display:flex;gap:6px;align-items:center;width:100%;";
 
-  function getUserKey(card) {
-    var text = (card.innerText || "").trim();
-    var match = text.match(/@[a-zA-Z0-9._-]+/);
-    if (match) return match[0];
-    var lines = text.split("\n").map(function (s) { return s.trim(); }).filter(Boolean);
-    return lines[0] || "user";
-  }
+        var input = document.createElement("input");
+        input.type = "number";
+        input.min = "1";
+        input.step = "1";
+        input.placeholder = "राशि टाइप करें (जैसे 50, 100, 200)";
+        input.style.cssText = "flex:1;min-width:0;padding:6px 8px;border-radius:7px;border:1px solid rgba(255,255,255,0.22);background:#14151c;color:#ffffff;font-size:12px;";
 
-  function enhanceRewardCards() {
-    var allButtons = Array.from(document.querySelectorAll("button"));
-    var approveBtns = allButtons.filter(function (btn) {
-      return /approve/i.test(btn.textContent || "");
-    });
+        var setBtn = document.createElement("button");
+        setBtn.type = "button";
+        setBtn.textContent = "राशि सेट करें";
+        setBtn.style.cssText = "padding:6px 10px;border-radius:7px;border:none;background:#d97706;color:#ffffff;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;";
 
-    var cards = [];
-    approveBtns.forEach(function (btn) {
-      var card = btn.closest("div[style], article, li, .reward-card, .user-card");
-      if (!card) card = btn.parentElement && btn.parentElement.parentElement;
-      if (card && cards.indexOf(card) === -1) {
-        cards.push(card);
-      }
-    });
+        function applyAmount() {
+          var val = parseInt((input.value || "").trim(), 10);
+          if (!val || val <= 0) return;
 
-    cards.forEach(function (card) {
-      if (card.querySelector(".tf-paytm-reward-box")) return;
+          var matchedCandidate = founderRewardCandidates.find(function (cand) {
+            return card.innerText.indexOf(cand.name) !== -1;
+          });
+          if (matchedCandidate) {
+            matchedCandidate.amount = val;
+            matchedCandidate.approved = false;
+            saveFounderRewardsState();
+            renderFounderRewardsPanel();
+          } else {
+            approveBtn.setAttribute("data-custom-amount", String(val));
+            approveBtn.textContent = "Approve ₹" + val;
+            approveBtn.setAttribute("data-tf-user", key);
+          }
 
-      var key = getUserKey(card);
-      var savedNumber = paytmState[key] || "";
-
-      var box = document.createElement("div");
-      box.className = "tf-paytm-reward-box";
-      box.style.cssText = "margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.12);display:flex;flex-direction:column;gap:8px;";
-
-      var msgBtn = document.createElement("button");
-      msgBtn.type = "button";
-      msgBtn.textContent = "Copy Winner Message (Paytm नंबर मांगें)";
-      msgBtn.style.cssText = "width:100%;padding:7px 10px;border-radius:7px;border:1px solid rgba(255,255,255,0.22);background:#1f2937;color:#f9fafb;font-size:12px;font-weight:600;cursor:pointer;";
-
-      var topRow = document.createElement("div");
-      topRow.style.cssText = "display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:13px;";
-
-      var numLabel = document.createElement("span");
-      numLabel.style.cssText = "color:#e5e7eb;word-break:break-all;";
-      numLabel.textContent = savedNumber ? ("Paytm नंबर: " + savedNumber) : "Paytm नंबर: अभी दर्ज नहीं";
-
-      var copyNumBtn = document.createElement("button");
-      copyNumBtn.type = "button";
-      copyNumBtn.textContent = "Copy No.";
-      copyNumBtn.style.cssText = "padding:5px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:#262630;color:#fff;font-size:12px;cursor:pointer;";
-
-      var inputRow = document.createElement("div");
-      inputRow.style.cssText = "display:flex;gap:6px;align-items:center;";
-
-      var numInput = document.createElement("input");
-      numInput.type = "tel";
-      numInput.placeholder = "यूज़र का Paytm फ़ोन नंबर डालें";
-      numInput.value = savedNumber;
-      numInput.style.cssText = "flex:1;padding:6px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.18);background:#18181f;color:#fff;font-size:12px;";
-
-      var saveNumBtn = document.createElement("button");
-      saveNumBtn.type = "button";
-      saveNumBtn.textContent = "Save";
-      saveNumBtn.style.cssText = "padding:6px 12px;border-radius:6px;border:none;background:#374151;color:#fff;font-size:12px;cursor:pointer;";
-
-      var paidBtn = document.createElement("button");
-      paidBtn.type = "button";
-      paidBtn.style.cssText = "width:100%;padding:8px 12px;border-radius:8px;border:none;font-weight:700;font-size:13px;cursor:pointer;";
-
-      function refreshPaidButton() {
-        var isPaid = !!paidState[key];
-        if (isPaid) {
-          paidBtn.textContent = "✓ Paid (भेज दिया गया)";
-          paidBtn.style.background = "#15803d";
-          paidBtn.style.color = "#ffffff";
-        } else {
-          paidBtn.textContent = "Paid मार्क करें";
-          paidBtn.style.background = "#2563eb";
-          paidBtn.style.color = "#ffffff";
+          setBtn.textContent = "सेट ✓";
+          setTimeout(function () {
+            setBtn.textContent = "राशि सेट करें";
+          }, 1200);
         }
-      }
 
-      msgBtn.addEventListener("click", function (e) {
-        e.stopPropagation();
-        var msg = "बधाई हो " + key + "! आपका नाम 2friend के आज के इनाम के लिए चुना गया है। कृपया अपना वह फ़ोन नंबर बता दें जिस पर आपका Paytm सक्रिय है, ताकि इनाम की राशि भेजी जा सके।";
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(msg).catch(function () {});
-        }
-        msgBtn.textContent = "Message Copied ✓";
-        setTimeout(function () {
-          msgBtn.textContent = "Copy Winner Message (Paytm नंबर मांगें)";
-        }, 1400);
+        setBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          applyAmount();
+        });
+
+        input.addEventListener("keydown", function (e) {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            e.stopPropagation();
+            applyAmount();
+          }
+        });
+
+        box.appendChild(input);
+        box.appendChild(setBtn);
+        card.appendChild(box);
       });
+    }
 
-      saveNumBtn.addEventListener("click", function (e) {
-        e.stopPropagation();
-        var val = (numInput.value || "").trim();
-        paytmState[key] = val;
-        savedNumber = val;
-        numLabel.textContent = val ? ("Paytm नंबर: " + val) : "Paytm नंबर: अभी दर्ज नहीं";
-        saveStates();
-      });
-
-      copyNumBtn.addEventListener("click", function (e) {
-        e.stopPropagation();
-        var val = (numInput.value || savedNumber || "").trim();
-        if (!val) return;
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(val).catch(function () {});
-        }
-        copyNumBtn.textContent = "Copied ✓";
-        setTimeout(function () {
-          copyNumBtn.textContent = "Copy No.";
-        }, 1200);
-      });
-
-      paidBtn.addEventListener("click", function (e) {
-        e.stopPropagation();
-        paidState[key] = !paidState[key];
-        saveStates();
-        refreshPaidButton();
-      });
-
-      refreshPaidButton();
-      topRow.appendChild(numLabel);
-      topRow.appendChild(copyNumBtn);
-      inputRow.appendChild(numInput);
-      inputRow.appendChild(saveNumBtn);
-      box.appendChild(msgBtn);
-      box.appendChild(topRow);
-      box.appendChild(inputRow);
-      box.appendChild(paidBtn);
-      card.appendChild(box);
-    });
-  }
-
-  enhanceRewardCards();
-  setTimeout(enhanceRewardCards, 800);
-});
-</script>
-
-
+    addCustomAmountBoxes();
+    setInterval(addCustomAmountBoxes, 1000);
+  })();
+  </script>
 
 </body>
-  </html>
+</html>
