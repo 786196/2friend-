@@ -498,7 +498,7 @@
       cursor: pointer;
     }
 
-    /* सिंगल-टच फ़ुलस्क्रीन मोड */
+    /* सिंगल-टच बड़ी व्यू (बिना फालतू बटन या ब्राउज़र बैनर के) */
     .reels-feed.tf-feed-fullscreen {
       position: fixed !important;
       inset: 0 !important;
@@ -509,53 +509,6 @@
     }
     .reel-slide.tf-slide-fullscreen video {
       object-fit: contain !important;
-    }
-    .tf-fullscreen-exit-btn {
-      position: fixed;
-      top: 14px;
-      right: 14px;
-      z-index: 950;
-      display: none;
-      align-items: center;
-      gap: 6px;
-      background: rgba(15, 15, 15, 0.82);
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.35);
-      border-radius: 20px;
-      padding: 7px 12px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .reels-feed.tf-feed-fullscreen + .tf-fullscreen-exit-btn {
-      display: flex;
-    }
-    .tf-step-nav-group {
-      position: fixed;
-      right: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 940;
-      display: none;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .reels-feed.tf-feed-fullscreen ~ .tf-step-nav-group {
-      display: flex;
-    }
-    .tf-step-btn {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      background: rgba(0, 0, 0, 0.65);
-      border: 1px solid rgba(255, 255, 255, 0.35);
-      color: #fff;
-      font-size: 15px;
-      font-weight: 800;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
 
     .center-controls-overlay {
@@ -713,7 +666,7 @@
       box-shadow: 0 0 6px rgba(0, 0, 0, 0.8);
     }
 
-    /* सर्च स्क्रीन (ऊपर नाम सूची + नीचे वीडियो कंटेंट) */
+    /* सर्च स्क्रीन */
     .search-wrapper {
       flex: 1;
       overflow-y: auto;
@@ -1830,10 +1783,6 @@
               <span class="side-count" data-key="saveLabel">Save</span>
             </div>
             <div class="side-btn-wrap">
-              <button class="side-btn" onclick="toggleFeedFullscreen()" title="Fullscreen">⛶</button>
-              <span class="side-count">Full</span>
-            </div>
-            <div class="side-btn-wrap">
               <button class="side-btn" onclick="openSafetyMenu('reel-1', '2friend founder')" title="Report / Block">⋮</button>
               <span class="side-count" data-key="reportLabel">Report</span>
             </div>
@@ -1861,13 +1810,6 @@
             <span style="color:#60a5fa; font-weight:700; flex-shrink:0;">Sponsored</span>
           </div>
         </div>
-      </div>
-
-      <!-- फ़ुलस्क्रीन मोड में बाहर निकलने और आगे-पीछे वीडियो जाने के कंट्रोल्स -->
-      <button type="button" class="tf-fullscreen-exit-btn" onclick="exitFeedFullscreen()">✕ Exit Fullscreen</button>
-      <div class="tf-step-nav-group">
-        <button type="button" class="tf-step-btn" onclick="stepReelSlide(-1)" title="Previous Video">▲</button>
-        <button type="button" class="tf-step-btn" onclick="stepReelSlide(1)" title="Next Video">▼</button>
       </div>
     </div>
 
@@ -2235,7 +2177,8 @@
         lower === "to friend founder" ||
         lower === "2friend founder" ||
         lower === "2friend_founder" ||
-        lower === "@2friend_founder"
+        lower === "@2friend_founder" ||
+        lower === "2friend"
       ) {
         return FOUNDER_DISPLAY_NAME;
       }
@@ -2246,17 +2189,13 @@
       return resolvePublicDisplayName(name) === FOUNDER_DISPLAY_NAME;
     }
 
-    /* --- सिंगल-टच फ़ुलस्क्रीन व आगे-पीछे वीडियो नेविगेशन --- */
+    /* --- सिंगल-टच बड़ी व्यू (बिना सिस्टम फ़ुलस्क्रीन मैसेज या फालतू बटनों के) --- */
     function enterFeedFullscreen() {
       const feed = document.getElementById("reelsFeedContainer");
       if (!feed) return;
       isFeedFullscreenMode = true;
       feed.classList.add("tf-feed-fullscreen");
       document.querySelectorAll("#reelsFeedContainer .reel-slide").forEach(s => s.classList.add("tf-slide-fullscreen"));
-
-      if (document.documentElement.requestFullscreen && !document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(() => {});
-      }
       syncFeedPlaybackOnScroll();
     }
 
@@ -2272,36 +2211,16 @@
       syncFeedPlaybackOnScroll();
     }
 
-    function toggleFeedFullscreen() {
+    function handleSingleTapFullscreen(event, videoId, ctrlId, spkId) {
+      if (event) event.stopPropagation();
       if (isFeedFullscreenMode) {
         exitFeedFullscreen();
       } else {
         enterFeedFullscreen();
-      }
-    }
-
-    function stepReelSlide(delta) {
-      const feed = document.getElementById("reelsFeedContainer");
-      if (!feed) return;
-      const slides = Array.from(feed.querySelectorAll(".reel-slide"));
-      if (!slides.length) return;
-
-      let curIdx = slides.findIndex(s => s.dataset.reelId === currentActiveReelId);
-      if (curIdx < 0) curIdx = 0;
-
-      const nextIdx = Math.min(slides.length - 1, Math.max(0, curIdx + delta));
-      slides[nextIdx].scrollIntoView({ behavior: "smooth" });
-      setTimeout(syncFeedPlaybackOnScroll, 180);
-    }
-
-    function handleSingleTapFullscreen(event, videoId, ctrlId, spkId) {
-      if (event) event.stopPropagation();
-      const video = document.getElementById(videoId);
-      if (video && video.paused) {
-        togglePlayPauseOnly(videoId, ctrlId, spkId);
-      }
-      if (!isFeedFullscreenMode) {
-        enterFeedFullscreen();
+        const video = document.getElementById(videoId);
+        if (video && video.paused) {
+          togglePlayPauseOnly(videoId, ctrlId, spkId);
+        }
       }
     }
 
@@ -3774,8 +3693,8 @@
       }
     }
 
-    const STORIES_META_KEY = "2friend_circle_stories_meta_v5";
-    const SEEN_STORIES_KEY = "2friend_seen_stories_v5";
+    const STORIES_META_KEY = "2friend_circle_stories_meta_v6";
+    const SEEN_STORIES_KEY = "2friend_seen_stories_v6";
 
     const DEFAULT_STORIES = [
       {
@@ -3788,17 +3707,6 @@
         text: "2friend • 24h Story",
         isDefault: true,
         createdAt: Date.now() - 2 * 60 * 60 * 1000
-      },
-      {
-        id: "story-delhi",
-        user: "@delhi_creators",
-        label: "delhi_creators",
-        mediaType: "text",
-        videoUrl: "",
-        imageDataUrl: "",
-        text: "1 मिनट की शानदार 720p/1080p स्टोरीज़ और रील्स!",
-        isDefault: true,
-        createdAt: Date.now() - 4 * 60 * 60 * 1000
       }
     ];
 
@@ -3807,8 +3715,8 @@
 
     function isStoryWithin24Hours(story) {
       if (!story) return false;
-      if (story.isDefault) return true;
-      const created = Number(story.createdAt) || Date.now();
+      const created = Number(story.createdAt) || 0;
+      if (!created) return false;
       return (Date.now() - created) < STORY_TTL_MS;
     }
 
@@ -3983,7 +3891,7 @@
       });
 
       DEFAULT_STORIES.forEach(def => {
-        if (!mergedMap.has(def.id)) {
+        if (!mergedMap.has(def.id) && isStoryWithin24Hours(def)) {
           mergedMap.set(def.id, {
             ...def,
             hasBlob: false,
@@ -3993,7 +3901,9 @@
         }
       });
 
-      storiesList = Array.from(mergedMap.values()).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+      storiesList = Array.from(mergedMap.values())
+        .filter(isStoryWithin24Hours)
+        .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
       persistStoriesMetadata();
       renderStoriesBar();
 
@@ -4520,10 +4430,6 @@
             <span class="side-count" data-key="saveLabel">${dict.saveLabel || 'Save'}</span>
           </div>
           <div class="side-btn-wrap">
-            <button class="side-btn" onclick="toggleFeedFullscreen()" title="Fullscreen">⛶</button>
-            <span class="side-count">Full</span>
-          </div>
-          <div class="side-btn-wrap">
             <button class="side-btn" onclick="openSafetyMenu('${reelId}', '${publicAuthor.replace(/'/g, "\\'")}')" title="Report / Block">⋮</button>
             <span class="side-count" data-key="reportLabel">${dict.reportLabel || 'Report'}</span>
           </div>
@@ -4869,95 +4775,7 @@
       syncLikeToServer(reelId, liked, count);
     }
 
-    async function trimVideoTo60Seconds(sourceVideoEl, maxSec, originalFileName) {
-      return new Promise((resolve) => {
-        const stream = sourceVideoEl.captureStream
-          ? sourceVideoEl.captureStream()
-          : (sourceVideoEl.mozCaptureStream ? sourceVideoEl.mozCaptureStream() : null);
-
-        if (!stream || typeof MediaRecorder === 'undefined') {
-          resolve(null);
-          return;
-        }
-
-        const mimeTypes = [
-          'video/webm;codecs=vp9,opus',
-          'video/webm;codecs=vp8,opus',
-          'video/webm',
-          'video/mp4'
-        ];
-        const supportedMime = mimeTypes.find((t) => MediaRecorder.isTypeSupported(t)) || '';
-
-        let recorder;
-        try {
-          recorder = supportedMime
-            ? new MediaRecorder(stream, { mimeType: supportedMime })
-            : new MediaRecorder(stream);
-        } catch (e) {
-          resolve(null);
-          return;
-        }
-
-        const chunks = [];
-        let finished = false;
-        recorder.ondataavailable = (ev) => {
-          if (ev.data && ev.data.size > 0) chunks.push(ev.data);
-        };
-
-        const stopRecording = () => {
-          if (finished) return;
-          finished = true;
-          if (recorder.state !== 'inactive') {
-            try { recorder.stop(); } catch (_) {}
-          }
-          try { sourceVideoEl.pause(); } catch (_) {}
-        };
-
-        recorder.onstop = () => {
-          const outType = recorder.mimeType || supportedMime || 'video/webm';
-          const trimmedBlob = new Blob(chunks, { type: outType });
-          if (!trimmedBlob.size) {
-            resolve(null);
-            return;
-          }
-          const ext = outType.includes('mp4') ? 'mp4' : 'webm';
-          const baseName = (originalFileName || 'video').replace(/\.[^/.]+$/, '');
-          const trimmedFile = new File([trimmedBlob], `${baseName}_60s.${ext}`, {
-            type: outType,
-            lastModified: Date.now()
-          });
-          resolve(trimmedFile);
-        };
-
-        sourceVideoEl.currentTime = 0;
-        sourceVideoEl.ontimeupdate = () => {
-          if (sourceVideoEl.currentTime >= maxSec) {
-            sourceVideoEl.ontimeupdate = null;
-            stopRecording();
-          }
-        };
-
-        try {
-          recorder.start(500);
-          const playRes = sourceVideoEl.play();
-          if (playRes && typeof playRes.catch === 'function') {
-            playRes.catch(() => {
-              stopRecording();
-              resolve(null);
-            });
-          }
-        } catch (e) {
-          stopRecording();
-          resolve(null);
-          return;
-        }
-
-        setTimeout(() => {
-          stopRecording();
-        }, (maxSec + 2) * 1000);
-      });
-    }
-
+    /* --- वीडियो चयन: बिना बेवजह रिजेक्ट किए आसानी से स्वीकार करना --- */
     function validateSelectedVideo(input) {
       const file = input.files && input.files[0];
       const feedback = document.getElementById('uploadFeedback');
@@ -4974,72 +4792,28 @@
         return;
       }
 
-      feedback.style.color = "#facc15";
-      feedback.innerText = "वीडियो की जाँच हो रही है (60s नियम)...";
-
       const blobUrl = URL.createObjectURL(file);
+      pendingVideoFile = file;
+      pendingVideoURL = blobUrl;
+      fileNameDisplay.innerText = "✅ " + file.name;
+      feedback.style.color = "#4ade80";
+      feedback.innerText = "वीडियो तैयार है! अपलोड करने के लिए बटन दबाएं।";
+      publishBtn.disabled = false;
+
       const tempVideo = document.createElement('video');
       tempVideo.preload = 'metadata';
       tempVideo.playsInline = true;
       tempVideo.muted = true;
-
-      const metaTimer = setTimeout(() => {
-        URL.revokeObjectURL(blobUrl);
-        feedback.style.color = "#f87171";
-        feedback.innerText = "❌ वीडियो लोड होने में समय लगा, दूसरा वीडियो चुनें या पुनः प्रयास करें।";
-        input.value = "";
-      }, 8000);
-
-      tempVideo.onloadedmetadata = async function () {
-        clearTimeout(metaTimer);
-        if (!isFinite(tempVideo.duration) || tempVideo.duration <= 0) {
-          URL.revokeObjectURL(blobUrl);
-          feedback.style.color = "#f87171";
-          feedback.innerText = "❌ इस वीडियो की अवधि (duration) पढ़ी नहीं जा सकी।";
-          input.value = "";
-          return;
-        }
-
-        if (tempVideo.duration > CLOUD_CONFIG.maxDurationSeconds + 0.5) {
-          feedback.style.color = "#facc15";
-          feedback.innerText = "✂️ वीडियो 1 मिनट से बड़ा है, 60 सेकंड में काटा जा रहा है...";
-          publishBtn.disabled = true;
-
-          const trimmedFile = await trimVideoTo60Seconds(tempVideo, CLOUD_CONFIG.maxDurationSeconds, file.name);
-          URL.revokeObjectURL(blobUrl);
-
-          if (trimmedFile) {
-            const trimmedUrl = URL.createObjectURL(trimmedFile);
-            pendingVideoFile = trimmedFile;
-            pendingVideoURL = trimmedUrl;
-            fileNameDisplay.innerText = "✅ " + trimmedFile.name + " (60s)";
-            feedback.style.color = "#4ade80";
-            feedback.innerText = "Cloudflare R2 पर अपलोड के लिए तैयार! (1 मिनट में कट गया)";
-            publishBtn.disabled = false;
-          } else {
-            feedback.style.color = "#f87171";
-            feedback.innerText = "❌ वीडियो 1 मिनट से बड़ा है! अधिकतम 60 सेकंड मान्य है।";
-            input.value = "";
+      tempVideo.onloadedmetadata = function () {
+        if (isFinite(tempVideo.duration) && tempVideo.duration > 0) {
+          const sec = Math.round(tempVideo.duration);
+          fileNameDisplay.innerText = "✅ " + file.name + " (" + sec + "s)";
+          if (sec > CLOUD_CONFIG.maxDurationSeconds) {
+            feedback.style.color = "#facc15";
+            feedback.innerText = "नोट: यह वीडियो " + sec + " सेकंड का है (60s से अधिक)। फिर भी अपलोड किया जा सकता है।";
           }
-          return;
         }
-
-        pendingVideoFile = file;
-        pendingVideoURL = blobUrl;
-        fileNameDisplay.innerText = "✅ " + file.name + " (" + Math.round(tempVideo.duration) + "s)";
-        feedback.style.color = "#4ade80";
-        feedback.innerText = "Cloudflare R2 पर अपलोड के लिए तैयार!";
-        publishBtn.disabled = false;
       };
-
-      tempVideo.onerror = function () {
-        clearTimeout(metaTimer);
-        URL.revokeObjectURL(blobUrl);
-        feedback.style.color = "#f87171";
-        feedback.innerText = "❌ यह वीडियो फ़ाइल समर्थित नहीं है या खराब है।";
-        input.value = "";
-      };
-
       tempVideo.src = blobUrl;
     }
 
@@ -5054,7 +4828,7 @@
 
       publishBtn.disabled = true;
       feedback.style.color = "#4ade80";
-      feedback.innerText = "Cloudflare R2 पर अपलोड हो रहा है...";
+      feedback.innerText = "वीडियो सेव हो रहा है...";
 
       let remoteUrl = null;
       let remoteId = null;
@@ -5148,34 +4922,11 @@
         return;
       }
 
-      status.style.color = "#facc15";
-      status.innerText = "स्टोरी वीडियो जाँचा जा रहा है (60s नियम)...";
-
-      const blobUrl = URL.createObjectURL(file);
-      const tempVid = document.createElement('video');
-      tempVid.preload = 'metadata';
-      tempVid.onloadedmetadata = function() {
-        const dur = tempVid.duration;
-        URL.revokeObjectURL(blobUrl);
-        if (dur > CLOUD_CONFIG.maxDurationSeconds + 0.5) {
-          status.style.color = "#f87171";
-          status.innerText = "❌ स्टोरी वीडियो अधिकतम 60 सेकंड का ही हो सकता है!";
-          input.value = "";
-        } else {
-          pendingStoryMediaFile = file;
-          pendingStoryMediaType = "video";
-          label.innerText = "✅ वीडियो: " + file.name + " (" + Math.round(dur) + "s)";
-          status.style.color = "#4ade80";
-          status.innerText = "स्टोरी वीडियो तैयार है! (24 घंटे बाद स्वतः हट जाएगी)";
-        }
-      };
-      tempVid.onerror = function() {
-        URL.revokeObjectURL(blobUrl);
-        status.style.color = "#f87171";
-        status.innerText = "❌ स्टोरी वीडियो पढ़ा नहीं जा सका।";
-        input.value = "";
-      };
-      tempVid.src = blobUrl;
+      pendingStoryMediaFile = file;
+      pendingStoryMediaType = "video";
+      label.innerText = "✅ वीडियो: " + file.name;
+      status.style.color = "#4ade80";
+      status.innerText = "स्टोरी वीडियो तैयार है! (24 घंटे बाद स्वतः हट जाएगी)";
     }
 
     async function publishNewStory() {
