@@ -9,6 +9,7 @@
   <link rel="manifest" href="manifest.json">
 
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
   <script>
     window.OneSignalDeferred = window.OneSignalDeferred || [];
@@ -17,7 +18,9 @@
         await OneSignal.init({
           appId: "72e22f54-652f-4d74-9ae3-fdd2cf750a2f",
         });
-        await checkAndSyncPushStatus(OneSignal);
+        if (typeof checkAndSyncPushStatus === "function") {
+          await checkAndSyncPushStatus(OneSignal);
+        }
       } catch (err) {
         console.log("OneSignal init error:", err);
       }
@@ -472,6 +475,7 @@
       overflow-y: scroll;
       scroll-snap-type: y mandatory;
       scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
     }
     .reels-feed::-webkit-scrollbar { display: none; }
     .reel-slide {
@@ -484,6 +488,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      overflow: hidden;
     }
     .reel-slide video {
       width: 100%;
@@ -492,6 +497,67 @@
       background: #000;
       cursor: pointer;
     }
+
+    /* सिंगल-टच फ़ुलस्क्रीन मोड */
+    .reels-feed.tf-feed-fullscreen {
+      position: fixed !important;
+      inset: 0 !important;
+      width: 100vw !important;
+      height: 100dvh !important;
+      z-index: 900 !important;
+      background: #000 !important;
+    }
+    .reel-slide.tf-slide-fullscreen video {
+      object-fit: contain !important;
+    }
+    .tf-fullscreen-exit-btn {
+      position: fixed;
+      top: 14px;
+      right: 14px;
+      z-index: 950;
+      display: none;
+      align-items: center;
+      gap: 6px;
+      background: rgba(15, 15, 15, 0.82);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 20px;
+      padding: 7px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .reels-feed.tf-feed-fullscreen + .tf-fullscreen-exit-btn {
+      display: flex;
+    }
+    .tf-step-nav-group {
+      position: fixed;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 940;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .reels-feed.tf-feed-fullscreen ~ .tf-step-nav-group {
+      display: flex;
+    }
+    .tf-step-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     .center-controls-overlay {
       position: absolute;
       display: flex;
@@ -532,7 +598,7 @@
       bottom: 76px;
       left: 12px;
       right: 72px;
-      z-index: 10;
+      z-index: 25;
       text-shadow: 0 1px 4px rgba(0,0,0,0.9);
     }
     .reel-user {
@@ -568,15 +634,15 @@
       flex-direction: column;
       align-items: center;
       gap: 10px;
-      z-index: 10;
+      z-index: 25;
     }
     .side-btn-wrap { display: flex; flex-direction: column; align-items: center; gap: 2px; }
     .side-btn {
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      background: rgba(25, 25, 25, 0.78);
-      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(25, 25, 25, 0.82);
+      border: 1px solid rgba(255,255,255,0.22);
       color: #fff;
       font-size: 17px;
       display: flex;
@@ -587,7 +653,7 @@
     }
     .side-btn.liked { color: #ff2a6d; border-color: #ff2a6d; }
     .side-btn.bookmarked { color: #facc15; border-color: #facc15; background: rgba(250, 204, 21, 0.18); }
-    .side-count { font-size: 10.5px; font-weight: 600; }
+    .side-count { font-size: 10.5px; font-weight: 600; text-shadow: 0 1px 3px #000; }
 
     /* वीडियो के नीचे टाइम और सीक/प्रोग्रेस लाइन */
     .reel-timeline-wrap {
@@ -595,7 +661,7 @@
       bottom: 32px;
       left: 0;
       right: 0;
-      z-index: 20;
+      z-index: 25;
       padding: 6px 12px 6px;
       background: linear-gradient(to top, rgba(0, 0, 0, 0.92), rgba(0, 0, 0, 0));
       display: flex;
@@ -647,34 +713,7 @@
       box-shadow: 0 0 6px rgba(0, 0, 0, 0.8);
     }
 
-    /* वन-टच फुल-स्क्रीन: पूरी स्क्रीन पर आने पर ऊपर-नीचे कोई निशान या ओवरले नहीं दिखेगा */
-    body.tf-fullscreen-active header,
-    body.tf-fullscreen-active nav,
-    body.tf-fullscreen-active .stories-bar {
-      display: none !important;
-    }
-    .reel-slide.tf-clean-fullscreen {
-      position: fixed !important;
-      inset: 0 !important;
-      width: 100vw !important;
-      height: 100dvh !important;
-      z-index: 9999 !important;
-      background: #000 !important;
-    }
-    .reel-slide.tf-clean-fullscreen video {
-      width: 100% !important;
-      height: 100% !important;
-      object-fit: contain !important;
-    }
-    .reel-slide.tf-clean-fullscreen .center-controls-overlay,
-    .reel-slide.tf-clean-fullscreen .reel-bottom-info,
-    .reel-slide.tf-clean-fullscreen .reel-side-actions,
-    .reel-slide.tf-clean-fullscreen .reel-timeline-wrap,
-    .reel-slide.tf-clean-fullscreen .reel-bottom-ad-bar {
-      display: none !important;
-    }
-
-    /* सर्च स्क्रीन */
+    /* सर्च स्क्रीन (ऊपर नाम सूची + नीचे वीडियो कंटेंट) */
     .search-wrapper {
       flex: 1;
       overflow-y: auto;
@@ -1100,7 +1139,7 @@
     .stat-box strong { display: block; font-size: 16px; }
     .stat-box span { font-size: 11px; color: #888; }
 
-    /* सिर्फ़ 2friend founder प्रोफ़ाइल के लिए स्क्रीन-टाइम इनाम और पुश अलर्ट पैनल */
+    /* सिर्फ़ 2friend founder प्रोफ़ाइल के लिए स्क्रीन-टाइम इनाम पैनल */
     .founder-rewards-box {
       width: 100%;
       display: none;
@@ -1650,7 +1689,7 @@
     .comment-sheet {
       position: fixed; bottom: 0; left: 0; right: 0; height: 52%;
       background: #161616; border-top-left-radius: 16px; border-top-right-radius: 16px;
-      z-index: 300; display: none; flex-direction: column; border-top: 1px solid #333;
+      z-index: 980; display: none; flex-direction: column; border-top: 1px solid #333;
     }
     .comment-sheet.open { display: flex; }
   </style>
@@ -1662,9 +1701,8 @@
     <div class="auth-card">
       <img src="logo.png" alt="2friend Logo" class="auth-logo-img" onerror="this.style.display='none'">
       <div class="auth-logo">2friend</div>
-      <p style="color: #aaa; font-size: 12.5px; margin-bottom: 14px;" data-key="loginSub">एक बार अकाउंट बनाएं, अगली बार अपने-आप खुलेगा</p>
+      <p style="color: #aaa; font-size: 12.5px; margin-bottom: 14px;" data-key="loginSub">एक बार नाम और पासवर्ड बनाएं, अगली बार अपने-आप खुलेगा</p>
 
-      <!-- Google एक-क्लिक लॉगिन -->
       <div class="google-login-wrap">
         <div id="g_id_onload"
              data-client_id="857463414976-qe5jfut213pj6mmjvml1hasmicc255q2.apps.googleusercontent.com"
@@ -1683,15 +1721,14 @@
         </div>
       </div>
 
-      <div class="auth-divider">या मोबाइल नंबर / ईमेल और पासवर्ड से</div>
+      <div class="auth-divider">या नाम / पासवर्ड से</div>
 
       <div class="auth-tabs">
         <button id="tabSignInBtn" class="auth-tab-btn" onclick="switchAuthMode('login')" data-key="signInTab">लॉगिन (Sign In)</button>
         <button id="tabSignUpBtn" class="auth-tab-btn active" onclick="switchAuthMode('signup')" data-key="signUpTab">नया अकाउंट (Sign Up)</button>
       </div>
 
-      <input type="text" id="loginProfileName" class="auth-input" placeholder="प्रोफ़ाइल नाम दर्ज करें" data-key-placeholder="namePlaceholder">
-      <input type="text" id="loginUsername" class="auth-input" placeholder="मोबाइल नंबर या ईमेल दर्ज करें" data-key-placeholder="userPlaceholder">
+      <input type="text" id="loginUsername" class="auth-input" placeholder="अपना नाम दर्ज करें (जैसे Nikhil Rana)" data-key-placeholder="userPlaceholder">
       <input type="password" id="loginPassword" class="auth-input" placeholder="पासवर्ड बनाएं (कम से कम 4 अक्षर)" data-key-placeholder="passPlaceholder">
       <input type="password" id="confirmPasswordInput" class="auth-input" placeholder="पासवर्ड दोबारा दर्ज करें">
       <div id="authErrorMsg" class="auth-error"></div>
@@ -1730,7 +1767,7 @@
     </div>
   </header>
 
-  <!-- नेविगेशन बार (Home, Search, Create, Chat, Notifications, Profile) -->
+  <!-- नेविगेशन बार -->
   <nav>
     <button class="nav-tab active" onclick="navigateTab('home', this)" aria-label="Home">
       <svg class="fill-active" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
@@ -1762,31 +1799,39 @@
 
       <div class="reels-feed" id="reelsFeedContainer">
         <div class="reel-slide" data-reel-id="reel-1" data-author="2friend founder">
-          <video id="vid-1" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" playsinline webkit-playsinline preload="auto" onclick="handleReelTap('vid-1', 'ctrl-1', 'spk-1')" controlsList="nodownload" disablePictureInPicture oncontextmenu="return false;"></video>
+          <video id="vid-1" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" loop playsinline webkit-playsinline preload="auto" onclick="handleSingleTapFullscreen(event, 'vid-1', 'ctrl-1', 'spk-1')" controlsList="nodownload" disablePictureInPicture oncontextmenu="return false;"></video>
           <div class="center-controls-overlay" id="ctrl-1" style="display:none;">
             <button class="center-speaker-btn" id="spk-1" onclick="event.stopPropagation(); toggleSpeakerOnly('vid-1', 'spk-1')" aria-label="Sound">🔊</button>
-            <div class="center-play-btn" onclick="event.stopPropagation(); handleReelTap('vid-1', 'ctrl-1', 'spk-1')">▶</div>
+            <div class="center-play-btn" onclick="event.stopPropagation(); togglePlayPauseOnly('vid-1', 'ctrl-1', 'spk-1')">▶</div>
           </div>
           <div class="reel-bottom-info">
             <div class="reel-user">
               <span class="reel-author-link" onclick="event.stopPropagation(); openPublicUserProfile('2friend founder')">2friend founder</span>
-              <button class="follow-chip" onclick="toggleFollow(this, '2friend founder')" data-key="followBtn">Follow</button>
+              <button class="follow-chip" onclick="event.stopPropagation(); toggleFollow(this, '2friend founder')" data-key="followBtn">Follow</button>
             </div>
-            <div class="reel-desc">2friend ऐप पर आपका स्वागत है! 480p / 720p / 1080p क्वालिटी, तेज़ लोडिंग और क्लाउड डेटाबेस सिंक। #2friend #India</div>
+            <div class="reel-desc">2friend ऐप पर आपका स्वागत है! 720p/1080p क्वालिटी, तेज़ लोडिंग और क्लाउड डेटाबेस सिंक। #2friend #India</div>
             <div class="reel-music">🎵 Original Audio (Copyright-Free)</div>
           </div>
-          <div class="reel-side-actions">
+          <div class="reel-side-actions" onclick="event.stopPropagation()">
             <div class="side-btn-wrap">
-              <button class="side-btn" onclick="toggleLike(this, 'like-1', 'reel-1')">♥</button>
+              <button class="side-btn" onclick="toggleLike(this, 'like-1', 'reel-1')" title="Like">♥</button>
               <span class="side-count" id="like-1">124</span>
             </div>
             <div class="side-btn-wrap">
-              <button class="side-btn" onclick="openComments('reel-1')">💬</button>
+              <button class="side-btn" onclick="openComments('reel-1', 'comment-count-1')" title="Comment">💬</button>
               <span class="side-count" id="comment-count-1">18</span>
+            </div>
+            <div class="side-btn-wrap">
+              <button class="side-btn" onclick="shareReel('reel-1', 'vid-1')" title="Share">➤</button>
+              <span class="side-count" data-key="shareLabel">Share</span>
             </div>
             <div class="side-btn-wrap">
               <button class="side-btn" id="bm-btn-reel-1" onclick="toggleBookmark(this, 'reel-1')" title="Bookmark">🔖</button>
               <span class="side-count" data-key="saveLabel">Save</span>
+            </div>
+            <div class="side-btn-wrap">
+              <button class="side-btn" onclick="toggleFeedFullscreen()" title="Fullscreen">⛶</button>
+              <span class="side-count">Full</span>
             </div>
             <div class="side-btn-wrap">
               <button class="side-btn" onclick="openSafetyMenu('reel-1', '2friend founder')" title="Report / Block">⋮</button>
@@ -1817,6 +1862,13 @@
           </div>
         </div>
       </div>
+
+      <!-- फ़ुलस्क्रीन मोड में बाहर निकलने और आगे-पीछे वीडियो जाने के कंट्रोल्स -->
+      <button type="button" class="tf-fullscreen-exit-btn" onclick="exitFeedFullscreen()">✕ Exit Fullscreen</button>
+      <div class="tf-step-nav-group">
+        <button type="button" class="tf-step-btn" onclick="stepReelSlide(-1)" title="Previous Video">▲</button>
+        <button type="button" class="tf-step-btn" onclick="stepReelSlide(1)" title="Next Video">▼</button>
+      </div>
     </div>
 
     <!-- 2. सर्च स्क्रीन -->
@@ -1824,7 +1876,7 @@
       <div class="search-wrapper">
         <div class="search-bar-box">
           <span style="font-size:16px; color:#9ca3af;">🔍</span>
-          <input type="text" id="globalSearchInput" placeholder="नाम या आईडी खोजें (जैसे 2friend founder)..." oninput="renderSearchScreen()">
+          <input type="text" id="globalSearchInput" placeholder="नाम या आईडी खोजें (जैसे 2friend founder, Nikhil Rana)..." oninput="renderSearchScreen()">
           <button type="button" id="searchClearBtn" class="search-clear-btn" onclick="clearSearchQuery()">✕</button>
         </div>
 
@@ -1838,7 +1890,7 @@
 
         <div>
           <div class="search-section-label">
-            <span id="searchVideosHeading">🔥 सभी यूज़र्स के वीडियो</span>
+            <span id="searchVideosHeading">🔥 लोकप्रिय और चुनिंदा वीडियो</span>
             <span id="searchVideosCount" style="font-size:11px; color:#9ca3af;">0</span>
           </div>
           <div class="search-videos-grid" id="searchVideosGrid"></div>
@@ -1851,13 +1903,13 @@
       <div class="create-wrapper">
         <h3 style="margin-bottom: 12px;" data-key="uploadTitle">नया वीडियो अपलोड करें</h3>
         <div class="rule-card">
-          <div>✅ <strong data-key="maxDuration">अधिकतम समय:</strong> <span data-key="maxDurationVal">1 मिनट (2-3 मिनट का वीडियो भी अपने-आप 1 मिनट में कटकर अप्रूव होगा)</span></div>
-          <div style="margin-top:3px;">✅ <strong data-key="qualityRule">क्वालिटी नियम:</strong> <span data-key="qualityRuleVal">480p / 720p / 1080p (सभी वीडियो मान्य)</span></div>
+          <div>✅ <strong data-key="maxDuration">अधिकतम समय:</strong> <span data-key="maxDurationVal">1 मिनट (60 सेकंड)</span></div>
+          <div style="margin-top:3px;">✅ <strong data-key="qualityRule">क्वालिटी नियम:</strong> <span data-key="qualityRuleVal">720p / 1080p (H.264/AAC)</span></div>
         </div>
         <div class="drop-zone" onclick="document.getElementById('videoFileInput').click()">
           <div style="font-size: 32px; margin-bottom: 6px;">🎬</div>
           <div id="selectedFileName" style="font-weight: bold; margin-bottom: 2px;" data-key="pickVideo">मोबाइल से वीडियो चुनें</div>
-          <div style="font-size: 11px; color: #888;" data-key="videoHint">MP4 / WebM (2-3 मिनट का वीडियो भी 60 सेकंड में कटकर चलेगा)</div>
+          <div style="font-size: 11px; color: #888;" data-key="videoHint">MP4 / WebM (मैक्स 60 सेकंड)</div>
           <input type="file" id="videoFileInput" accept="video/*" style="display:none;" onchange="validateSelectedVideo(this)">
         </div>
         <input type="text" id="videoCaptionInput" class="caption-input" placeholder="वीडियो का कैप्शन लिखें (#hashtags)..." data-key-placeholder="captionPlaceholder">
@@ -1952,20 +2004,12 @@
           <div class="stat-box"><strong id="langCountStat">17</strong><span data-key="langsLabel">Languages</span></div>
         </div>
 
-        <!-- सिर्फ़ 2friend founder प्रोफ़ाइल के लिए: पुश अलर्ट और स्क्रीन-टाइम इनाम नियंत्रण पैनल -->
+        <!-- सिर्फ़ 2friend founder प्रोफाइल के लिए: स्क्रीन-टाइम इनाम नियंत्रण पैनल -->
         <div class="founder-rewards-box" id="founderRewardsPanel">
-          <div style="margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid #2e3446;">
-            <div style="font-size:12.5px; font-weight:800; color:#60a5fa; margin-bottom:6px;">📢 सभी यूज़र्स को Push Notification भेजें</div>
-            <div style="display:flex; gap:6px;">
-              <input type="text" id="founderPushBroadcastInput" class="reward-paytm-input" placeholder="सभी यूज़र्स के लिए अलर्ट संदेश लिखें...">
-              <button type="button" onclick="sendFounderPushBroadcast()" style="background:#1877f2; color:#fff; border:none; padding:6px 12px; border-radius:7px; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap;">Send Alert</button>
-            </div>
-          </div>
-
           <div class="founder-rewards-header">
             <div>
-              <div style="font-size:13px; font-weight:800; color:#ffb74d;">🏆 यूज़र स्क्रीन-टाइम इनाम (₹20 / ₹30 / ₹40 या कस्टम राशि)</div>
-              <div style="font-size:10.5px; color:#9ca3af;">यहीं से ₹20, ₹30, ₹40 चुनें या नीचे बॉक्स में ₹1000 आदि टाइप कर Approve करें</div>
+              <div style="font-size:13px; font-weight:800; color:#ffb74d;">🏆 सबसे ज़्यादा समय बिताने वाले यूज़र इनाम</div>
+              <div style="font-size:10.5px; color:#9ca3af;">तय राशि चुनें या खुद राशि लिखें, Paytm नंबर सेव करें और Approve करें</div>
             </div>
             <button class="reward-clear-all-btn" onclick="clearAllRewardCandidates()">🗑️ आज डिलीट करें</button>
           </div>
@@ -2001,7 +2045,7 @@
           </div>
         </div>
 
-        <!-- अकाउंट सुरक्षा: सिर्फ़ आम यूज़र प्रोफ़ाइल पर (2friend founder पर छिपा रहेगा) -->
+        <!-- अकाउंट सुरक्षा: सिर्फ़ आम यूज़र प्रोफाइल पर (2friend founder पर छिपा रहेगा) -->
         <div class="account-safety-box" id="accountSafetyBox">
           <div style="font-weight:bold; font-size:12px; color:#d1d5db;" data-key="accountSafetyTitle">🔐 अकाउंट सेटिंग्स और सुरक्षा:</div>
           <div class="safety-btn-row">
@@ -2136,6 +2180,7 @@
         <button type="button" class="story-reply-btn" onclick="openChatFromStory()">Send message... ❤️😊</button>
         <button type="button" class="story-heart-btn" id="storyLikeHeartBtn" onclick="sendStoryEmojiBurst('❤️')" aria-label="Like Story">♥</button>
       </div>
+
     </div>
   </div>
 
@@ -2171,7 +2216,7 @@
     let authMode = "signup";
     let safetyTarget = { reelId: "", author: "" };
     let viewingProfileUser = null;
-    let fullscreenReelSlide = null;
+    let isFeedFullscreenMode = false;
 
     function resolvePublicDisplayName(rawName) {
       const val = String(rawName || "").trim();
@@ -2189,6 +2234,7 @@
         val.includes("सांची") ||
         lower === "to friend founder" ||
         lower === "2friend founder" ||
+        lower === "2friend_founder" ||
         lower === "@2friend_founder"
       ) {
         return FOUNDER_DISPLAY_NAME;
@@ -2200,33 +2246,122 @@
       return resolvePublicDisplayName(name) === FOUNDER_DISPLAY_NAME;
     }
 
-    /* --- वन-टच फुल-स्क्रीन (बिना किसी निशान या बटन के) --- */
-    function enterCleanFullscreenForSlide(slide, video) {
-      if (!slide || !video) return;
-      exitCleanFullscreen();
-      fullscreenReelSlide = slide;
-      slide.classList.add("tf-clean-fullscreen");
-      document.body.classList.add("tf-fullscreen-active");
+    /* --- सिंगल-टच फ़ुलस्क्रीन व आगे-पीछे वीडियो नेविगेशन --- */
+    function enterFeedFullscreen() {
+      const feed = document.getElementById("reelsFeedContainer");
+      if (!feed) return;
+      isFeedFullscreenMode = true;
+      feed.classList.add("tf-feed-fullscreen");
+      document.querySelectorAll("#reelsFeedContainer .reel-slide").forEach(s => s.classList.add("tf-slide-fullscreen"));
 
-      const ctrl = slide.querySelector(".center-controls-overlay");
-      if (ctrl) ctrl.style.display = "none";
+      if (document.documentElement.requestFullscreen && !document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      }
+      syncFeedPlaybackOnScroll();
+    }
 
-      video.muted = userPrefersMuted;
-      const p = video.play();
-      if (p && typeof p.catch === "function") {
-        p.catch(() => {
-          video.muted = true;
-          video.play().catch(() => {});
-        });
+    function exitFeedFullscreen() {
+      const feed = document.getElementById("reelsFeedContainer");
+      isFeedFullscreenMode = false;
+      if (feed) feed.classList.remove("tf-feed-fullscreen");
+      document.querySelectorAll("#reelsFeedContainer .reel-slide").forEach(s => s.classList.remove("tf-slide-fullscreen"));
+
+      if (document.fullscreenElement && document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+      syncFeedPlaybackOnScroll();
+    }
+
+    function toggleFeedFullscreen() {
+      if (isFeedFullscreenMode) {
+        exitFeedFullscreen();
+      } else {
+        enterFeedFullscreen();
       }
     }
 
-    function exitCleanFullscreen() {
-      if (fullscreenReelSlide) {
-        fullscreenReelSlide.classList.remove("tf-clean-fullscreen");
-        fullscreenReelSlide = null;
+    function stepReelSlide(delta) {
+      const feed = document.getElementById("reelsFeedContainer");
+      if (!feed) return;
+      const slides = Array.from(feed.querySelectorAll(".reel-slide"));
+      if (!slides.length) return;
+
+      let curIdx = slides.findIndex(s => s.dataset.reelId === currentActiveReelId);
+      if (curIdx < 0) curIdx = 0;
+
+      const nextIdx = Math.min(slides.length - 1, Math.max(0, curIdx + delta));
+      slides[nextIdx].scrollIntoView({ behavior: "smooth" });
+      setTimeout(syncFeedPlaybackOnScroll, 180);
+    }
+
+    function handleSingleTapFullscreen(event, videoId, ctrlId, spkId) {
+      if (event) event.stopPropagation();
+      const video = document.getElementById(videoId);
+      if (video && video.paused) {
+        togglePlayPauseOnly(videoId, ctrlId, spkId);
       }
-      document.body.classList.remove("tf-fullscreen-active");
+      if (!isFeedFullscreenMode) {
+        enterFeedFullscreen();
+      }
+    }
+
+    function togglePlayPauseOnly(videoId, ctrlId, spkId) {
+      const video = document.getElementById(videoId);
+      const ctrl = document.getElementById(ctrlId);
+      const spk = document.getElementById(spkId);
+      if (!video || !ctrl) return;
+
+      if (video.paused || video.ended) {
+        pauseAndMuteOtherVideos(videoId);
+        if (video.ended) video.currentTime = 0;
+        if (video.readyState === 0) video.load();
+        video.muted = userPrefersMuted;
+        if (spk) spk.innerText = video.muted ? "🔇" : "🔊";
+        video.play().then(() => {
+          ctrl.style.display = "none";
+        }).catch(() => {
+          video.muted = true;
+          if (spk) spk.innerText = "🔇";
+          video.play().then(() => {
+            ctrl.style.display = "none";
+          }).catch(() => {
+            ctrl.style.display = "flex";
+          });
+        });
+      } else {
+        video.pause();
+        if (spk) spk.innerText = video.muted ? "🔇" : "🔊";
+        ctrl.style.display = "flex";
+      }
+    }
+
+    async function shareReel(reelId, videoId) {
+      const slide = document.querySelector(`.reel-slide[data-reel-id="${CSS.escape(String(reelId))}"]`);
+      const desc = slide?.querySelector(".reel-desc")?.textContent?.trim() || "2friend Video";
+      const vid = document.getElementById(videoId);
+      const shareUrl = (vid && vid.currentSrc && !vid.currentSrc.startsWith("blob:"))
+        ? vid.currentSrc
+        : window.location.href;
+
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: "2friend Video",
+            text: desc,
+            url: shareUrl
+          });
+          return;
+        } catch (e) {}
+      }
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(shareUrl);
+          alert("🔗 वीडियो लिंक कॉपी हो गया है!");
+          return;
+        } catch (e) {}
+      }
+      alert("🔗 लिंक: " + shareUrl);
     }
 
     /* --- Google OAuth लॉगिन कॉलबैक --- */
@@ -2272,7 +2407,7 @@
           });
         } catch (netErr) {}
 
-        saveRegisteredUserLocal((email || publicName).toLowerCase(), "google_oauth", publicName);
+        saveRegisteredUserLocal(publicName.toLowerCase(), "google_oauth", publicName);
 
         try {
           localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify({
@@ -2294,7 +2429,6 @@
     /* --- लॉगिन व साइन-अप लॉजिक --- */
     function switchAuthMode(mode) {
       authMode = mode === "signup" ? "signup" : "login";
-      const nameInput = document.getElementById("loginProfileName");
       const confirmInput = document.getElementById("confirmPasswordInput");
       const errEl = document.getElementById("authErrorMsg");
       const btnIn = document.getElementById("tabSignInBtn");
@@ -2303,13 +2437,11 @@
 
       if (errEl) errEl.textContent = "";
       if (authMode === "signup") {
-        if (nameInput) nameInput.style.display = "block";
         if (confirmInput) confirmInput.style.display = "block";
         if (btnIn) btnIn.classList.remove("active");
         if (btnUp) btnUp.classList.add("active");
         if (submitBtn) submitBtn.textContent = "अकाउंट बनाएं और शुरू करें";
       } else {
-        if (nameInput) nameInput.style.display = "none";
         if (confirmInput) confirmInput.style.display = "none";
         if (btnIn) btnIn.classList.add("active");
         if (btnUp) btnUp.classList.remove("active");
@@ -2336,7 +2468,6 @@
     }
 
     async function handleAuthSubmit() {
-      const profileNameRaw = (document.getElementById("loginProfileName")?.value || "").trim();
       const uRaw = document.getElementById("loginUsername").value.trim();
       const pass = document.getElementById("loginPassword").value.trim();
       const confirmPass = document.getElementById("confirmPasswordInput").value.trim();
@@ -2346,7 +2477,7 @@
       if (errEl) errEl.textContent = "";
 
       if (!uRaw) {
-        if (errEl) errEl.textContent = "कृपया मोबाइल नंबर या ईमेल दर्ज करें।";
+        if (errEl) errEl.textContent = "कृपया अपना नाम या यूज़रनेम दर्ज करें।";
         return;
       }
       if (!pass || pass.length < 4) {
@@ -2355,18 +2486,16 @@
       }
 
       const normKey = uRaw.toLowerCase();
+      const publicName = resolvePublicDisplayName(uRaw);
       const usersMap = getRegisteredUsersMap();
-      const existingUser = usersMap[normKey];
-      const chosenName = profileNameRaw || (existingUser && existingUser.publicName) || uRaw;
-      const publicName = resolvePublicDisplayName(chosenName);
 
       if (authMode === "signup") {
         if (pass !== confirmPass) {
           if (errEl) errEl.textContent = "दोनों पासवर्ड एक जैसे नहीं हैं।";
           return;
         }
-        if (existingUser) {
-          if (errEl) errEl.textContent = "यह मोबाइल नंबर/ईमेल पहले से बना हुआ है, कृपया लॉगिन टैब चुनें।";
+        if (usersMap[normKey]) {
+          if (errEl) errEl.textContent = "यह नाम पहले से बना हुआ है, कृपया लॉगिन टैब चुनें।";
           return;
         }
         if (submitBtn) submitBtn.disabled = true;
@@ -2380,7 +2509,7 @@
         saveRegisteredUserLocal(normKey, pass, publicName);
         if (submitBtn) submitBtn.disabled = false;
       } else {
-        if (existingUser && existingUser.password !== pass) {
+        if (usersMap[normKey] && usersMap[normKey].password !== pass) {
           if (errEl) errEl.textContent = "गलत पासवर्ड! कृपया सही पासवर्ड दर्ज करें।";
           return;
         }
@@ -2392,12 +2521,12 @@
             body: JSON.stringify({ username: uRaw, password: pass })
           });
           if (res.status === 401) {
-            if (errEl) errEl.textContent = "गलत मोबाइल/ईमेल या पासवर्ड।";
+            if (errEl) errEl.textContent = "गलत यूज़रनेम या पासवर्ड।";
             if (submitBtn) submitBtn.disabled = false;
             return;
           }
         } catch (e) {}
-        if (!existingUser) {
+        if (!usersMap[normKey]) {
           saveRegisteredUserLocal(normKey, pass, publicName);
         }
         if (submitBtn) submitBtn.disabled = false;
@@ -2442,7 +2571,7 @@
 
     function handleLogout() {
       if (isFounderAccount(loggedInUser)) return;
-      exitCleanFullscreen();
+      exitFeedFullscreen();
       pauseAllVideosAndMute();
       try {
         localStorage.removeItem(AUTH_SESSION_KEY);
@@ -2454,7 +2583,7 @@
       document.getElementById("auth-screen").style.display = "flex";
     }
 
-    /* --- प्रोफ़ाइल रेंडर करना --- */
+    /* --- प्रोफ़ाइल रेंडरिंग --- */
     function renderProfileScreenForUser(targetUserName) {
       const profileOwner = resolvePublicDisplayName(targetUserName || loggedInUser);
       const isOwnProfile = profileOwner === loggedInUser;
@@ -2480,7 +2609,6 @@
         if (isOwnProfile && isFounder) renderFounderRewardsPanel();
       }
 
-      // 2friend founder प्रोफ़ाइल से Log Out और Delete Account हमेशा हटे रहेंगे
       const safetyBox = document.getElementById("accountSafetyBox");
       if (safetyBox) {
         safetyBox.style.display = (isOwnProfile && !isFounder) ? "flex" : "none";
@@ -2523,7 +2651,7 @@
     }
 
     function openPublicUserProfile(targetName) {
-      exitCleanFullscreen();
+      exitFeedFullscreen();
       const cleanTarget = resolvePublicDisplayName(targetName);
       viewingProfileUser = cleanTarget === loggedInUser ? null : cleanTarget;
       const profileNavBtn = document.querySelectorAll(".nav-tab")[5];
@@ -2634,7 +2762,7 @@
         renderSearchVideoCards(videosGridEl, matchedSlides, "इस नाम से अभी कोई वीडियो नहीं मिला।");
       } else {
         if (usersSection) usersSection.style.display = "none";
-        if (videosHeadingEl) videosHeadingEl.textContent = "🔥 सभी यूज़र्स के वीडियो";
+        if (videosHeadingEl) videosHeadingEl.textContent = "🔥 लोकप्रिय और चुनिंदा लोगों के वीडियो";
         if (videosCountEl) videosCountEl.textContent = String(allSlides.length);
         renderSearchVideoCards(videosGridEl, allSlides, "अभी कोई वीडियो उपलब्ध नहीं है।");
       }
@@ -2689,44 +2817,8 @@
       });
     }
 
-    /* --- फाउंडर पुश ब्रॉडकास्ट व इनाम पैनल --- */
-    async function sendFounderPushBroadcast() {
-      if (!isFounderAccount(loggedInUser)) return;
-      const inputEl = document.getElementById("founderPushBroadcastInput");
-      const msg = (inputEl ? inputEl.value : "").trim();
-      if (!msg) {
-        alert("कृपया भेजने के लिए नोटिफिकेशन संदेश लिखें।");
-        return;
-      }
-      if (inputEl) inputEl.value = "";
-      try {
-        await fetch(`${API_BASE}/api/notifications/broadcast`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sender: FOUNDER_DISPLAY_NAME, message: msg })
-        });
-      } catch (e) {}
-
-      const list = document.getElementById("notificationsList");
-      if (list) {
-        const row = document.createElement("div");
-        row.className = "notif-item";
-        row.innerHTML = `
-          <div class="notif-avatar-wrap">
-            <div class="notif-avatar">2F</div>
-            <span class="notif-mini-badge">🔔</span>
-          </div>
-          <div class="notif-content">
-            <div class="notif-text"><strong>${FOUNDER_DISPLAY_NAME}:</strong> ${msg}</div>
-            <div class="notif-time">अभी</div>
-          </div>
-        `;
-        list.appendChild(row);
-      }
-      alert("📢 सभी यूज़र्स को Push Notification भेज दिया गया है!");
-    }
-
-    const ALLOWED_REWARD_AMOUNTS = [20, 30, 40];
+    /* --- फाउंडर स्क्रीन-टाइम इनाम पैनल --- */
+    const ALLOWED_REWARD_AMOUNTS = [20, 30, 40, 50];
 
     const DEFAULT_TOP6_REWARD_USERS = [
       { id: "rwd-1", name: "@priya_jaipur", minutes: 128, amount: 20, approved: false, paytm: "", paid: false },
@@ -2818,6 +2910,7 @@
             userId: target.id,
             username: target.name,
             amount: amountToSend,
+            paytm: target.paytm || "",
             minutes: target.minutes
           })
         });
@@ -2869,7 +2962,7 @@
         });
       } catch (e) {}
 
-      alert("🗑️ आज की इनाम सूची डिलीट कर दी गई है—आज किसी को इनाम नहीं दिया जाएगा।");
+      alert("🗑️ आज की इनाम सूची डिलीट कर दी गई है।");
     }
 
     function renderFounderRewardsPanel() {
@@ -2928,18 +3021,15 @@
         const customInput = document.createElement("input");
         customInput.type = "number";
         customInput.min = "1";
-        customInput.placeholder = "खुद राशि टाइप करें (जैसे 1000)";
+        customInput.placeholder = "खुद राशि टाइप करें (जैसे 50, 100, 200)";
         customInput.style.cssText = "flex:1; min-width:0; padding:6px 8px; border-radius:7px; border:1px solid #374151; background:#14151c; color:#fff; font-size:12px;";
         const customSetBtn = document.createElement("button");
         customSetBtn.type = "button";
-        customSetBtn.textContent = "Approve ₹";
+        customSetBtn.textContent = "राशि सेट करें";
         customSetBtn.style.cssText = "padding:6px 10px; border-radius:7px; border:none; background:#d97706; color:#fff; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap;";
         customSetBtn.onclick = () => {
           const val = parseInt(customInput.value.trim(), 10);
-          if (val > 0) {
-            selectRewardAmount(u.id, val);
-            approveUserReward(u.id);
-          }
+          if (val > 0) selectRewardAmount(u.id, val);
         };
         customBox.appendChild(customInput);
         customBox.appendChild(customSetBtn);
@@ -3047,7 +3137,7 @@
         } catch (e) {}
         applyBlockedAndReportedFilters();
         syncFeedPlaybackOnScroll();
-        alert(`⛔ ${author} को ब्लॉक कर दिया गया है। अब इनके वीडियो और संदेश नहीं दिखेंगे।`);
+        alert(`⛔ ${author} को ब्लॉक कर दिया गया है।`);
       } else {
         if (reelId && reelId !== "chat") {
           const reported = getReportedReelsSet();
@@ -3058,7 +3148,7 @@
           applyBlockedAndReportedFilters();
           syncFeedPlaybackOnScroll();
         }
-        alert("✅ आपकी रिपोर्ट दर्ज कर ली गई है। हमारी टीम इसकी समीक्षा करेगी।");
+        alert("✅ आपकी रिपोर्ट दर्ज कर ली गई है।");
       }
 
       try {
@@ -3075,7 +3165,6 @@
       } catch (e) {}
     }
 
-    /* --- Delete Account व Privacy Policy / Terms --- */
     function openDeleteAccountModal() {
       if (isFounderAccount(loggedInUser)) return;
       document.getElementById("deleteAccountModal").classList.add("open");
@@ -3088,7 +3177,7 @@
     async function confirmDeleteAccount() {
       if (isFounderAccount(loggedInUser)) return;
       closeDeleteAccountModal();
-      exitCleanFullscreen();
+      exitFeedFullscreen();
       pauseAllVideosAndMute();
 
       try {
@@ -3123,7 +3212,7 @@
       if (type === "terms") {
         titleEl.textContent = "Terms of Service — 2friend";
         bodyEl.innerHTML = `
-          <p style="margin-bottom:8px;"><strong>1. कंटेंट नियम:</strong> 2friend पर अपलोड किए जाने वाले वीडियो अधिकतम 1 मिनट (60 सेकंड) तक मान्य होते हैं।</p>
+          <p style="margin-bottom:8px;"><strong>1. कंटेंट नियम:</strong> 2friend पर केवल 60 सेकंड तक के मौलिक और कॉपीराइट-मुक्त वीडियो व स्टोरी ही अपलोड करें।</p>
           <p style="margin-bottom:8px;"><strong>2. सुरक्षित व्यवहार:</strong> किसी भी प्रकार की हिंसा, नफरत, स्पैम या अश्लील सामग्री सख्त वर्जित है।</p>
           <p><strong>3. 1-to-1 चैट:</strong> चैट सुविधा केवल सुरक्षित टेक्स्ट संवाद के लिए है।</p>
         `;
@@ -3131,8 +3220,8 @@
         titleEl.textContent = "Privacy Policy — 2friend";
         bodyEl.innerHTML = `
           <p style="margin-bottom:8px;"><strong>1. डेटा संग्रह:</strong> 2friend केवल आपकी प्रोफाइल पहचान, अपलोड किए गए वीडियो, टेक्स्ट चैट और नोटिफिकेशन टोकन सुरक्षित रूप से स्टोर करता है।</p>
-          <p style="margin-bottom:8px;"><strong>2. डेटा सुरक्षा:</strong> आपका मीडिया डेटा Cloudflare R2 और D1 डेटाबेस पर एन्क्रिप्टेड रूप से सुरक्षित रहता है।</p>
-          <p><strong>3. डेटा हटाने का अधिकार:</strong> सामान्य यूज़र अपनी प्रोफाइल में जाकर कभी भी <strong>Delete Account</strong> बटन द्वारा अपना पूरा डेटा स्थायी रूप से हटा सकते हैं।</p>
+          <p style="margin-bottom:8px;"><strong>2. डेटा सुरक्षा:</strong> आपका मीडिया डेटा Cloudflare R2 और D1 डेटाबेस पर सुरक्षित रहता है।</p>
+          <p><strong>3. डेटा हटाने का अधिकार:</strong> सामान्य यूज़र अपनी प्रोफाइल से <strong>Delete Account</strong> द्वारा अपना डेटा हटा सकते हैं।</p>
         `;
       }
       document.getElementById("policyModal").classList.add("open");
@@ -3282,7 +3371,7 @@
 
     const CLOUD_CONFIG = {
       bucketName: "VIDEOS_BUCKET",
-      resolution: "480p/720p/1080p",
+      resolution: "720p/1080p",
       maxDurationSeconds: 60
     };
 
@@ -3429,7 +3518,6 @@
     }
 
     function playBookmarkedReelInHome(reelId) {
-      exitCleanFullscreen();
       const homeNavBtn = document.querySelectorAll(".nav-tab")[0];
       navigateTab("home", homeNavBtn);
       const slide = document.querySelector(`.reel-slide[data-reel-id="${CSS.escape(String(reelId))}"]`);
@@ -3479,10 +3567,6 @@
         video.addEventListener("timeupdate", updateTimelineUI);
         video.addEventListener("playing", updateTimelineUI);
         video.addEventListener("seeked", updateTimelineUI);
-        // वीडियो खत्म होने पर अपने-आप स्वाइप नहीं होगा; यूज़र उंगली से ऊपर खिसकाएं तभी अगला वीडियो आएगा
-        video.addEventListener("ended", () => {
-          updateTimelineUI();
-        });
       }
       updateTimelineUI();
     }
@@ -3712,7 +3796,7 @@
         mediaType: "text",
         videoUrl: "",
         imageDataUrl: "",
-        text: "1 मिनट की शानदार स्टोरीज़ और रील्स!",
+        text: "1 मिनट की शानदार 720p/1080p स्टोरीज़ और रील्स!",
         isDefault: true,
         createdAt: Date.now() - 4 * 60 * 60 * 1000
       }
@@ -4053,7 +4137,6 @@
         item.appendChild(labelEl);
         bar.appendChild(item);
 
-        // हर तीन स्टोरी के बाद विज्ञापन की पट्टी/कार्ड
         if ((idx + 1) % 3 === 0) {
           const adCard = document.createElement("div");
           adCard.className = "story-inline-ad-card";
@@ -4084,7 +4167,6 @@
     }
 
     function openStoryAtIndex(index) {
-      exitCleanFullscreen();
       storiesList = storiesList.filter(isStoryWithin24Hours);
       if (!Array.isArray(storiesList) || storiesList.length === 0) {
         closeStory();
@@ -4175,9 +4257,7 @@
 
         vidEl.onloadedmetadata = () => {
           if (sessionId !== activeStoryPlaybackSession) return;
-          try {
-            vidEl.currentTime = 0;
-          } catch (e) {}
+          try { vidEl.currentTime = 0; } catch (e) {}
           if (isFinite(vidEl.duration) && vidEl.duration > 0) {
             durationMs = Math.min(vidEl.duration * 1000, CLOUD_CONFIG.maxDurationSeconds * 1000);
             startStorySegmentTimer(index, durationMs, sessionId);
@@ -4405,35 +4485,43 @@
       const dict = translations[document.getElementById('languageSelect')?.value] || translations.hi;
 
       const newSlide = document.createElement('div');
-      newSlide.className = 'reel-slide';
+      newSlide.className = 'reel-slide' + (isFeedFullscreenMode ? ' tf-slide-fullscreen' : '');
       newSlide.dataset.reelId = reelId;
       newSlide.dataset.author = publicAuthor;
       newSlide.innerHTML = `
-        <video id="${newVidId}" src="${videoSrc}" playsinline webkit-playsinline preload="metadata" onclick="handleReelTap('${newVidId}', '${newCtrlId}', '${newSpkId}')" controlsList="nodownload" disablePictureInPicture oncontextmenu="return false;"></video>
+        <video id="${newVidId}" src="${videoSrc}" loop playsinline webkit-playsinline preload="metadata" onclick="handleSingleTapFullscreen(event, '${newVidId}', '${newCtrlId}', '${newSpkId}')" controlsList="nodownload" disablePictureInPicture oncontextmenu="return false;"></video>
         <div class="center-controls-overlay" id="${newCtrlId}" style="display:none;">
           <button class="center-speaker-btn" id="${newSpkId}" onclick="event.stopPropagation(); toggleSpeakerOnly('${newVidId}', '${newSpkId}')" aria-label="Sound">🔊</button>
-          <div class="center-play-btn" onclick="event.stopPropagation(); handleReelTap('${newVidId}', '${newCtrlId}', '${newSpkId}')">▶</div>
+          <div class="center-play-btn" onclick="event.stopPropagation(); togglePlayPauseOnly('${newVidId}', '${newCtrlId}', '${newSpkId}')">▶</div>
         </div>
         <div class="reel-bottom-info">
           <div class="reel-user">
             <span class="reel-author-link" onclick="event.stopPropagation(); openPublicUserProfile('${publicAuthor.replace(/'/g, "\\'")}')">${publicAuthor}</span>
-            <button class="follow-chip" onclick="toggleFollow(this, '${publicAuthor.replace(/'/g, "\\'")}')" data-key="followBtn">${dict.followBtn}</button>
+            <button class="follow-chip" onclick="event.stopPropagation(); toggleFollow(this, '${publicAuthor.replace(/'/g, "\\'")}')" data-key="followBtn">${dict.followBtn}</button>
           </div>
           <div class="reel-desc"></div>
           <div class="reel-music">🎵 Original Audio - 2friend</div>
         </div>
-        <div class="reel-side-actions">
+        <div class="reel-side-actions" onclick="event.stopPropagation()">
           <div class="side-btn-wrap">
-            <button class="side-btn" onclick="toggleLike(this, '${newLikeId}', '${reelId}')">♥</button>
+            <button class="side-btn" onclick="toggleLike(this, '${newLikeId}', '${reelId}')" title="Like">♥</button>
             <span class="side-count" id="${newLikeId}">${initialLikes}</span>
           </div>
           <div class="side-btn-wrap">
-            <button class="side-btn" onclick="openComments('${reelId}', '${newCommentCountId}')">💬</button>
+            <button class="side-btn" onclick="openComments('${reelId}', '${newCommentCountId}')" title="Comment">💬</button>
             <span class="side-count" id="${newCommentCountId}">${initialComments}</span>
+          </div>
+          <div class="side-btn-wrap">
+            <button class="side-btn" onclick="shareReel('${reelId}', '${newVidId}')" title="Share">➤</button>
+            <span class="side-count" data-key="shareLabel">${dict.shareLabel || 'Share'}</span>
           </div>
           <div class="side-btn-wrap">
             <button class="side-btn ${isBookmarked ? 'bookmarked' : ''}" id="bm-btn-${reelId}" onclick="toggleBookmark(this, '${reelId}')" title="Bookmark">🔖</button>
             <span class="side-count" data-key="saveLabel">${dict.saveLabel || 'Save'}</span>
+          </div>
+          <div class="side-btn-wrap">
+            <button class="side-btn" onclick="toggleFeedFullscreen()" title="Fullscreen">⛶</button>
+            <span class="side-count">Full</span>
           </div>
           <div class="side-btn-wrap">
             <button class="side-btn" onclick="openSafetyMenu('${reelId}', '${publicAuthor.replace(/'/g, "\\'")}')" title="Report / Block">⋮</button>
@@ -4592,51 +4680,6 @@
       navigateTab("notifications", notifTabBtn);
     }
 
-    /* --- फुल-स्क्रीन पर उंगली से ऊपर स्वाइप करने पर अगला वीडियो लाना --- */
-    (function setupCleanFullscreenSwipe() {
-      let touchStartY = 0;
-      document.addEventListener("touchstart", (e) => {
-        if (!fullscreenReelSlide) return;
-        if (e.touches && e.touches.length > 0) {
-          touchStartY = e.touches[0].clientY;
-        }
-      }, { passive: true });
-
-      document.addEventListener("touchend", (e) => {
-        if (!fullscreenReelSlide) return;
-        const touchEndY = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0].clientY : touchStartY;
-        const deltaY = touchStartY - touchEndY;
-
-        // उंगली से ऊपर खिसकाने पर अगला वीडियो पूरी स्क्रीन पर चले
-        if (deltaY > 45) {
-          const nextSlide = fullscreenReelSlide.nextElementSibling;
-          if (nextSlide && nextSlide.classList.contains("reel-slide")) {
-            const nextVid = nextSlide.querySelector("video");
-            nextSlide.scrollIntoView({ behavior: "auto" });
-            if (nextVid) {
-              pauseAndMuteOtherVideos(nextVid.id);
-              enterCleanFullscreenForSlide(nextSlide, nextVid);
-            }
-          } else {
-            exitCleanFullscreen();
-          }
-        } else if (deltaY < -45) {
-          // नीचे स्वाइप करने पर पिछला वीडियो या सामान्य व्यू
-          const prevSlide = fullscreenReelSlide.previousElementSibling;
-          if (prevSlide && prevSlide.classList.contains("reel-slide")) {
-            const prevVid = prevSlide.querySelector("video");
-            prevSlide.scrollIntoView({ behavior: "auto" });
-            if (prevVid) {
-              pauseAndMuteOtherVideos(prevVid.id);
-              enterCleanFullscreenForSlide(prevSlide, prevVid);
-            }
-          } else {
-            exitCleanFullscreen();
-          }
-        }
-      }, { passive: true });
-    })();
-
     document.addEventListener('DOMContentLoaded', async () => {
       loadBookmarkedVideos();
       loadFounderRewardsState();
@@ -4735,7 +4778,9 @@
     }
 
     function navigateTab(tabId, btnElement) {
-      exitCleanFullscreen();
+      if (tabId !== "home") {
+        exitFeedFullscreen();
+      }
       document.querySelectorAll('.screen-view').forEach(view => view.classList.remove('active'));
       document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
       
@@ -4778,34 +4823,6 @@
         applyBlockedAndReportedFilters();
         syncFeedPlaybackOnScroll();
       }
-    }
-
-    /* --- वीडियो पर एक टच करते ही स्क्रीन बड़ी (फुल-स्क्रीन) होगी और पूरी वीडियो चलेगी --- */
-    function handleReelTap(videoId, ctrlId, spkId) {
-      const video = document.getElementById(videoId);
-      const ctrl = document.getElementById(ctrlId);
-      const spk = document.getElementById(spkId);
-      const slide = video ? video.closest(".reel-slide") : null;
-      if (!video || !slide) return;
-
-      pauseAndMuteOtherVideos(videoId);
-      if (video.ended) {
-        video.currentTime = 0;
-      }
-      if (video.readyState === 0) {
-        video.load();
-      }
-
-      // अगर पहले से साफ फुल-स्क्रीन है तो टच करने पर सामान्य स्क्रीन पर आएं
-      if (slide.classList.contains("tf-clean-fullscreen")) {
-        exitCleanFullscreen();
-        if (ctrl) ctrl.style.display = "none";
-        return;
-      }
-
-      // एक टच मारते ही वीडियो बड़ी (पूरी स्क्रीन) पर आएगी और पूरी चलेगी
-      enterCleanFullscreenForSlide(slide, video);
-      if (spk) spk.innerText = video.muted ? "🔇" : "🔊";
     }
 
     function toggleSpeakerOnly(videoId, spkId) {
@@ -4983,10 +5000,9 @@
           return;
         }
 
-        // 2 या 3 मिनट (1 मिनट से बड़ा) वीडियो डालने पर सिस्टम अपने-आप काटकर 60 सेकंड का अप्रूव करेगा
         if (tempVideo.duration > CLOUD_CONFIG.maxDurationSeconds + 0.5) {
           feedback.style.color = "#facc15";
-          feedback.innerText = "✂️ वीडियो 1 मिनट से बड़ा है, सिस्टम अपने-आप 60 सेकंड में काटकर अप्रूव कर रहा है...";
+          feedback.innerText = "✂️ वीडियो 1 मिनट से बड़ा है, 60 सेकंड में काटा जा रहा है...";
           publishBtn.disabled = true;
 
           const trimmedFile = await trimVideoTo60Seconds(tempVideo, CLOUD_CONFIG.maxDurationSeconds, file.name);
@@ -4996,19 +5012,14 @@
             const trimmedUrl = URL.createObjectURL(trimmedFile);
             pendingVideoFile = trimmedFile;
             pendingVideoURL = trimmedUrl;
-            fileNameDisplay.innerText = "✅ " + trimmedFile.name + " (60s Approved)";
+            fileNameDisplay.innerText = "✅ " + trimmedFile.name + " (60s)";
             feedback.style.color = "#4ade80";
-            feedback.innerText = "वीडियो 1 मिनट में कटकर अप्रूव हो गया है! सेव करने के लिए बटन दबाएं।";
+            feedback.innerText = "Cloudflare R2 पर अपलोड के लिए तैयार! (1 मिनट में कट गया)";
             publishBtn.disabled = false;
           } else {
-            // यदि ब्राउज़र री-एनकोड सपोर्ट न करे तो मूल फ़ाइल को 60s मार्क के साथ अप्रूव करें
-            const fallbackUrl = URL.createObjectURL(file);
-            pendingVideoFile = file;
-            pendingVideoURL = fallbackUrl;
-            fileNameDisplay.innerText = "✅ " + file.name + " (60s Approved)";
-            feedback.style.color = "#4ade80";
-            feedback.innerText = "वीडियो 1 मिनट की सीमा के लिए अप्रूव हो गया है!";
-            publishBtn.disabled = false;
+            feedback.style.color = "#f87171";
+            feedback.innerText = "❌ वीडियो 1 मिनट से बड़ा है! अधिकतम 60 सेकंड मान्य है।";
+            input.value = "";
           }
           return;
         }
@@ -5084,7 +5095,6 @@
     }
 
     function openStoryCreator() {
-      exitCleanFullscreen();
       pauseAllVideosAndMute();
       pendingStoryMediaFile = null;
       pendingStoryMediaType = "";
@@ -5267,7 +5277,6 @@
       syncFeedPlaybackOnScroll();
     }
 
-    /* --- चैट मैसेज सुरक्षित रखना --- */
     function persistChatMessageToStorage(text, isSent, timestamp = Date.now()) {
       try {
         const raw = localStorage.getItem(CHAT_PERSIST_KEY);
@@ -5389,25 +5398,25 @@
 
     const translations = {
       hi: {
-        loginSub: "एक बार अकाउंट बनाएं, अगली बार अपने-आप खुलेगा",
+        loginSub: "एक बार नाम और पासवर्ड बनाएं, अगली बार अपने-आप खुलेगा",
         signInTab: "लॉगिन (Sign In)",
         signUpTab: "नया अकाउंट (Sign Up)",
-        namePlaceholder: "प्रोफ़ाइल नाम दर्ज करें",
-        userPlaceholder: "मोबाइल नंबर या ईमेल दर्ज करें",
+        userPlaceholder: "अपना नाम दर्ज करें (जैसे Nikhil Rana)",
         passPlaceholder: "पासवर्ड बनाएं (कम से कम 4 अक्षर)",
         loginBtn: "अकाउंट बनाएं और शुरू करें",
         yourStory: "Your story",
         addStory: "+ स्टोरी",
         followBtn: "Follow",
+        shareLabel: "Share",
         saveLabel: "Save",
         reportLabel: "Report",
         uploadTitle: "नया वीडियो अपलोड करें",
         maxDuration: "अधिकतम समय:",
-        maxDurationVal: "1 मिनट (2-3 मिनट का वीडियो भी अपने-आप 1 मिनट में कटकर अप्रूव होगा)",
+        maxDurationVal: "1 मिनट (60 सेकंड)",
         qualityRule: "क्वालिटी नियम:",
-        qualityRuleVal: "480p / 720p / 1080p (सभी वीडियो मान्य)",
+        qualityRuleVal: "720p / 1080p (H.264/AAC)",
         pickVideo: "मोबाइल से वीडियो चुनें",
-        videoHint: "MP4 / WebM (2-3 मिनट का वीडियो भी 60 सेकंड में कटकर चलेगा)",
+        videoHint: "MP4 / WebM (मैक्स 60 सेकंड)",
         captionPlaceholder: "वीडियो का कैप्शन लिखें (#hashtags)...",
         publishBtn: "Cloudflare R2 पर सेव करें",
         chatHeaderLeft: "💬 1-to-1 टेक्स्ट चैट (सुरक्षित)",
@@ -5436,25 +5445,25 @@
         postBtn: "Post"
       },
       en: {
-        loginSub: "Create account once, opens automatically next time",
+        loginSub: "Create name & password once, opens automatically next time",
         signInTab: "Sign In",
         signUpTab: "Sign Up",
-        namePlaceholder: "Enter profile name",
-        userPlaceholder: "Enter mobile number or email",
+        userPlaceholder: "Enter your name (e.g. Nikhil Rana)",
         passPlaceholder: "Create password (min 4 chars)",
         loginBtn: "Create Account & Start",
         yourStory: "Your story",
         addStory: "+ Story",
         followBtn: "Follow",
+        shareLabel: "Share",
         saveLabel: "Save",
         reportLabel: "Report",
         uploadTitle: "Upload New Video",
         maxDuration: "Max Duration:",
-        maxDurationVal: "1 Minute (2-3 min videos auto-trim to 1 min & approve)",
+        maxDurationVal: "1 Minute (60 Seconds)",
         qualityRule: "Quality Rule:",
-        qualityRuleVal: "480p / 720p / 1080p (All video qualities supported)",
+        qualityRuleVal: "720p / 1080p (H.264/AAC)",
         pickVideo: "Choose Video from Phone",
-        videoHint: "MP4 / WebM (2-3 min videos auto-trim to 60 seconds)",
+        videoHint: "MP4 / WebM (Max 60 seconds)",
         captionPlaceholder: "Write video caption (#hashtags)...",
         publishBtn: "Save to Cloudflare R2",
         chatHeaderLeft: "💬 1-to-1 Text Chat (Safe)",
