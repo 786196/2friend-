@@ -5288,12 +5288,12 @@
       try {
         if (!("Notification" in window) || !oneSignalInstance) return;
 
-        if (Notification.permission === "granted") {
-          const btn = document.getElementById("profileNotifToggleBtn");
-          const lbl = document.getElementById("profileNotifBtnLabel");
+             if (Notification.permission === "granted") {
+          const btn = document.getElementById("enablePushBtn");
+          const lbl = document.getElementById("pushStatusLabel");
           if (btn) btn.classList.add("enabled");
-          if (lbl) lbl.textContent = "Notifications On ✓";
-          if (oneSignalInstance.User && oneSignalInstance.User.PushSubscription) {
+          if (lbl) lbl.textContent = "Notifications enabled";
+          if (oneSignalInstance && oneSignalInstance.User && oneSignalInstance.User.PushSubscription) {
             await oneSignalInstance.User.PushSubscription.optIn();
           }
           return;
@@ -5301,11 +5301,14 @@
 
         if (Notification.permission === "default" && !pushPromptRequested) {
           pushPromptRequested = true;
-          if (oneSignalInstance.Notifications && typeof oneSignalInstance.Notifications.requestPermission === "function") {
+          if (oneSignalInstance && oneSignalInstance.Notifications && typeof oneSignalInstance.Notifications.requestPermission === "function") {
             await oneSignalInstance.Notifications.requestPermission();
+            if (oneSignalInstance.User && oneSignalInstance.User.PushSubscription) {
+              await oneSignalInstance.User.PushSubscription.optIn();
+            }
           }
         }
-      } catch (err) {}
+   
     }
 
     function navigateTab(tabId, btnElement) {
