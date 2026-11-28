@@ -5193,18 +5193,23 @@
       const btn = document.getElementById("profileNotifToggleBtn");
       const lbl = document.getElementById("profileNotifBtnLabel");
       try {
+        if (window.OneSignalDeferred) {
+          window.OneSignalDeferred.push(async function(OneSignal) {
+            try {
+              if (OneSignal.Notifications && typeof OneSignal.Notifications.requestPermission === "function") {
+                await OneSignal.Notifications.requestPermission();
+              }
+              if (OneSignal.User && OneSignal.User.PushSubscription) {
+                await OneSignal.User.PushSubscription.optIn();
+              }
+            } catch (e) {}
+          });
+        }
         if ("Notification" in window) {
           const perm = await Notification.requestPermission();
           if (perm === "granted") {
             if (btn) btn.classList.add("enabled");
             if (lbl) lbl.textContent = "Notifications On ✓";
-            if (window.OneSignalDeferred) {
-              window.OneSignalDeferred.push(async function(OneSignal) {
-                if (OneSignal.User && OneSignal.User.PushSubscription) {
-                  await OneSignal.User.PushSubscription.optIn();
-                }
-              });
-            }
             alert("🔔 Push Notifications चालू हो गए हैं!");
             return;
           }
@@ -5288,11 +5293,11 @@
       try {
         if (!("Notification" in window) || !oneSignalInstance) return;
 
-             if (Notification.permission === "granted") {
-          const btn = document.getElementById("enablePushBtn");
-          const lbl = document.getElementById("pushStatusLabel");
+        if (Notification.permission === "granted") {
+          const btn = document.getElementById("profileNotifToggleBtn");
+          const lbl = document.getElementById("profileNotifBtnLabel");
           if (btn) btn.classList.add("enabled");
-          if (lbl) lbl.textContent = "Notifications enabled";
+          if (lbl) lbl.textContent = "Notifications On ✓";
           if (oneSignalInstance && oneSignalInstance.User && oneSignalInstance.User.PushSubscription) {
             await oneSignalInstance.User.PushSubscription.optIn();
           }
@@ -5308,7 +5313,7 @@
             }
           }
         }
-   
+      } catch (err) {}
     }
 
     function navigateTab(tabId, btnElement) {
