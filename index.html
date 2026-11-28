@@ -1866,7 +1866,7 @@
         <button id="tabSignUpBtn" class="auth-tab-btn active" onclick="switchAuthMode('signup')" data-key="signUpTab">नया अकाउंट (Sign Up)</button>
       </div>
 
-      <input type="text" id="loginUsername" class="auth-input" autocomplete="username" placeholder="अपना नाम दर्ज करें (जैसे Nikhil Rana)" data-key-placeholder="userPlaceholder" onkeydown="if(event.key==='Enter') handleAuthSubmit()">
+      <input type="text" id="loginUsername" class="auth-input" autocomplete="username" placeholder="अपना नाम दर्ज करें (जैसे Verender Rawat)" data-key-placeholder="userPlaceholder" onkeydown="if(event.key==='Enter') handleAuthSubmit()">
       <input type="password" id="loginPassword" class="auth-input" autocomplete="current-password" placeholder="पासवर्ड बनाएं (कम से कम 4 अक्षर)" data-key-placeholder="passPlaceholder" onkeydown="if(event.key==='Enter') handleAuthSubmit()">
       <input type="password" id="confirmPasswordInput" class="auth-input" autocomplete="new-password" placeholder="पासवर्ड दोबारा दर्ज करें" onkeydown="if(event.key==='Enter') handleAuthSubmit()">
       <div id="authErrorMsg" class="auth-error"></div>
@@ -1947,7 +1947,7 @@
               <span class="reel-author-link" onclick="event.stopPropagation(); openPublicUserProfile('2friend founder')">2friend founder</span>
               <button class="follow-chip" onclick="event.stopPropagation(); toggleFollow(this, '2friend founder')" data-key="followBtn">Follow</button>
             </div>
-            <div class="reel-desc">2friend ऐप पर आपका स्वागत है! 480p/720p/1080p क्वालिटी, तेज़ लोडिंग और क्लाउड डेटाबेस सिंक। #2friend #India</div>
+            <div class="reel-desc">2friend ऐप पर आपका स्वागत है! 720p / 1080p क्वालिटी, तेज़ लोडिंग और क्लाउड डेटाबेस सिंक। #2friend #India</div>
             <div class="reel-music">🎵 Original Audio (Copyright-Free)</div>
           </div>
           <div class="reel-side-actions" onclick="event.stopPropagation()">
@@ -2031,14 +2031,14 @@
         <h3 style="margin-bottom: 12px;" data-key="uploadTitle">नया वीडियो अपलोड करें</h3>
         <div class="rule-card">
           <div>✅ <strong data-key="maxDuration">अधिकतम समय:</strong> <span data-key="maxDurationVal">1 मिनट (60 सेकंड) — लंबा वीडियो अपने-आप 60s पर सेट होगा</span></div>
-          <div style="margin-top:3px;">✅ <strong data-key="qualityRule">क्वालिटी सपोर्ट:</strong> <span data-key="qualityRuleVal">480p / 720p / 1080p (हर मोबाइल वीडियो चलेगा)</span></div>
+          <div style="margin-top:3px;">✅ <strong data-key="qualityRule">क्वालिटी सपोर्ट:</strong> <span data-key="qualityRuleVal">720p / 1080p (हर मोबाइल वीडियो चलेगा)</span></div>
         </div>
 
         <div class="drop-zone" onclick="document.getElementById('videoFileInput').click()">
           <div style="font-size: 32px; margin-bottom: 6px;">🎬</div>
           <div id="selectedFileName" style="font-weight: bold; margin-bottom: 2px;" data-key="pickVideo">मोबाइल से वीडियो चुनें</div>
-          <div style="font-size: 11px; color: #888;" data-key="videoHint">कोई भी क्वालिटी • 1 मिनट से लंबा वीडियो 60 सेकंड में चलेगा</div>
-          <input type="file" id="videoFileInput" accept="video/*" style="display:none;" onchange="validateSelectedVideo(this)">
+          <div style="font-size: 11px; color: #888;" data-key="videoHint">कोई भी क्वालिटी या फ़ॉर्मेट • 1 मिनट से लंबा वीडियो 60 सेकंड में चलेगा</div>
+          <input type="file" id="videoFileInput" accept="video/*,.mp4,.mov,.mkv,.webm,.3gp,.avi,.m4v" style="display:none;" onchange="validateSelectedVideo(this)">
         </div>
 
         <!-- वीडियो प्रीव्यू बॉक्स ताकि काला/ब्लैंक न दिखे -->
@@ -3863,7 +3863,7 @@
 
     const CLOUD_CONFIG = {
       bucketName: "VIDEOS_BUCKET",
-      resolution: "480p/720p/1080p",
+      resolution: "720p / 1080p",
       maxDurationSeconds: 60
     };
 
@@ -4961,7 +4961,28 @@
     }
 
     /* --- वीडियो का पहला फ़्रेम तैयार करना ताकि कोई वीडियो काला/ब्लैंक न दिखे --- */
+    
+    function ensureUniversalVideoPlayback(videoEl) {
+      if (!videoEl) return;
+      videoEl.setAttribute("playsinline", "");
+      videoEl.setAttribute("webkit-playsinline", "");
+      if (videoEl.dataset.universalBound === "true") return;
+      videoEl.dataset.universalBound = "true";
+
+      videoEl.addEventListener("error", function () {
+        if (!videoEl.dataset.retriedOnce && videoEl.src) {
+          videoEl.dataset.retriedOnce = "true";
+          const currentSrc = videoEl.src;
+          videoEl.removeAttribute("src");
+          videoEl.load();
+          videoEl.src = currentSrc;
+          videoEl.load();
+        }
+      });
+    }
+    
     function prepareVideoFrame(video) {
+      ensureUniversalVideoPlayback(video);
       if (!video) return;
       bindVideoTimelineControls(video);
 
@@ -5382,7 +5403,7 @@
       syncLikeToServer(reelId, liked, count);
     }
 
-    /* --- वीडियो चयन: हर क्वालिटी (480p/720p/1080p) चलेगा, 2-4 मिनट के वीडियो को 1 मिनट (60s) में काटेगा और काला फ़्रेम नहीं आने देगा --- */
+    /* --- वीडियो चयन: हर क्वालिटी (720p / 1080p) चलेगा, 2-4 मिनट के वीडियो को 1 मिनट (60s) में काटेगा और काला फ़्रेम नहीं आने देगा --- */
     function validateSelectedVideo(input) {
       const file = input.files && input.files[0];
       const feedback = document.getElementById('uploadFeedback');
@@ -5408,7 +5429,7 @@
       pendingVideoURL = blobUrl;
       fileNameDisplay.innerText = "✅ " + file.name;
       feedback.style.color = "#4ade80";
-      feedback.innerText = "वीडियो तैयार है! (480p/720p/1080p सभी क्वालिटी समर्थित)";
+      feedback.innerText = "वीडियो तैयार है! (हर क्वालिटी और फ़ॉर्मेट का वीडियो चलेगा)";
       publishBtn.disabled = false;
 
       if (previewBox && previewVid) {
@@ -5798,7 +5819,7 @@
         loginSub: "एक बार नाम और पासवर्ड बनाएं, अगली बार अपने-आप खुलेगा",
         signInTab: "लॉगिन (Sign In)",
         signUpTab: "नया अकाउंट (Sign Up)",
-        userPlaceholder: "अपना नाम दर्ज करें (जैसे Nikhil Rana)",
+        userPlaceholder: "अपना नाम दर्ज करें (जैसे Verender Rawat)",
         passPlaceholder: "पासवर्ड बनाएं (कम से कम 4 अक्षर)",
         loginBtn: "अकाउंट बनाएं और शुरू करें",
         yourStory: "Your story",
@@ -5810,9 +5831,9 @@
         maxDuration: "अधिकतम समय:",
         maxDurationVal: "1 मिनट (60 सेकंड) — लंबा वीडियो अपने-आप 60s पर सेट होगा",
         qualityRule: "क्वालिटी सपोर्ट:",
-        qualityRuleVal: "480p / 720p / 1080p (हर मोबाइल वीडियो चलेगा)",
+        qualityRuleVal: "720p / 1080p (हर मोबाइल वीडियो चलेगा)",
         pickVideo: "मोबाइल से वीडियो चुनें",
-        videoHint: "कोई भी क्वालिटी • 1 मिनट से लंबा वीडियो 60 सेकंड में चलेगा",
+        videoHint: "कोई भी क्वालिटी या फ़ॉर्मेट • 1 मिनट से लंबा वीडियो 60 सेकंड में चलेगा",
         captionPlaceholder: "वीडियो का कैप्शन लिखें (#hashtags)...",
         publishBtn: "Cloudflare R2 पर सेव करें",
         chatHeaderLeft: "💬 1-to-1 टेक्स्ट चैट (सुरक्षित)",
@@ -5845,7 +5866,7 @@
         loginSub: "Sign up once with name & password, opens automatically next time",
         signInTab: "Sign In",
         signUpTab: "Sign Up",
-        userPlaceholder: "Enter your name (e.g. Nikhil Rana)",
+        userPlaceholder: "Enter your name (e.g. Verender Rawat)",
         passPlaceholder: "Create password (min 4 chars)",
         loginBtn: "Create Account & Start",
         yourStory: "Your story",
@@ -5857,7 +5878,7 @@
         maxDuration: "Max Duration:",
         maxDurationVal: "1 Minute (60 Seconds) — Longer videos auto-trim to 60s",
         qualityRule: "Quality Support:",
-        qualityRuleVal: "480p / 720p / 1080p (All mobile videos supported)",
+        qualityRuleVal: "720p / 1080p (All mobile videos supported)",
         pickVideo: "Select Video from Mobile",
         videoHint: "Any Quality • Videos over 1 min cap at 60 seconds",
         captionPlaceholder: "Write video caption (#hashtags)...",
@@ -5892,7 +5913,7 @@
         loginSub: "Sign up once with name & password, opens automatically next time",
         signInTab: "Sign In",
         signUpTab: "Sign Up",
-        userPlaceholder: "Enter your name (e.g. Nikhil Rana)",
+        userPlaceholder: "Enter your name (e.g. Verender Rawat)",
         passPlaceholder: "Create password (min 4 chars)",
         loginBtn: "Create Account & Start",
         yourStory: "Your story",
@@ -5904,7 +5925,7 @@
         maxDuration: "Max Duration:",
         maxDurationVal: "1 Minute (60 Seconds) — Longer videos auto-trim to 60s",
         qualityRule: "Quality Support:",
-        qualityRuleVal: "480p / 720p / 1080p",
+        qualityRuleVal: "720p / 1080p",
         pickVideo: "Select Video from Phone",
         videoHint: "Any Quality • Max 60 seconds",
         captionPlaceholder: "Write video caption (#hashtags)...",
@@ -5939,7 +5960,7 @@
         loginSub: "Sign up once with name & password, opens automatically next time",
         signInTab: "Sign In",
         signUpTab: "Sign Up",
-        userPlaceholder: "Enter your name (e.g. Nikhil Rana)",
+        userPlaceholder: "Enter your name (e.g. Verender Rawat)",
         passPlaceholder: "Create password (min 4 chars)",
         loginBtn: "Create Account & Start",
         yourStory: "Your story",
@@ -5951,7 +5972,7 @@
         maxDuration: "Max Duration:",
         maxDurationVal: "1 Minute (60 Seconds)",
         qualityRule: "Quality Support:",
-        qualityRuleVal: "480p / 720p / 1080p",
+        qualityRuleVal: "720p / 1080p",
         pickVideo: "Select Video from Mobile",
         videoHint: "Any Quality • Max 60 seconds",
         captionPlaceholder: "Write video caption (#hashtags)...",
@@ -5998,7 +6019,7 @@
         maxDuration: "المدة القصوى:",
         maxDurationVal: "دقيقة واحدة (60 ثانية)",
         qualityRule: "دعم الجودة:",
-        qualityRuleVal: "480p / 720p / 1080p",
+        qualityRuleVal: "720p / 1080p",
         pickVideo: "اختر فيديو من الهاتف",
         videoHint: "بحد أقصى 60 ثانية",
         captionPlaceholder: "اكتب وصف الفيديو...",
@@ -6045,7 +6066,7 @@
         maxDuration: "সর্বোচ্চ সময়:",
         maxDurationVal: "১ মিনিট (৬০ সেকেন্ড)",
         qualityRule: "কোয়ালিটি:",
-        qualityRuleVal: "480p / 720p / 1080p",
+        qualityRuleVal: "720p / 1080p",
         pickVideo: "মোবাইল থেকে ভিডিও বাছুন",
         videoHint: "সর্বোচ্চ ৬০ সেকেন্ড",
         captionPlaceholder: "ক্যাপশন লিখুন...",
@@ -6076,17 +6097,17 @@
         commentPlaceholder: "কমেন্ট লিখুন...",
         postBtn: "পোস্ট"
       },
-      te: { loginSub: "ఒక్కసారి పేరు మరియు పాస్‌వర్డ్‌తో సైన్ అప్ చేయండి", signInTab: "సైన్ ఇన్", signUpTab: "కొత్త ఖాతా", userPlaceholder: "మీ పేరు నమోదు చేయండి", passPlaceholder: "పాస్‌వర్డ్", loginBtn: "ప్రారంభించండి", yourStory: "మీ స్టోరీ", followBtn: "ఫాలో", shareLabel: "షేర్", saveLabel: "సేవ్", reportLabel: "రిపోర్ట్", uploadTitle: "కొత్త వీడియో అప్‌లోడ్", maxDuration: "గరిష్ట సమయం:", maxDurationVal: "1 నిమిషం (60 సెకన్లు)", qualityRule: "క్వాలిటీ:", qualityRuleVal: "480p / 720p / 1080p", pickVideo: "వీడియో ఎంచుకోండి", videoHint: "గరిష్టంగా 60 సెకన్లు", captionPlaceholder: "క్యాప్షన్ రాయండి...", publishBtn: "సేవ్ చేయండి", chatHeaderLeft: "💬 సురక్షిత చాట్", chatSafetyBtn: "🛡️ రిపోర్ట్ / బ్లాక్", chatPlaceholder: "సందేశం రాయండి...", sendBtn: "పంపండి", notifTitle: "నోటిఫికేషన్లు", enableNotifBtn: "🔔 పుష్ ఆన్", notifNew: "కొత్తవి", notifBtnLabel: "నోటిఫికేషన్లు", bookmarksBtnLabel: "బుక్‌మార్క్‌లు", postsLabel: "పోస్టులు", followersLabel: "ఫాలోవర్లు", langsLabel: "భాషలు", savedVideosTitle: "🔖 సేవ్ చేసిన వీడియోలు", noBookmarksYet: "ఇంకా వీడియోలు సేవ్ చేయలేదు.", accountSafetyTitle: "🔐 ఖాతా సెట్టింగ్‌లు:", logoutBtn: "లాగ్ అవుట్", deleteAccountBtn: "ఖాతా తొలగించు", storyModalTitle: "కొత్త స్టోరీ (24 గంటలు)", storyPickVideo: "ఫోటో లేదా వీడియో ఎంచుకోండి", storyHint: "24 గంటల తర్వాత పోతుంది", storyMsgPlaceholder: "స్టోరీ సందేశం...", storyShareBtn: "షేర్ చేయండి", commentsTitle: "కామెంట్లు", commentPlaceholder: "కామెంట్ రాయండి...", postBtn: "పోస్ట్" },
-      mr: { loginSub: "एकदा नाव आणि पासवर्ड तयार करा", signInTab: "लॉगिन", signUpTab: "नवीन खाते", userPlaceholder: "तुमचे नाव टाका", passPlaceholder: "पासवर्ड तयार करा", loginBtn: "सुरू करा", yourStory: "तुमची स्टोरी", followBtn: "फॉलो", shareLabel: "शेअर", saveLabel: "सेव्ह", reportLabel: "रिपोर्ट", uploadTitle: "नवीन व्हिडिओ अपलोड करा", maxDuration: "कमाल वेळ:", maxDurationVal: "१ मिनिट (६० सेकंद)", qualityRule: "क्वालिटी:", qualityRuleVal: "480p / 720p / 1080p", pickVideo: "व्हिडिओ निवडा", videoHint: "कमाल ६० सेकंद", captionPlaceholder: "कॅप्शन लिहा...", publishBtn: "सेव्ह करा", chatHeaderLeft: "💬 सुरक्षित चॅट", chatSafetyBtn: "🛡️ रिपोर्ट / ब्लॉक", chatPlaceholder: "संदेश लिहा...", sendBtn: "पाठवा", notifTitle: "नोटिफिकेशन्स", enableNotifBtn: "🔔 पुश चालू करा", notifNew: "नवीन", notifBtnLabel: "नोटिफिकेशन्स", bookmarksBtnLabel: "बुकमार्क", postsLabel: "पोस्ट", followersLabel: "फॉलोअर्स", langsLabel: "भाषा", savedVideosTitle: "🔖 सेव्ह केलेले व्हिडिओ", noBookmarksYet: "अद्याप कोणताही व्हिडिओ सेव्ह केलेला नाही.", accountSafetyTitle: "🔐 खाते सेटिंग्ज:", logoutBtn: "लॉग आउट", deleteAccountBtn: "खाते हटवा", storyModalTitle: "नवीन स्टोरी टाका (२४ तास)", storyPickVideo: "फोटो किंवा व्हिडिओ निवडा", storyHint: "२४ तासांनंतर आपोआप निघून जाईल", storyMsgPlaceholder: "स्टोरी संदेश लिहा...", storyShareBtn: "स्टोरी शेअर करा", commentsTitle: "कमेंट्स", commentPlaceholder: "कमेंट लिहा...", postBtn: "पोस्ट" },
-      ta: { loginSub: "ஒருமுறை பெயர் மற்றும் கடவுச்சொல் உருவாக்கவும்", signInTab: "உள்நுழை", signUpTab: "புதிய கணக்கு", userPlaceholder: "உங்கள் பெயர்", passPlaceholder: "கடவுச்சொல்", loginBtn: "தொடங்கு", yourStory: "உங்கள் ஸ்டோரி", followBtn: "பின்தொடர்", shareLabel: "பகிர்", saveLabel: "சேமி", reportLabel: "புகார்", uploadTitle: "புதிய வீடியோ பதிவேற்று", maxDuration: "அதிகபட்ச நேரம்:", maxDurationVal: "1 நிமிடம் (60 வினாடிகள்)", qualityRule: "தரம்:", qualityRuleVal: "480p / 720p / 1080p", pickVideo: "வீடியோவைத் தேர்ந்தெடுக்கவும்", videoHint: "அதிகபட்சம் 60 வினாடிகள்", captionPlaceholder: "தலைப்பு எழுதவும்...", publishBtn: "சேமிக்கவும்", chatHeaderLeft: "💬 பாதுகாப்பான அரட்டை", chatSafetyBtn: "🛡️ புகார் / தடு", chatPlaceholder: "செய்தி எழுதவும்...", sendBtn: "அனுப்பு", notifTitle: "அறிவிப்புகள்", enableNotifBtn: "🔔 புஷ் இயக்கு", notifNew: "புதியது", notifBtnLabel: "அறிவிப்புகள்", bookmarksBtnLabel: "சேமித்தவை", postsLabel: "பதிவுகள்", followersLabel: "பின்தொடர்பவர்கள்", langsLabel: "மொழிகள்", savedVideosTitle: "🔖 சேமித்த வீடியோக்கள்", noBookmarksYet: "வீடியோக்கள் எதுவும் சேமிக்கப்படவில்லை.", accountSafetyTitle: "🔐 கணக்கு அமைப்புகள்:", logoutBtn: "வெளியேறு", deleteAccountBtn: "கணக்கை நீக்கு", storyModalTitle: "புதிய ஸ்டோரி (24 மணி நேரம்)", storyPickVideo: "புகைப்படம் அல்லது வீடியோ", storyHint: "24 மணி நேரத்தில் மறைந்துவிடும்", storyMsgPlaceholder: "செய்தி எழுதவும்...", storyShareBtn: "பகிர்", commentsTitle: "கருத்துகள்", commentPlaceholder: "கருத்து எழுதவும்...", postBtn: "பதிவிடு" },
-      gu: { loginSub: "એકવાર નામ અને પાસવર્ડ બનાવો", signInTab: "લોગિન", signUpTab: "નવું એકાઉન્ટ", userPlaceholder: "તમારું નામ લખો", passPlaceholder: "પાસવર્ડ બનાવો", loginBtn: "શરૂ કરો", yourStory: "તમારી સ્ટોરી", followBtn: "ફોલો", shareLabel: "શેર", saveLabel: "સેવ", reportLabel: "રિપોર્ટ", uploadTitle: "નવો વીડિયો અપલોડ કરો", maxDuration: "મહત્તમ સમય:", maxDurationVal: "૧ મિનિટ (૬૦ સેકન્ડ)", qualityRule: "ક્વોલિટી:", qualityRuleVal: "480p / 720p / 1080p", pickVideo: "વીડિયો પસંદ કરો", videoHint: "મહત્તમ ૬૦ સેકન્ડ", captionPlaceholder: "કેપ્શન લખો...", publishBtn: "સેવ કરો", chatHeaderLeft: "💬 સુરક્ષિત ચેટ", chatSafetyBtn: "🛡️ રિપોર્ટ / બ્લોક", chatPlaceholder: "સંદેશ લખો...", sendBtn: "મોકલો", notifTitle: "નોટિફિકેશન્સ", enableNotifBtn: "🔔 પુશ ચાલુ કરો", notifNew: "નવું", notifBtnLabel: "નોટિફિકેશન્સ", bookmarksBtnLabel: "બુકમાર્ક", postsLabel: "પોસ્ટ", followersLabel: "ફોલોઅર્સ", langsLabel: "ભાષાઓ", savedVideosTitle: "🔖 સેવ કરેલા વીડિયો", noBookmarksYet: "હજુ સુધી કોઈ વીડિયો સેવ કર્યો નથી.", accountSafetyTitle: "🔐 એકાઉન્ટ સેટિંગ્સ:", logoutBtn: "લોગ આઉટ", deleteAccountBtn: "એકાઉન્ટ ડિલીટ", storyModalTitle: "નવી સ્ટોરી મૂકો (૨૪ કલાક)", storyPickVideo: "ફોટો અથવા વીડિયો પસંદ કરો", storyHint: "૨૪ કલાક પછી આપમેળે દૂર થઈ જશે", storyMsgPlaceholder: "સ્ટોરી સંદેશ લખો...", storyShareBtn: "શેર કરો", commentsTitle: "કોમેન્ટ્સ", commentPlaceholder: "કોમેન્ટ લખો...", postBtn: "પોસ્ટ" },
-      ur: { loginSub: "ایک بار نام اور پاس ورڈ بنائیں", signInTab: "سائن ان", signUpTab: "نیا اکاؤنٹ", userPlaceholder: "اپنا نام درج کریں", passPlaceholder: "پاس ورڈ بنائیں", loginBtn: "شروع کریں", yourStory: "آپ کی اسٹوری", followBtn: "فالو", shareLabel: "شیئر", saveLabel: "محفوظ", reportLabel: "رپورٹ", uploadTitle: "نئی ویڈیو اپ لوڈ کریں", maxDuration: "زیادہ سے زیادہ وقت:", maxDurationVal: "1 منٹ (60 سیکنڈ)", qualityRule: "کوالٹی:", qualityRuleVal: "480p / 720p / 1080p", pickVideo: "ویڈیو منتخب کریں", videoHint: "زیادہ سے زیادہ 60 سیکنڈ", captionPlaceholder: "کیپشن لکھیں...", publishBtn: "محفوظ کریں", chatHeaderLeft: "💬 محفوظ چیٹ", chatSafetyBtn: "🛡️ رپورٹ / بلاک", chatPlaceholder: "پیغام لکھیں...", sendBtn: "بھیجیں", notifTitle: "اطلاعات", enableNotifBtn: "🔔 پش آن کریں", notifNew: "نیا", notifBtnLabel: "اطلاعات", bookmarksBtnLabel: "محفوظ شدہ", postsLabel: "پوسٹس", followersLabel: "فالوورز", langsLabel: "زبانیں", savedVideosTitle: "🔖 محفوظ شدہ ویڈیوز", noBookmarksYet: "ابھی کوئی ویڈیو محفوظ نہیں کی گئی۔", accountSafetyTitle: "🔐 اکاؤنٹ کی ترتیبات:", logoutBtn: "لاگ آؤٹ", deleteAccountBtn: "اکاؤنٹ حذف کریں", storyModalTitle: "نئی اسٹوری (24 گھنٹے)", storyPickVideo: "تصویر یا ویڈیو منتخب کریں", storyHint: "24 گھنٹے بعد خود بخود ہٹ جائے گی", storyMsgPlaceholder: "اسٹوری پیغام لکھیں...", storyShareBtn: "شیئر کریں", commentsTitle: "تبصرے", commentPlaceholder: "تبصرہ لکھیں...", postBtn: "پوسٹ" },
-      kn: { loginSub: "ಒಮ್ಮೆ ಹೆಸರು ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ರಚಿಸಿ", signInTab: "ಸೈನ್ ಇನ್", signUpTab: "ಹೊಸ ಖಾತೆ", userPlaceholder: "ನಿಮ್ಮ ಹೆಸರು", passPlaceholder: "ಪಾಸ್‌ವರ್ಡ್", loginBtn: "ಪ್ರಾರಂಭಿಸಿ", yourStory: "ನಿಮ್ಮ ಸ್ಟೋರಿ", followBtn: "ಫಾಲೋ", shareLabel: "ಹಂಚಿ", saveLabel: "ಉಳಿಸಿ", reportLabel: "ವರದಿ", uploadTitle: "ಹೊಸ ವೀಡಿಯೊ ಅಪ್‌ಲೋಡ್", maxDuration: "ಗರಿಷ್ಠ ಸಮಯ:", maxDurationVal: "1 ನಿಮಿಷ (60 ಸೆಕೆಂಡುಗಳು)", qualityRule: "ಗುಣಮಟ್ಟ:", qualityRuleVal: "480p / 720p / 1080p", pickVideo: "ವೀಡಿಯೊ ಆಯ್ಕೆಮಾಡಿ", videoHint: "ಗರಿಷ್ಠ 60 ಸೆಕೆಂಡುಗಳು", captionPlaceholder: "ಶೀರ್ಷಿಕೆ ಬರೆಯಿರಿ...", publishBtn: "ಉಳಿಸಿ", chatHeaderLeft: "💬 ಸುರಕ್ಷಿತ ಚಾಟ್", chatSafetyBtn: "🛡️ ವರದಿ / ನಿರ್ಬಂಧಿಸಿ", chatPlaceholder: "ಸಂದೇಶ ಟೈಪ್ ಮಾಡಿ...", sendBtn: "ಕಳುಹಿಸಿ", notifTitle: "ಅಧಿಸೂಚನೆಗಳು", enableNotifBtn: "🔔 ಪುಶ್ ಆನ್", notifNew: "ಹೊಸದು", notifBtnLabel: "ಅಧಿಸೂಚನೆಗಳು", bookmarksBtnLabel: "ಉಳಿಸಿದವು", postsLabel: "ಪೋಸ್ಟ್‌ಗಳು", followersLabel: "ಅನುಯಾಯಿಗಳು", langsLabel: "ಭಾಷೆಗಳು", savedVideosTitle: "🔖 ಉಳಿಸಿದ ವೀಡಿಯೊಗಳು", noBookmarksYet: "ಯಾವುದೇ ವೀಡಿಯೊ ಉಳಿಸಲಾಗಿಲ್ಲ.", accountSafetyTitle: "🔐 ಖಾತೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳು:", logoutBtn: "ಲಾಗ್ ಔಟ್", deleteAccountBtn: "ಖಾತೆ ಅಳಿಸಿ", storyModalTitle: "ಹೊಸ ಸ್ಟೋರಿ (24 ಗಂಟೆ)", storyPickVideo: "ಫೋಟೋ ಅಥವಾ ವೀಡಿಯೊ ಆಯ್ಕೆಮಾಡಿ", storyHint: "24 ಗಂಟೆಗಳ ನಂತರ ಕಣ್ಮರೆಯಾಗುತ್ತದೆ", storyMsgPlaceholder: "ಸಂದೇಶ ಬರೆಯಿರಿ...", storyShareBtn: "ಹಂಚಿಕೊಳ್ಳಿ", commentsTitle: "ಕಾಮೆಂಟ್‌ಗಳು", commentPlaceholder: "ಕಾಮೆಂಟ್ ಬರೆಯಿರಿ...", postBtn: "ಪೋಸ್ಟ್" },
-      ml: { loginSub: "ഒരിക്കൽ പേരും പാസ്‌വേഡും നൽകുക", signInTab: "സൈൻ ഇൻ", signUpTab: "പുതിയ അക്കൗണ്ട്", userPlaceholder: "നിങ്ങളുടെ പേര്", passPlaceholder: "പാസ്‌വേഡ്", loginBtn: "ആരംഭിക്കുക", yourStory: "നിങ്ങളുടെ സ്റ്റോറി", followBtn: "ഫോളോ", shareLabel: "പങ്കിടുക", saveLabel: "സേവ്", reportLabel: "റിപ്പോർട്ട്", uploadTitle: "പുതിയ വീഡിയോ അപ്‌ലോഡ്", maxDuration: "പരമാവധി സമയം:", maxDurationVal: "1 മിനിറ്റ് (60 സെക്കൻഡ്)", qualityRule: "ക്വാളിറ്റി:", qualityRuleVal: "480p / 720p / 1080p", pickVideo: "വീഡിയോ തിരഞ്ഞെടുക്കുക", videoHint: "പരമാവധി 60 സെക്കൻഡ്", captionPlaceholder: "അടിക്കുറിപ്പ് എഴുതുക...", publishBtn: "സേവ് ചെയ്യുക", chatHeaderLeft: "💬 സുരക്ഷിത ചാറ്റ്", chatSafetyBtn: "🛡️ റിപ്പോർട്ട് / ബ്ലോക്ക്", chatPlaceholder: "സന്ദേശം എഴുതുക...", sendBtn: "അയയ്ക്കുക", notifTitle: "അറിയിപ്പുകൾ", enableNotifBtn: "🔔 പുഷ് ഓൺ", notifNew: "പുതിയത്", notifBtnLabel: "അറിയിപ്പുകൾ", bookmarksBtnLabel: "ബുക്ക്മാർക്കുകൾ", postsLabel: "പോസ്റ്റുകൾ", followersLabel: "ഫോളോവേഴ്സ്", langsLabel: "ഭാഷകൾ", savedVideosTitle: "🔖 സേവ് ചെയ്ത വീഡിയോകൾ", noBookmarksYet: "വീഡിയോകളൊന്നും സേവ് ചെയ്തിട്ടില്ല.", accountSafetyTitle: "🔐 അക്കൗണ്ട് ക്രമീകരണങ്ങൾ:", logoutBtn: "ലോഗ് ഔട്ട്", deleteAccountBtn: "അക്കൗണ്ട് നീക്കം ചെയ്യുക", storyModalTitle: "പുതിയ സ്റ്റോറി (24 മണിക്കൂർ)", storyPickVideo: "ഫോട്ടോ അല്ലെങ്കിൽ വീഡിയോ", storyHint: "24 മണിക്കൂറിന് ശേഷം മായും", storyMsgPlaceholder: "സന്ദേശം എഴുതുക...", storyShareBtn: "പങ്കിടുക", commentsTitle: "കമന്റുകൾ", commentPlaceholder: "കമന്റ് എഴുതുക...", postBtn: "പോസ്റ്റ്" },
-      pa: { loginSub: "ਇੱਕ ਵਾਰ ਨਾਮ ਅਤੇ ਪਾਸਵਰਡ ਬਣਾਓ", signInTab: "ਲੌਗਇਨ", signUpTab: "ਨਵਾਂ ਖਾਤਾ", userPlaceholder: "ਆਪਣਾ ਨਾਮ ਦਰਜ ਕਰੋ", passPlaceholder: "ਪਾਸਵਰਡ ਬਣਾਓ", loginBtn: "ਸ਼ੁਰੂ ਕਰੋ", yourStory: "ਤੁਹਾਡੀ ਸਟੋਰੀ", followBtn: "ਫਾਲੋ", shareLabel: "ਸ਼ੇਅਰ", saveLabel: "ਸੇਵ", reportLabel: "ਰਿਪੋਰਟ", uploadTitle: "ਨਵੀਂ ਵੀਡੀਓ ਅੱਪਲੋਡ ਕਰੋ", maxDuration: "ਵੱਧ ਤੋਂ ਵੱਧ ਸਮਾਂ:", maxDurationVal: "1 ਮਿੰਟ (60 ਸਕਿੰਟ)", qualityRule: "ਕੁਆਲਿਟੀ:", qualityRuleVal: "480p / 720p / 1080p", pickVideo: "ਵੀਡੀਓ ਚੁਣੋ", videoHint: "ਵੱਧ ਤੋਂ ਵੱਧ 60 ਸਕਿੰਟ", captionPlaceholder: "ਕੈਪਸ਼ਨ ਲਿਖੋ...", publishBtn: "ਸੇਵ ਕਰੋ", chatHeaderLeft: "💬 ਸੁਰੱਖਿਅਤ ਚੈਟ", chatSafetyBtn: "🛡️ ਰਿਪੋਰਟ / ਬਲੌਕ", chatPlaceholder: "ਸੁਨੇਹਾ ਲਿਖੋ...", sendBtn: "ਭੇਜੋ", notifTitle: "ਨੋਟੀਫਿਕੇਸ਼ਨ", enableNotifBtn: "🔔 ਪੁਸ਼ ਚਾਲੂ ਕਰੋ", notifNew: "ਨਵਾਂ", notifBtnLabel: "ਨੋਟੀਫਿਕੇਸ਼ਨ", bookmarksBtnLabel: "ਬੁੱਕਮਾਰਕ", postsLabel: "ਪੋਸਟਾਂ", followersLabel: "ਫਾਲੋਅਰਜ਼", langsLabel: "ਭਾਸ਼ਾਵਾਂ", savedVideosTitle: "🔖 ਸੇਵ ਕੀਤੀਆਂ ਵੀਡੀਓਜ਼", noBookmarksYet: "ਅਜੇ ਕੋਈ ਵੀਡੀਓ ਸੇਵ ਨਹੀਂ ਕੀਤੀ ਗਈ।", accountSafetyTitle: "🔐 ਖਾਤਾ ਸੈਟਿੰਗਾਂ:", logoutBtn: "ਲੌਗ ਆਊਟ", deleteAccountBtn: "ਖਾਤਾ ਮਿਟਾਓ", storyModalTitle: "ਨਵੀਂ ਸਟੋਰੀ ਪਾਓ (24 ਘੰਟੇ)", storyPickVideo: "ਫੋਟੋ ਜਾਂ ਵੀਡੀਓ ਚੁਣੋ", storyHint: "24 ਘੰਟਿਆਂ ਬਾਅਦ ਆਪਣੇ ਆਪ ਹਟ ਜਾਵੇਗੀ", storyMsgPlaceholder: "ਸਟੋਰੀ ਸੁਨੇਹਾ ਲਿਖੋ...", storyShareBtn: "ਸ਼ੇਅਰ ਕਰੋ", commentsTitle: "ਕਮੈਂਟ", commentPlaceholder: "ਕਮੈਂਟ ਲਿਖੋ...", postBtn: "ਪੋਸਟ" },
-      or: { loginSub: "ଥରେ ନାମ ଓ ପାସୱାର୍ଡ ତିଆରି କରନ୍ତୁ", signInTab: "ଲଗଇନ୍", signUpTab: "ନୂଆ ଆକାଉଣ୍ଟ", userPlaceholder: "ଆପଣଙ୍କ ନାମ ଦିଅନ୍ତୁ", passPlaceholder: "ପାସୱାର୍ଡ", loginBtn: "ଆରମ୍ଭ କରନ୍ତୁ", yourStory: "ଆପଣଙ୍କ ଷ୍ଟୋରୀ", followBtn: "ଫଲୋ", shareLabel: "ସେୟାର", saveLabel: "ସେଭ୍", reportLabel: "ରିପୋର୍ଟ", uploadTitle: "ନୂଆ ଭିଡିଓ ଅପଲୋଡ୍", maxDuration: "ସର୍ବାଧିକ ସମୟ:", maxDurationVal: "୧ ମିନିଟ୍ (୬୦ ସେକେଣ୍ଡ)", qualityRule: "କ୍ୱାଲିଟି:", qualityRuleVal: "480p / 720p / 1080p", pickVideo: "ଭିଡିଓ ବାଛନ୍ତୁ", videoHint: "ସର୍ବାଧିକ ୬୦ ସେକେଣ୍ଡ", captionPlaceholder: "କ୍ୟାପସନ୍ ଲେଖନ୍ତୁ...", publishBtn: "ସେଭ୍ କରନ୍ତୁ", chatHeaderLeft: "💬 ସୁରକ୍ଷିତ ଚାଟ୍", chatSafetyBtn: "🛡️ ରିପୋର୍ଟ / ବ୍ଲକ୍", chatPlaceholder: "ବାର୍ତ୍ତା ଲେଖନ୍ତୁ...", sendBtn: "ପଠାନ୍ତୁ", notifTitle: "ନୋଟିଫିକେସନ୍", enableNotifBtn: "🔔 ପୁସ୍ ଅନ୍", notifNew: "ନୂଆ", notifBtnLabel: "ନୋଟିଫିକେସନ୍", bookmarksBtnLabel: "ବୁକମାର୍କ", postsLabel: "ପୋଷ୍ଟ", followersLabel: "ଫଲୋଅର୍ସ", langsLabel: "ଭାଷା", savedVideosTitle: "🔖 ସେଭ୍ ଭିଡିଓ", noBookmarksYet: "ଏପର୍ଯ୍ୟନ୍ତ କୌଣସି ଭିଡିଓ ସେଭ୍ ହୋଇନାହିଁ।", accountSafetyTitle: "🔐 ଆକାଉଣ୍ଟ ସେଟିଂସ:", logoutBtn: "ଲଗ୍ ଆଉଟ୍", deleteAccountBtn: "ଆକାଉଣ୍ଟ ଡିଲିଟ୍", storyModalTitle: "ନୂଆ ଷ୍ଟୋରୀ (୨୪ ଘଣ୍ଟା)", storyPickVideo: "ଫଟୋ କିମ୍ବା ଭିଡିଓ ବାଛନ୍ତୁ", storyHint: "୨୪ ଘଣ୍ଟା ପରେ ହଟିଯିବ", storyMsgPlaceholder: "ଷ୍ଟୋରୀ ବାର୍ତ୍ତା...", storyShareBtn: "ସେୟାର କରନ୍ତୁ", commentsTitle: "କମେଣ୍ଟ", commentPlaceholder: "କମେଣ୍ଟ ଲେଖନ୍ତୁ...", postBtn: "ପୋଷ୍ଟ" },
-      as: { loginSub: "এবাৰ নাম আৰু পাছৱৰ্ড বনাওক", signInTab: "লগইন", signUpTab: "নতুন একাউণ্ট", userPlaceholder: "আপোনাৰ নাম লিখক", passPlaceholder: "পাছৱৰ্ড", loginBtn: "আৰম্ভ কৰক", yourStory: "আপোনাৰ ষ্ট'ৰী", followBtn: "ফ'ল'", shareLabel: "শ্বেয়াৰ", saveLabel: "ছেভ", reportLabel: "ৰিপ'ৰ্ট", uploadTitle: "নতুন ভিডিঅ' আপল'ড", maxDuration: "সৰ্বাধিক সময়:", maxDurationVal: "১ মিনিট (৬০ ছেকেণ্ড)", qualityRule: "কোৱালিটি:", qualityRuleVal: "480p / 720p / 1080p", pickVideo: "ভিডিঅ' বাছক", videoHint: "সৰ্বাধিক ৬০ ছেকেণ্ড", captionPlaceholder: "কেপচন লিখক...", publishBtn: "ছেভ কৰক", chatHeaderLeft: "💬 সুৰক্ষিত চেট", chatSafetyBtn: "🛡️ ৰিপ'ৰ্ট / ব্লক", chatPlaceholder: "বাৰ্তা লিখক...", sendBtn: "পঠিয়াওক", notifTitle: "নটিফিকেচন", enableNotifBtn: "🔔 পুছ অন", notifNew: "নতুন", notifBtnLabel: "নটিফিকেচন", bookmarksBtnLabel: "বুকমাৰ্ক", postsLabel: "প'ষ্ট", followersLabel: "ফ'ল'ৱাৰ", langsLabel: "ভাষা", savedVideosTitle: "🔖 ছেভ কৰা ভিডিঅ'", noBookmarksYet: "এতিয়ালৈকে কোনো ভিডিঅ' ছেভ কৰা হোৱা নাই।", accountSafetyTitle: "🔐 একাউণ্ট ছেটিংছ:", logoutBtn: "লগ আউট", deleteAccountBtn: "একাউণ্ট ডিলিট", storyModalTitle: "নতুন ষ্ট'ৰী (২৪ ঘণ্টা)", storyPickVideo: "ফটো বা ভিডিঅ' বাছক", storyHint: "২৪ ঘণ্টাৰ পিছত আঁতৰি যাব", storyMsgPlaceholder: "ষ্ট'ৰী বাৰ্তা...", storyShareBtn: "শ্বেয়াৰ কৰক", commentsTitle: "কমেণ্ট", commentPlaceholder: "কমেণ্ট লিখক...", postBtn: "প'ষ্ট" },
-      ks: { loginSub: "اکھ لٹہِ ناو تہٕ پاس ورڈ بنایو", signInTab: "لاگ ان", signUpTab: "نۆو اکاؤنٹ", userPlaceholder: "پَنُن ناو لیکھیو", passPlaceholder: "پاس ورڈ", loginBtn: "شروع کٔریو", yourStory: "تُہٕنٛز سٹوری", followBtn: "فالو", shareLabel: "شیئر", saveLabel: "محفوظ", reportLabel: "رپورٹ", uploadTitle: "نۆو ویڈیو اپ لوڈ", maxDuration: "زیادٕ وقت:", maxDurationVal: "1 منٹ (60 سیکنڈ)", qualityRule: "کوالٹی:", qualityRuleVal: "480p / 720p / 1080p", pickVideo: "ویڈیو ژٲریو", videoHint: "زیادٕ 60 سیکنڈ", captionPlaceholder: "کیپشن لیکھیو...", publishBtn: "محفوظ کٔریو", chatHeaderLeft: "💬 محفوظ چیٹ", chatSafetyBtn: "🛡️ رپورٹ / بلاک", chatPlaceholder: "پیغام لیکھیو...", sendBtn: "سوزیو", notifTitle: "اطلاعات", enableNotifBtn: "🔔 پش آن", notifNew: "نۆو", notifBtnLabel: "اطلاعات", bookmarksBtnLabel: "محفوظ", postsLabel: "پوسٹ", followersLabel: "فالوور", langsLabel: "زبانہٕ", savedVideosTitle: "🔖 محفوظ ویڈیوز", noBookmarksYet: "ونہِ چھُنہٕ کانٛہہ ویڈیو محفوظ۔", accountSafetyTitle: "🔐 اکاؤنٹ سیٹنگز:", logoutBtn: "لاگ آؤٹ", deleteAccountBtn: "اکاؤنٹ ڈیلیٹ", storyModalTitle: "نۆو سٹوری (24 گھنٹہٕ)", storyPickVideo: "فوٹو یا ویڈیو ژٲریو", storyHint: "24 گھنٹن پتہٕ گژھہِ ختم", storyMsgPlaceholder: "سٹوری پیغام...", storyShareBtn: "شیئر کٔریو", commentsTitle: "تبصرٕ", commentPlaceholder: "تبصرٕ لیکھیو...", postBtn: "پوسٹ" }
+      te: { loginSub: "ఒక్కసారి పేరు మరియు పాస్‌వర్డ్‌తో సైన్ అప్ చేయండి", signInTab: "సైన్ ఇన్", signUpTab: "కొత్త ఖాతా", userPlaceholder: "మీ పేరు నమోదు చేయండి", passPlaceholder: "పాస్‌వర్డ్", loginBtn: "ప్రారంభించండి", yourStory: "మీ స్టోరీ", followBtn: "ఫాలో", shareLabel: "షేర్", saveLabel: "సేవ్", reportLabel: "రిపోర్ట్", uploadTitle: "కొత్త వీడియో అప్‌లోడ్", maxDuration: "గరిష్ట సమయం:", maxDurationVal: "1 నిమిషం (60 సెకన్లు)", qualityRule: "క్వాలిటీ:", qualityRuleVal: "720p / 1080p", pickVideo: "వీడియో ఎంచుకోండి", videoHint: "గరిష్టంగా 60 సెకన్లు", captionPlaceholder: "క్యాప్షన్ రాయండి...", publishBtn: "సేవ్ చేయండి", chatHeaderLeft: "💬 సురక్షిత చాట్", chatSafetyBtn: "🛡️ రిపోర్ట్ / బ్లాక్", chatPlaceholder: "సందేశం రాయండి...", sendBtn: "పంపండి", notifTitle: "నోటిఫికేషన్లు", enableNotifBtn: "🔔 పుష్ ఆన్", notifNew: "కొత్తవి", notifBtnLabel: "నోటిఫికేషన్లు", bookmarksBtnLabel: "బుక్‌మార్క్‌లు", postsLabel: "పోస్టులు", followersLabel: "ఫాలోవర్లు", langsLabel: "భాషలు", savedVideosTitle: "🔖 సేవ్ చేసిన వీడియోలు", noBookmarksYet: "ఇంకా వీడియోలు సేవ్ చేయలేదు.", accountSafetyTitle: "🔐 ఖాతా సెట్టింగ్‌లు:", logoutBtn: "లాగ్ అవుట్", deleteAccountBtn: "ఖాతా తొలగించు", storyModalTitle: "కొత్త స్టోరీ (24 గంటలు)", storyPickVideo: "ఫోటో లేదా వీడియో ఎంచుకోండి", storyHint: "24 గంటల తర్వాత పోతుంది", storyMsgPlaceholder: "స్టోరీ సందేశం...", storyShareBtn: "షేర్ చేయండి", commentsTitle: "కామెంట్లు", commentPlaceholder: "కామెంట్ రాయండి...", postBtn: "పోస్ట్" },
+      mr: { loginSub: "एकदा नाव आणि पासवर्ड तयार करा", signInTab: "लॉगिन", signUpTab: "नवीन खाते", userPlaceholder: "तुमचे नाव टाका", passPlaceholder: "पासवर्ड तयार करा", loginBtn: "सुरू करा", yourStory: "तुमची स्टोरी", followBtn: "फॉलो", shareLabel: "शेअर", saveLabel: "सेव्ह", reportLabel: "रिपोर्ट", uploadTitle: "नवीन व्हिडिओ अपलोड करा", maxDuration: "कमाल वेळ:", maxDurationVal: "१ मिनिट (६० सेकंद)", qualityRule: "क्वालिटी:", qualityRuleVal: "720p / 1080p", pickVideo: "व्हिडिओ निवडा", videoHint: "कमाल ६० सेकंद", captionPlaceholder: "कॅप्शन लिहा...", publishBtn: "सेव्ह करा", chatHeaderLeft: "💬 सुरक्षित चॅट", chatSafetyBtn: "🛡️ रिपोर्ट / ब्लॉक", chatPlaceholder: "संदेश लिहा...", sendBtn: "पाठवा", notifTitle: "नोटिफिकेशन्स", enableNotifBtn: "🔔 पुश चालू करा", notifNew: "नवीन", notifBtnLabel: "नोटिफिकेशन्स", bookmarksBtnLabel: "बुकमार्क", postsLabel: "पोस्ट", followersLabel: "फॉलोअर्स", langsLabel: "भाषा", savedVideosTitle: "🔖 सेव्ह केलेले व्हिडिओ", noBookmarksYet: "अद्याप कोणताही व्हिडिओ सेव्ह केलेला नाही.", accountSafetyTitle: "🔐 खाते सेटिंग्ज:", logoutBtn: "लॉग आउट", deleteAccountBtn: "खाते हटवा", storyModalTitle: "नवीन स्टोरी टाका (२४ तास)", storyPickVideo: "फोटो किंवा व्हिडिओ निवडा", storyHint: "२४ तासांनंतर आपोआप निघून जाईल", storyMsgPlaceholder: "स्टोरी संदेश लिहा...", storyShareBtn: "स्टोरी शेअर करा", commentsTitle: "कमेंट्स", commentPlaceholder: "कमेंट लिहा...", postBtn: "पोस्ट" },
+      ta: { loginSub: "ஒருமுறை பெயர் மற்றும் கடவுச்சொல் உருவாக்கவும்", signInTab: "உள்நுழை", signUpTab: "புதிய கணக்கு", userPlaceholder: "உங்கள் பெயர்", passPlaceholder: "கடவுச்சொல்", loginBtn: "தொடங்கு", yourStory: "உங்கள் ஸ்டோரி", followBtn: "பின்தொடர்", shareLabel: "பகிர்", saveLabel: "சேமி", reportLabel: "புகார்", uploadTitle: "புதிய வீடியோ பதிவேற்று", maxDuration: "அதிகபட்ச நேரம்:", maxDurationVal: "1 நிமிடம் (60 வினாடிகள்)", qualityRule: "தரம்:", qualityRuleVal: "720p / 1080p", pickVideo: "வீடியோவைத் தேர்ந்தெடுக்கவும்", videoHint: "அதிகபட்சம் 60 வினாடிகள்", captionPlaceholder: "தலைப்பு எழுதவும்...", publishBtn: "சேமிக்கவும்", chatHeaderLeft: "💬 பாதுகாப்பான அரட்டை", chatSafetyBtn: "🛡️ புகார் / தடு", chatPlaceholder: "செய்தி எழுதவும்...", sendBtn: "அனுப்பு", notifTitle: "அறிவிப்புகள்", enableNotifBtn: "🔔 புஷ் இயக்கு", notifNew: "புதியது", notifBtnLabel: "அறிவிப்புகள்", bookmarksBtnLabel: "சேமித்தவை", postsLabel: "பதிவுகள்", followersLabel: "பின்தொடர்பவர்கள்", langsLabel: "மொழிகள்", savedVideosTitle: "🔖 சேமித்த வீடியோக்கள்", noBookmarksYet: "வீடியோக்கள் எதுவும் சேமிக்கப்படவில்லை.", accountSafetyTitle: "🔐 கணக்கு அமைப்புகள்:", logoutBtn: "வெளியேறு", deleteAccountBtn: "கணக்கை நீக்கு", storyModalTitle: "புதிய ஸ்டோரி (24 மணி நேரம்)", storyPickVideo: "புகைப்படம் அல்லது வீடியோ", storyHint: "24 மணி நேரத்தில் மறைந்துவிடும்", storyMsgPlaceholder: "செய்தி எழுதவும்...", storyShareBtn: "பகிர்", commentsTitle: "கருத்துகள்", commentPlaceholder: "கருத்து எழுதவும்...", postBtn: "பதிவிடு" },
+      gu: { loginSub: "એકવાર નામ અને પાસવર્ડ બનાવો", signInTab: "લોગિન", signUpTab: "નવું એકાઉન્ટ", userPlaceholder: "તમારું નામ લખો", passPlaceholder: "પાસવર્ડ બનાવો", loginBtn: "શરૂ કરો", yourStory: "તમારી સ્ટોરી", followBtn: "ફોલો", shareLabel: "શેર", saveLabel: "સેવ", reportLabel: "રિપોર્ટ", uploadTitle: "નવો વીડિયો અપલોડ કરો", maxDuration: "મહત્તમ સમય:", maxDurationVal: "૧ મિનિટ (૬૦ સેકન્ડ)", qualityRule: "ક્વોલિટી:", qualityRuleVal: "720p / 1080p", pickVideo: "વીડિયો પસંદ કરો", videoHint: "મહત્તમ ૬૦ સેકન્ડ", captionPlaceholder: "કેપ્શન લખો...", publishBtn: "સેવ કરો", chatHeaderLeft: "💬 સુરક્ષિત ચેટ", chatSafetyBtn: "🛡️ રિપોર્ટ / બ્લોક", chatPlaceholder: "સંદેશ લખો...", sendBtn: "મોકલો", notifTitle: "નોટિફિકેશન્સ", enableNotifBtn: "🔔 પુશ ચાલુ કરો", notifNew: "નવું", notifBtnLabel: "નોટિફિકેશન્સ", bookmarksBtnLabel: "બુકમાર્ક", postsLabel: "પોસ્ટ", followersLabel: "ફોલોઅર્સ", langsLabel: "ભાષાઓ", savedVideosTitle: "🔖 સેવ કરેલા વીડિયો", noBookmarksYet: "હજુ સુધી કોઈ વીડિયો સેવ કર્યો નથી.", accountSafetyTitle: "🔐 એકાઉન્ટ સેટિંગ્સ:", logoutBtn: "લોગ આઉટ", deleteAccountBtn: "એકાઉન્ટ ડિલીટ", storyModalTitle: "નવી સ્ટોરી મૂકો (૨૪ કલાક)", storyPickVideo: "ફોટો અથવા વીડિયો પસંદ કરો", storyHint: "૨૪ કલાક પછી આપમેળે દૂર થઈ જશે", storyMsgPlaceholder: "સ્ટોરી સંદેશ લખો...", storyShareBtn: "શેર કરો", commentsTitle: "કોમેન્ટ્સ", commentPlaceholder: "કોમેન્ટ લખો...", postBtn: "પોસ્ટ" },
+      ur: { loginSub: "ایک بار نام اور پاس ورڈ بنائیں", signInTab: "سائن ان", signUpTab: "نیا اکاؤنٹ", userPlaceholder: "اپنا نام درج کریں", passPlaceholder: "پاس ورڈ بنائیں", loginBtn: "شروع کریں", yourStory: "آپ کی اسٹوری", followBtn: "فالو", shareLabel: "شیئر", saveLabel: "محفوظ", reportLabel: "رپورٹ", uploadTitle: "نئی ویڈیو اپ لوڈ کریں", maxDuration: "زیادہ سے زیادہ وقت:", maxDurationVal: "1 منٹ (60 سیکنڈ)", qualityRule: "کوالٹی:", qualityRuleVal: "720p / 1080p", pickVideo: "ویڈیو منتخب کریں", videoHint: "زیادہ سے زیادہ 60 سیکنڈ", captionPlaceholder: "کیپشن لکھیں...", publishBtn: "محفوظ کریں", chatHeaderLeft: "💬 محفوظ چیٹ", chatSafetyBtn: "🛡️ رپورٹ / بلاک", chatPlaceholder: "پیغام لکھیں...", sendBtn: "بھیجیں", notifTitle: "اطلاعات", enableNotifBtn: "🔔 پش آن کریں", notifNew: "نیا", notifBtnLabel: "اطلاعات", bookmarksBtnLabel: "محفوظ شدہ", postsLabel: "پوسٹس", followersLabel: "فالوورز", langsLabel: "زبانیں", savedVideosTitle: "🔖 محفوظ شدہ ویڈیوز", noBookmarksYet: "ابھی کوئی ویڈیو محفوظ نہیں کی گئی۔", accountSafetyTitle: "🔐 اکاؤنٹ کی ترتیبات:", logoutBtn: "لاگ آؤٹ", deleteAccountBtn: "اکاؤنٹ حذف کریں", storyModalTitle: "نئی اسٹوری (24 گھنٹے)", storyPickVideo: "تصویر یا ویڈیو منتخب کریں", storyHint: "24 گھنٹے بعد خود بخود ہٹ جائے گی", storyMsgPlaceholder: "اسٹوری پیغام لکھیں...", storyShareBtn: "شیئر کریں", commentsTitle: "تبصرے", commentPlaceholder: "تبصرہ لکھیں...", postBtn: "پوسٹ" },
+      kn: { loginSub: "ಒಮ್ಮೆ ಹೆಸರು ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ರಚಿಸಿ", signInTab: "ಸೈನ್ ಇನ್", signUpTab: "ಹೊಸ ಖಾತೆ", userPlaceholder: "ನಿಮ್ಮ ಹೆಸರು", passPlaceholder: "ಪಾಸ್‌ವರ್ಡ್", loginBtn: "ಪ್ರಾರಂಭಿಸಿ", yourStory: "ನಿಮ್ಮ ಸ್ಟೋರಿ", followBtn: "ಫಾಲೋ", shareLabel: "ಹಂಚಿ", saveLabel: "ಉಳಿಸಿ", reportLabel: "ವರದಿ", uploadTitle: "ಹೊಸ ವೀಡಿಯೊ ಅಪ್‌ಲೋಡ್", maxDuration: "ಗರಿಷ್ಠ ಸಮಯ:", maxDurationVal: "1 ನಿಮಿಷ (60 ಸೆಕೆಂಡುಗಳು)", qualityRule: "ಗುಣಮಟ್ಟ:", qualityRuleVal: "720p / 1080p", pickVideo: "ವೀಡಿಯೊ ಆಯ್ಕೆಮಾಡಿ", videoHint: "ಗರಿಷ್ಠ 60 ಸೆಕೆಂಡುಗಳು", captionPlaceholder: "ಶೀರ್ಷಿಕೆ ಬರೆಯಿರಿ...", publishBtn: "ಉಳಿಸಿ", chatHeaderLeft: "💬 ಸುರಕ್ಷಿತ ಚಾಟ್", chatSafetyBtn: "🛡️ ವರದಿ / ನಿರ್ಬಂಧಿಸಿ", chatPlaceholder: "ಸಂದೇಶ ಟೈಪ್ ಮಾಡಿ...", sendBtn: "ಕಳುಹಿಸಿ", notifTitle: "ಅಧಿಸೂಚನೆಗಳು", enableNotifBtn: "🔔 ಪುಶ್ ಆನ್", notifNew: "ಹೊಸದು", notifBtnLabel: "ಅಧಿಸೂಚನೆಗಳು", bookmarksBtnLabel: "ಉಳಿಸಿದವು", postsLabel: "ಪೋಸ್ಟ್‌ಗಳು", followersLabel: "ಅನುಯಾಯಿಗಳು", langsLabel: "ಭಾಷೆಗಳು", savedVideosTitle: "🔖 ಉಳಿಸಿದ ವೀಡಿಯೊಗಳು", noBookmarksYet: "ಯಾವುದೇ ವೀಡಿಯೊ ಉಳಿಸಲಾಗಿಲ್ಲ.", accountSafetyTitle: "🔐 ಖಾತೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳು:", logoutBtn: "ಲಾಗ್ ಔಟ್", deleteAccountBtn: "ಖಾತೆ ಅಳಿಸಿ", storyModalTitle: "ಹೊಸ ಸ್ಟೋರಿ (24 ಗಂಟೆ)", storyPickVideo: "ಫೋಟೋ ಅಥವಾ ವೀಡಿಯೊ ಆಯ್ಕೆಮಾಡಿ", storyHint: "24 ಗಂಟೆಗಳ ನಂತರ ಕಣ್ಮರೆಯಾಗುತ್ತದೆ", storyMsgPlaceholder: "ಸಂದೇಶ ಬರೆಯಿರಿ...", storyShareBtn: "ಹಂಚಿಕೊಳ್ಳಿ", commentsTitle: "ಕಾಮೆಂಟ್‌ಗಳು", commentPlaceholder: "ಕಾಮೆಂಟ್ ಬರೆಯಿರಿ...", postBtn: "ಪೋಸ್ಟ್" },
+      ml: { loginSub: "ഒരിക്കൽ പേരും പാസ്‌വേഡും നൽകുക", signInTab: "സൈൻ ഇൻ", signUpTab: "പുതിയ അക്കൗണ്ട്", userPlaceholder: "നിങ്ങളുടെ പേര്", passPlaceholder: "പാസ്‌വേഡ്", loginBtn: "ആരംഭിക്കുക", yourStory: "നിങ്ങളുടെ സ്റ്റോറി", followBtn: "ഫോളോ", shareLabel: "പങ്കിടുക", saveLabel: "സേവ്", reportLabel: "റിപ്പോർട്ട്", uploadTitle: "പുതിയ വീഡിയോ അപ്‌ലോഡ്", maxDuration: "പരമാവധി സമയം:", maxDurationVal: "1 മിനിറ്റ് (60 സെക്കൻഡ്)", qualityRule: "ക്വാളിറ്റി:", qualityRuleVal: "720p / 1080p", pickVideo: "വീഡിയോ തിരഞ്ഞെടുക്കുക", videoHint: "പരമാവധി 60 സെക്കൻഡ്", captionPlaceholder: "അടിക്കുറിപ്പ് എഴുതുക...", publishBtn: "സേവ് ചെയ്യുക", chatHeaderLeft: "💬 സുരക്ഷിത ചാറ്റ്", chatSafetyBtn: "🛡️ റിപ്പോർട്ട് / ബ്ലോക്ക്", chatPlaceholder: "സന്ദേശം എഴുതുക...", sendBtn: "അയയ്ക്കുക", notifTitle: "അറിയിപ്പുകൾ", enableNotifBtn: "🔔 പുഷ് ഓൺ", notifNew: "പുതിയത്", notifBtnLabel: "അറിയിപ്പുകൾ", bookmarksBtnLabel: "ബുക്ക്മാർക്കുകൾ", postsLabel: "പോസ്റ്റുകൾ", followersLabel: "ഫോളോവേഴ്സ്", langsLabel: "ഭാഷകൾ", savedVideosTitle: "🔖 സേവ് ചെയ്ത വീഡിയോകൾ", noBookmarksYet: "വീഡിയോകളൊന്നും സേവ് ചെയ്തിട്ടില്ല.", accountSafetyTitle: "🔐 അക്കൗണ്ട് ക്രമീകരണങ്ങൾ:", logoutBtn: "ലോഗ് ഔട്ട്", deleteAccountBtn: "അക്കൗണ്ട് നീക്കം ചെയ്യുക", storyModalTitle: "പുതിയ സ്റ്റോറി (24 മണിക്കൂർ)", storyPickVideo: "ഫോട്ടോ അല്ലെങ്കിൽ വീഡിയോ", storyHint: "24 മണിക്കൂറിന് ശേഷം മായും", storyMsgPlaceholder: "സന്ദേശം എഴുതുക...", storyShareBtn: "പങ്കിടുക", commentsTitle: "കമന്റുകൾ", commentPlaceholder: "കമന്റ് എഴുതുക...", postBtn: "പോസ്റ്റ്" },
+      pa: { loginSub: "ਇੱਕ ਵਾਰ ਨਾਮ ਅਤੇ ਪਾਸਵਰਡ ਬਣਾਓ", signInTab: "ਲੌਗਇਨ", signUpTab: "ਨਵਾਂ ਖਾਤਾ", userPlaceholder: "ਆਪਣਾ ਨਾਮ ਦਰਜ ਕਰੋ", passPlaceholder: "ਪਾਸਵਰਡ ਬਣਾਓ", loginBtn: "ਸ਼ੁਰੂ ਕਰੋ", yourStory: "ਤੁਹਾਡੀ ਸਟੋਰੀ", followBtn: "ਫਾਲੋ", shareLabel: "ਸ਼ੇਅਰ", saveLabel: "ਸੇਵ", reportLabel: "ਰਿਪੋਰਟ", uploadTitle: "ਨਵੀਂ ਵੀਡੀਓ ਅੱਪਲੋਡ ਕਰੋ", maxDuration: "ਵੱਧ ਤੋਂ ਵੱਧ ਸਮਾਂ:", maxDurationVal: "1 ਮਿੰਟ (60 ਸਕਿੰਟ)", qualityRule: "ਕੁਆਲਿਟੀ:", qualityRuleVal: "720p / 1080p", pickVideo: "ਵੀਡੀਓ ਚੁਣੋ", videoHint: "ਵੱਧ ਤੋਂ ਵੱਧ 60 ਸਕਿੰਟ", captionPlaceholder: "ਕੈਪਸ਼ਨ ਲਿਖੋ...", publishBtn: "ਸੇਵ ਕਰੋ", chatHeaderLeft: "💬 ਸੁਰੱਖਿਅਤ ਚੈਟ", chatSafetyBtn: "🛡️ ਰਿਪੋਰਟ / ਬਲੌਕ", chatPlaceholder: "ਸੁਨੇਹਾ ਲਿਖੋ...", sendBtn: "ਭੇਜੋ", notifTitle: "ਨੋਟੀਫਿਕੇਸ਼ਨ", enableNotifBtn: "🔔 ਪੁਸ਼ ਚਾਲੂ ਕਰੋ", notifNew: "ਨਵਾਂ", notifBtnLabel: "ਨੋਟੀਫਿਕੇਸ਼ਨ", bookmarksBtnLabel: "ਬੁੱਕਮਾਰਕ", postsLabel: "ਪੋਸਟਾਂ", followersLabel: "ਫਾਲੋਅਰਜ਼", langsLabel: "ਭਾਸ਼ਾਵਾਂ", savedVideosTitle: "🔖 ਸੇਵ ਕੀਤੀਆਂ ਵੀਡੀਓਜ਼", noBookmarksYet: "ਅਜੇ ਕੋਈ ਵੀਡੀਓ ਸੇਵ ਨਹੀਂ ਕੀਤੀ ਗਈ।", accountSafetyTitle: "🔐 ਖਾਤਾ ਸੈਟਿੰਗਾਂ:", logoutBtn: "ਲੌਗ ਆਊਟ", deleteAccountBtn: "ਖਾਤਾ ਮਿਟਾਓ", storyModalTitle: "ਨਵੀਂ ਸਟੋਰੀ ਪਾਓ (24 ਘੰਟੇ)", storyPickVideo: "ਫੋਟੋ ਜਾਂ ਵੀਡੀਓ ਚੁਣੋ", storyHint: "24 ਘੰਟਿਆਂ ਬਾਅਦ ਆਪਣੇ ਆਪ ਹਟ ਜਾਵੇਗੀ", storyMsgPlaceholder: "ਸਟੋਰੀ ਸੁਨੇਹਾ ਲਿਖੋ...", storyShareBtn: "ਸ਼ੇਅਰ ਕਰੋ", commentsTitle: "ਕਮੈਂਟ", commentPlaceholder: "ਕਮੈਂਟ ਲਿਖੋ...", postBtn: "ਪੋਸਟ" },
+      or: { loginSub: "ଥରେ ନାମ ଓ ପାସୱାର୍ଡ ତିଆରି କରନ୍ତୁ", signInTab: "ଲଗଇନ୍", signUpTab: "ନୂଆ ଆକାଉଣ୍ଟ", userPlaceholder: "ଆପଣଙ୍କ ନାମ ଦିଅନ୍ତୁ", passPlaceholder: "ପାସୱାର୍ଡ", loginBtn: "ଆରମ୍ଭ କରନ୍ତୁ", yourStory: "ଆପଣଙ୍କ ଷ୍ଟୋରୀ", followBtn: "ଫଲୋ", shareLabel: "ସେୟାର", saveLabel: "ସେଭ୍", reportLabel: "ରିପୋର୍ଟ", uploadTitle: "ନୂଆ ଭିଡିଓ ଅପଲୋଡ୍", maxDuration: "ସର୍ବାଧିକ ସମୟ:", maxDurationVal: "୧ ମିନିଟ୍ (୬୦ ସେକେଣ୍ଡ)", qualityRule: "କ୍ୱାଲିଟି:", qualityRuleVal: "720p / 1080p", pickVideo: "ଭିଡିଓ ବାଛନ୍ତୁ", videoHint: "ସର୍ବାଧିକ ୬୦ ସେକେଣ୍ଡ", captionPlaceholder: "କ୍ୟାପସନ୍ ଲେଖନ୍ତୁ...", publishBtn: "ସେଭ୍ କରନ୍ତୁ", chatHeaderLeft: "💬 ସୁରକ୍ଷିତ ଚାଟ୍", chatSafetyBtn: "🛡️ ରିପୋର୍ଟ / ବ୍ଲକ୍", chatPlaceholder: "ବାର୍ତ୍ତା ଲେଖନ୍ତୁ...", sendBtn: "ପଠାନ୍ତୁ", notifTitle: "ନୋଟିଫିକେସନ୍", enableNotifBtn: "🔔 ପୁସ୍ ଅନ୍", notifNew: "ନୂଆ", notifBtnLabel: "ନୋଟିଫିକେସନ୍", bookmarksBtnLabel: "ବୁକମାର୍କ", postsLabel: "ପୋଷ୍ଟ", followersLabel: "ଫଲୋଅର୍ସ", langsLabel: "ଭାଷା", savedVideosTitle: "🔖 ସେଭ୍ ଭିଡିଓ", noBookmarksYet: "ଏପର୍ଯ୍ୟନ୍ତ କୌଣସି ଭିଡିଓ ସେଭ୍ ହୋଇନାହିଁ।", accountSafetyTitle: "🔐 ଆକାଉଣ୍ଟ ସେଟିଂସ:", logoutBtn: "ଲଗ୍ ଆଉଟ୍", deleteAccountBtn: "ଆକାଉଣ୍ଟ ଡିଲିଟ୍", storyModalTitle: "ନୂଆ ଷ୍ଟୋରୀ (୨୪ ଘଣ୍ଟା)", storyPickVideo: "ଫଟୋ କିମ୍ବା ଭିଡିଓ ବାଛନ୍ତୁ", storyHint: "୨୪ ଘଣ୍ଟା ପରେ ହଟିଯିବ", storyMsgPlaceholder: "ଷ୍ଟୋରୀ ବାର୍ତ୍ତା...", storyShareBtn: "ସେୟାର କରନ୍ତୁ", commentsTitle: "କମେଣ୍ଟ", commentPlaceholder: "କମେଣ୍ଟ ଲେଖନ୍ତୁ...", postBtn: "ପୋଷ୍ଟ" },
+      as: { loginSub: "এবাৰ নাম আৰু পাছৱৰ্ড বনাওক", signInTab: "লগইন", signUpTab: "নতুন একাউণ্ট", userPlaceholder: "আপোনাৰ নাম লিখক", passPlaceholder: "পাছৱৰ্ড", loginBtn: "আৰম্ভ কৰক", yourStory: "আপোনাৰ ষ্ট'ৰী", followBtn: "ফ'ল'", shareLabel: "শ্বেয়াৰ", saveLabel: "ছেভ", reportLabel: "ৰিপ'ৰ্ট", uploadTitle: "নতুন ভিডিঅ' আপল'ড", maxDuration: "সৰ্বাধিক সময়:", maxDurationVal: "১ মিনিট (৬০ ছেকেণ্ড)", qualityRule: "কোৱালিটি:", qualityRuleVal: "720p / 1080p", pickVideo: "ভিডিঅ' বাছক", videoHint: "সৰ্বাধিক ৬০ ছেকেণ্ড", captionPlaceholder: "কেপচন লিখক...", publishBtn: "ছেভ কৰক", chatHeaderLeft: "💬 সুৰক্ষিত চেট", chatSafetyBtn: "🛡️ ৰিপ'ৰ্ট / ব্লক", chatPlaceholder: "বাৰ্তা লিখক...", sendBtn: "পঠিয়াওক", notifTitle: "নটিফিকেচন", enableNotifBtn: "🔔 পুছ অন", notifNew: "নতুন", notifBtnLabel: "নটিফিকেচন", bookmarksBtnLabel: "বুকমাৰ্ক", postsLabel: "প'ষ্ট", followersLabel: "ফ'ল'ৱাৰ", langsLabel: "ভাষা", savedVideosTitle: "🔖 ছেভ কৰা ভিডিঅ'", noBookmarksYet: "এতিয়ালৈকে কোনো ভিডিঅ' ছেভ কৰা হোৱা নাই।", accountSafetyTitle: "🔐 একাউণ্ট ছেটিংছ:", logoutBtn: "লগ আউট", deleteAccountBtn: "একাউণ্ট ডিলিট", storyModalTitle: "নতুন ষ্ট'ৰী (২৪ ঘণ্টা)", storyPickVideo: "ফটো বা ভিডিঅ' বাছক", storyHint: "২৪ ঘণ্টাৰ পিছত আঁতৰি যাব", storyMsgPlaceholder: "ষ্ট'ৰী বাৰ্তা...", storyShareBtn: "শ্বেয়াৰ কৰক", commentsTitle: "কমেণ্ট", commentPlaceholder: "কমেণ্ট লিখক...", postBtn: "প'ষ্ট" },
+      ks: { loginSub: "اکھ لٹہِ ناو تہٕ پاس ورڈ بنایو", signInTab: "لاگ ان", signUpTab: "نۆو اکاؤنٹ", userPlaceholder: "پَنُن ناو لیکھیو", passPlaceholder: "پاس ورڈ", loginBtn: "شروع کٔریو", yourStory: "تُہٕنٛز سٹوری", followBtn: "فالو", shareLabel: "شیئر", saveLabel: "محفوظ", reportLabel: "رپورٹ", uploadTitle: "نۆو ویڈیو اپ لوڈ", maxDuration: "زیادٕ وقت:", maxDurationVal: "1 منٹ (60 سیکنڈ)", qualityRule: "کوالٹی:", qualityRuleVal: "720p / 1080p", pickVideo: "ویڈیو ژٲریو", videoHint: "زیادٕ 60 سیکنڈ", captionPlaceholder: "کیپشن لیکھیو...", publishBtn: "محفوظ کٔریو", chatHeaderLeft: "💬 محفوظ چیٹ", chatSafetyBtn: "🛡️ رپورٹ / بلاک", chatPlaceholder: "پیغام لیکھیو...", sendBtn: "سوزیو", notifTitle: "اطلاعات", enableNotifBtn: "🔔 پش آن", notifNew: "نۆو", notifBtnLabel: "اطلاعات", bookmarksBtnLabel: "محفوظ", postsLabel: "پوسٹ", followersLabel: "فالوور", langsLabel: "زبانہٕ", savedVideosTitle: "🔖 محفوظ ویڈیوز", noBookmarksYet: "ونہِ چھُنہٕ کانٛہہ ویڈیو محفوظ۔", accountSafetyTitle: "🔐 اکاؤنٹ سیٹنگز:", logoutBtn: "لاگ آؤٹ", deleteAccountBtn: "اکاؤنٹ ڈیلیٹ", storyModalTitle: "نۆو سٹوری (24 گھنٹہٕ)", storyPickVideo: "فوٹو یا ویڈیو ژٲریو", storyHint: "24 گھنٹن پتہٕ گژھہِ ختم", storyMsgPlaceholder: "سٹوری پیغام...", storyShareBtn: "شیئر کٔریو", commentsTitle: "تبصرٕ", commentPlaceholder: "تبصرٕ لیکھیو...", postBtn: "پوسٹ" }
     };
 
     function applyLanguage() {
